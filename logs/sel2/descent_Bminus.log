@@ -1,0 +1,21 @@
+L = Q[y]/(y^6 - 3*y^4 + 3*y^2 - 3), signature [2, 2], class group [], index of the model []
+S = [2, 3, 17]  extra primes for the class group: []  (odd part of Cl left: 1)
+#gens L(S',2) = 9, norm-square dim 6, Q(S',2) image dim 4, dim H_Q(S') = 2
+real place (2 real roots): no condition
+p = 2: primes [[6, 1]]  local square-class dims [8]
+p = 3: primes [[6, 1]]  local square-class dims [2]
+p = 17: primes [[1, 1], [1, 1], [1, 4]]  local square-class dims [2, 2, 2]
+product-formula check of nfhilbert on 60 random pairs: 0 failures
+p = 2: factors [6], dim J(Q_p)/2J(Q_p) = 2, (1,-1)_p nonzero: 1 => dim of fake local image = 1
+   rational points: 8, image dim so far 0
+   quadratic points hit: 72289, image dim now 1  COMPLETE
+p = 3: factors [6], dim J(Q_p)/2J(Q_p) = 0, (1,-1)_p nonzero: 0 => dim of fake local image = 0
+   rational points: 243, image dim so far 0
+   quadratic points hit: 0, image dim now 0  COMPLETE
+p = 17: factors [1, 1, 4], dim J(Q_p)/2J(Q_p) = 1, (1,-1)_p nonzero: 0 => dim of fake local image = 1
+   rational points: 20, image dim so far 1
+   quadratic points hit: 0, image dim now 1  COMPLETE
+p = 2: dim V_p = 1   dim of Selmer candidates so far = 1
+p = 3: dim V_p = 2   dim of Selmer candidates so far = 1
+p = 17: dim V_p = 1   dim of Selmer candidates so far = 1
+dim fake 2-Selmer group F = 1   =>  dim Sel^2(J) = 2  (fake group + 1 for the class of [P - iota P]);  rank J(Q) <= 2

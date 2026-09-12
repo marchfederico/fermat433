@@ -1,0 +1,6 @@
+14 candidates with a != 0 (mod 43^12)
+q = 11003 f = 1: #E1 = 10914 #E2 = 11094  43-parts [0, 2]  |S| = 1821 of 1849   candidates alive: 14 -> 14
+q = 11003 f = 1: #E1 = 11094 #E2 = 10914  43-parts [2, 0]  |S| = 1821 of 1849   candidates alive: 14 -> 14
+q = 11243 f = 1: #E1 = 11394 #E2 = 11094  43-parts [0, 2]  |S| = 1837 of 1849   candidates alive: 14 -> 14
+q = 11243 f = 1: #E1 = 11094 #E2 = 11394  43-parts [2, 0]  |S| = 1837 of 1849   candidates alive: 14 -> 14
+surviving candidates with a != 0: [[2, 1], [2, -1], [11, 1], [11, -1], [16, 1], [16, -1], [27, 1], [27, -1], [29, 1], [29, -1], [32, 1], [32, -1], [42, 1], [42, -1]]

@@ -1,0 +1,22 @@
+k=0 lambda=1: genus2red conductor 729  minimal model [-10*x^3 - 8, x^3]  |disc(4P+Q^2)|/2^12 = 940369969152
+   Igusa-Clebsch invariants: [34560, 89579520, -103195607040, -2897732645683200, 986049380773527552]
+   squarefree parts of Frobenius discriminants (RM test): [0, 1, 6, 7, 13, 31, 37, 61, 79, 103, 109, 127, 151, 157, 181, 199, 223, 229, 271, 277]
+   torsion bound gcd #J(F_q) = 3
+   functional-equation check (log10 error): -4   L(J,1) = 0.39611753764453213630507114626048092925
+k=0 lambda=-2: genus2red conductor 729  minimal model [-2*x^6 + 10*x^3 + 1, 0]  |disc(4P+Q^2)|/2^12 = 940369969152
+   Igusa-Clebsch invariants: [138240, 1433272320, -6604518850560, -741819557294899200, 1009714565912092213248]
+   squarefree parts of Frobenius discriminants (RM test): [0, 1, 6, 7, 13, 31, 37, 61, 79, 103, 109, 127, 151, 157, 181, 199, 223, 229, 271, 277]
+   torsion bound gcd #J(F_q) = 3
+   functional-equation check (log10 error): -4   L(J,1) = 0.39611753764453213630507114626048092925
+k=1 lambda=1: genus2red conductor 729  minimal model [-17*x^6 + 72*x^5 - 90*x^4 - 40*x^3 + 180*x^2 - 144*x + 40, 0]  |disc(4P+Q^2)|/2^12 = 986049380773527552
+   Igusa-Clebsch invariants: [34560, 89579520, -103195607040, -2897732645683200, 986049380773527552]
+   squarefree parts of Frobenius discriminants (RM test): [0, 1, 2, 6, 7, 10, 13, 37, 46, 61, 79, 94, 103, 127, 151, 181, 199, 229, 271, 334, 382, 394, 538, 586]
+   torsion bound gcd #J(F_q) = 1
+   functional-equation check (log10 error): -4   L(J,1) = 0.39508639800029765256692240991599347476
+k=1 lambda=-2: genus2red conductor 729  minimal model [136*x^6 - 288*x^5 + 180*x^4 + 40*x^3 - 90*x^2 + 36*x - 5, 0]  |disc(4P+Q^2)|/2^12 = 986049380773527552
+   Igusa-Clebsch invariants: [138240, 1433272320, -6604518850560, -741819557294899200, 1009714565912092213248]
+   squarefree parts of Frobenius discriminants (RM test): [0, 1, 2, 6, 7, 10, 13, 37, 46, 61, 79, 94, 103, 127, 151, 181, 199, 229, 271, 334, 382, 394, 538, 586]
+   torsion bound gcd #J(F_q) = 1
+   functional-equation check (log10 error): -4   L(J,1) = 0.39508639800029765256692240991599347476
+done
+exit 0

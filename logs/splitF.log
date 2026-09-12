@@ -1,0 +1,20 @@
+B- : y^2 = -C3: conductor 729 = [3]^[6]   disc = [2, 3]^[36, 15]
+   local data: [[2, [5, [Mod(0, 2), Mod(0, 2)]], []], [3, [1, []], ["[III{3}] page 184", [3, 3]]]]
+   split primes: 29 factor as (T^2-aT+p)(T^2-bT+p), failures: 85  [11, x^4 + 4*x^3 + 8*x^2 + 44*x + 121]
+   sample (p, [a, b]): [[41, [6, -6]], [83, [18, -18]], [131, [18, -18]], [179, [18, -18]], [227, [30, -30]], [233, [30, -30]]]
+   inert primes with trace 0: 123, failures: 0  
+C+ : y^2 = 2C3: conductor 729 = [3]^[6]   disc = [2, 3]^[46, 15]
+   local data: [[2, [5, [Mod(0, 2), Mod(0, 2)]], []], [3, [1, []], ["[III{3}] page 184", [3, 3]]]]
+   split primes: 29 factor as (T^2-aT+p)(T^2-bT+p), failures: 85  [11, x^4 + 4*x^3 + 8*x^2 + 44*x + 121]
+   sample (p, [a, b]): [[41, [6, -6]], [83, [18, -18]], [131, [18, -18]], [179, [18, -18]], [227, [30, -30]], [233, [30, -30]]]
+   inert primes with trace 0: 123, failures: 0  
+A+ : y^2 = x^6-40x^3-32: conductor 729 = [3]^[6]   disc = [2, 3]^[36, 15]
+   local data: [[2, [5, [Mod(0, 2), Mod(0, 2)]], []], [3, [1, []], ["[III{3}] page 184", [3, 3]]]]
+   split primes: 62 factor as (T^2-aT+p)(T^2-bT+p), failures: 52  [19, x^4 + 2*x^3 - 15*x^2 + 38*x + 361]
+   sample (p, [a, b]): [[11, [6, -6]], [17, [6, -6]], [41, [6, -6]], [59, [6, -6]], [83, [18, -18]], [89, [18, -18]]]
+   inert primes with trace 0: 123, failures: 0  
+A(-2): conductor 729 = [3]^[6]   disc = [2, 3]^[46, 15]
+   local data: [[2, [5, [Mod(0, 2), Mod(0, 2)]], []], [3, [1, []], ["[III{3}] page 184", [3, 3]]]]
+   split primes: 62 factor as (T^2-aT+p)(T^2-bT+p), failures: 52  [19, x^4 + 2*x^3 - 15*x^2 + 38*x + 361]
+   sample (p, [a, b]): [[11, [6, -6]], [17, [6, -6]], [41, [6, -6]], [59, [6, -6]], [83, [18, -18]], [89, [18, -18]]]
+   inert primes with trace 0: 123, failures: 0  

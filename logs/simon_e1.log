@@ -1,0 +1,5 @@
+E0 Weierstrass (w): [0, -1/3*w^2, 0, 1/54*w, 5/729]
+E1 Weierstrass (w): [0, -1/3*w^2 + 1/3*w + 1/3, 0, -5/54*w^2 + 11/54*w - 1/9, 2/243*w^2 + 11/486*w - 31/729]
+E1 over K: [rank lower bound, 2-Selmer rank, #points] = [3, 4, 5]
+done
+exit 0

@@ -1,0 +1,23 @@
+L = Q[y]/(y^6 - y^5 - 13*y^4 - 34*y^3 - 36*y^2 + 4*y + 20), signature [2, 2], class group [], index of the model [2]
+S = [2, 3, 209203]  extra primes for the class group: []  (odd part of Cl left: 1)
+#gens L(S',2) = 11, norm-square dim 7, Q(S',2) image dim 4, dim H_Q(S') = 3
+real place (2 real roots): no condition
+p = 2: primes [[4, 1], [1, 2]]  local square-class dims [6, 4]
+p = 3: primes [[2, 1], [1, 4]]  local square-class dims [2, 2]
+p = 209203: primes [[2, 1], [1, 2], [1, 2]]  local square-class dims [2, 2, 2]
+product-formula check of nfhilbert on 60 random pairs: 0 failures
+p = 2: factors [2, 4], dim J(Q_p)/2J(Q_p) = 3, (1,-1)_p nonzero: 1 => dim of fake local image = 2
+   rational points: 1, image dim so far 0
+   quadratic points hit: 31, image dim now 1  INCOMPLETE
+   near infinity: rational points 8129, image dim now 2
+   COMPLETE
+p = 3: factors [2, 4], dim J(Q_p)/2J(Q_p) = 1, (1,-1)_p nonzero: 1 => dim of fake local image = 0
+   rational points: 216, image dim so far 0
+   quadratic points hit: 0, image dim now 0  COMPLETE
+p = 209203: factors [2, 2, 2], dim J(Q_p)/2J(Q_p) = 2, (1,-1)_p nonzero: 1 => dim of fake local image = 1
+   rational points: 300, image dim so far 0
+   quadratic points hit: 5602, image dim now 1  COMPLETE
+p = 2: dim V_p = 1   dim of Selmer candidates so far = 1
+p = 3: dim V_p = 3   dim of Selmer candidates so far = 1
+p = 209203: dim V_p = 2   dim of Selmer candidates so far = 0
+dim fake 2-Selmer group F = 0   =>  dim Sel^2(J) = 1  (fake group + 1 for the class of [P - iota P]);  rank J(Q) <= 1

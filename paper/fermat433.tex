@@ -1,0 +1,1319 @@
+% !TeX program = pdflatex
+%
+% The primitive solutions of x^4 + 2y^3 + z^3 = 0.
+% Companion to the repository https://github.com/marchfederico/fermat433
+%
+\documentclass[11pt,reqno]{amsart}
+
+\usepackage[OT2,T1]{fontenc}   % OT2 supplies the Cyrillic "Sha" for \Sha below
+\usepackage[utf8]{inputenc}
+\usepackage{amsmath,amssymb,amsthm}
+\usepackage{mathtools}
+\usepackage{array}
+\usepackage{booktabs}
+\usepackage{enumitem}
+\usepackage[margin=1.15in]{geometry}
+\usepackage[colorlinks=true,linkcolor=blue,citecolor=blue,urlcolor=blue]{hyperref}
+
+% ---------------------------------------------------------------- theorems ---
+\theoremstyle{plain}
+\newtheorem{theorem}{Theorem}[section]
+\newtheorem{proposition}[theorem]{Proposition}
+\newtheorem{lemma}[theorem]{Lemma}
+\newtheorem{corollary}[theorem]{Corollary}
+\theoremstyle{definition}
+\newtheorem{remark}[theorem]{Remark}
+\newtheorem{convention}[theorem]{Convention}
+
+% ----------------------------------------------------------------- notation ---
+\newcommand{\Q}{\mathbb{Q}}
+\newcommand{\Z}{\mathbb{Z}}
+\newcommand{\R}{\mathbb{R}}
+\newcommand{\Co}{\mathbb{C}}
+\newcommand{\Ad}{\mathbb{A}}
+\newcommand{\PP}{\mathbb{P}}
+\newcommand{\FF}{\mathbb{F}}
+\newcommand{\Qbar}{\overline{\Q}}
+\newcommand{\Ocal}{\mathcal{O}}
+\newcommand{\pp}{\mathfrak{p}}
+\newcommand{\qq}{\mathfrak{q}}
+\newcommand{\PPr}{\mathfrak{P}}
+\newcommand{\aaa}{\mathfrak{a}}
+
+\DeclareMathOperator{\NS}{NS}
+\DeclareMathOperator{\rk}{rk}
+\DeclareMathOperator{\Aut}{Aut}
+\DeclareMathOperator{\End}{End}
+\DeclareMathOperator{\Jac}{Jac}
+\DeclareMathOperator{\Sel}{Sel}
+\DeclareMathOperator{\disc}{disc}
+\DeclareMathOperator{\Gal}{Gal}
+\DeclareMathOperator{\Ind}{Ind}
+\DeclareMathOperator{\sgn}{sgn}
+\DeclareMathOperator{\stdrep}{std}
+\DeclareMathOperator{\Log}{Log}
+\DeclareMathOperator{\Nm}{N}
+\DeclareMathOperator{\cont}{cont}
+\DeclareMathOperator{\Sym}{S}
+\newcommand{\tors}{\mathrm{tors}}
+\newcommand{\fake}{\mathrm{fake}}
+
+% The Tate--Shafarevich group.  \Sha below uses the wncyr fonts, which live in
+% TeX Live's "cyrillic" collection (present on Overleaf and in any full
+% installation).  If they are missing, comment out the two \Declare... lines
+% and uncomment the \newcommand fallback instead.
+\DeclareSymbolFont{cyrletters}{OT2}{wncyr}{m}{n}
+\DeclareMathSymbol{\Sha}{\mathord}{cyrletters}{"58}
+%\newcommand{\Sha}{\mathrm{Sha}}
+
+\numberwithin{equation}{section}
+
+% Long \texttt{} script names cannot hyphenate; give TeX room to stretch.
+\emergencystretch=3em
+
+% ------------------------------------------------------------------- front ---
+\title[Quadratic Chabauty through a hidden involution]
+      {Quadratic Chabauty through a hidden involution:\\
+       the primitive solutions of $x^{4}+2y^{3}+z^{3}=0$}
+
+\author{Marcello Federico}
+\email{marcellof@gmail.com}
+\date{September 2026}
+
+\subjclass[2020]{Primary 11D41; Secondary 11G30, 11G50, 11Y50, 14G05, 14H45}
+\keywords{Generalised Fermat equation, quadratic Chabauty, bielliptic genus two
+curve, N\'eron--Severi group, $p$-adic height, Mordell--Weil sieve, Bolza curve}
+
+\begin{document}
+
+\begin{abstract}
+We determine all primitive integer solutions of $x^{4}+2y^{3}+z^{3}=0$: they are
+$(\pm1,0,-1)$, $(\pm1,-1,1)$ and $(\pm43,-203,237)$. This was the smallest
+generalised Fermat equation left uninvestigated ($H=40$) in the survey of
+Ratcliffe and Grechuk. A descent over $\Q(\sqrt[3]{2})$ reduces the equation to
+rational points on six genus-$2$ curves, four of which are settled by two-cover
+descent and by a classical Chabauty argument at an inert prime. The remaining
+pair, $B^{-}\colon y^{2}=-C_{3}(x)$ and $C^{+}\colon y^{2}=2C_{3}(x)$ with
+$C_{3}(x)=17x^{6}-72x^{5}+90x^{4}+40x^{3}-180x^{2}+144x-40$, have Jacobians of
+Mordell--Weil rank $2$, equal to the genus, and N\'eron--Severi rank $1$ over
+$\Q$ and over $\Q(\sqrt{-2})$; neither classical Chabauty nor quadratic
+Chabauty over those fields applies.
+
+We show that these curves are $\Q$-twists of the Bolza curve and carry an
+involution $\tau$ defined over a field $L$ of degree $12$, whose N\'eron--Severi
+class is the unique class on which complex conjugation acts by $-1$ --- exactly
+the class counted by the term $\rk\NS(J_{\Qbar})^{c=-1}$ in the finiteness
+criterion of Balakrishnan--Dogra. The bielliptic quadratic Chabauty function of
+Balakrishnan--Besser--Bianchi--M\"uller over $L$, formed with the unique idele
+class character lying in the matching Galois-isotypic component, restricts to a
+locally analytic function on $X(\Q_{p})$ that takes a single value on $X(\Q)$.
+Computing its zeros at $p=499$, and independently at $p=1459$, and applying a
+Mordell--Weil sieve leaves exactly the four known rational points on each curve.
+
+\medskip
+\noindent\emph{Provenance.} This work was carried out in a human--AI
+collaboration with Claude (Anthropic): the design of the computations, the
+scripts and this write-up were all produced in that collaboration. Every
+assertion below is backed by a script and a log in the public repository, and
+the record of how the argument developed, including the errors found and
+corrected along the way, is kept there as well. The result has not been
+refereed. Credits and status in full: \S\ref{subsec:status}.
+\end{abstract}
+
+\maketitle
+
+% ==============================================================================
+\section{Introduction}
+% ==============================================================================
+
+\subsection{The result}
+
+\begin{theorem}\label{thm:main}
+The integer solutions of
+\begin{equation}\label{eq:main}
+  x^{4}+2y^{3}+z^{3}=0, \qquad \gcd(x,y,z)=1,
+\end{equation}
+are exactly
+\[
+  (x,y,z)=(\pm1,\,0,\,-1),\qquad (\pm1,\,-1,\,1),\qquad (\pm43,\,-203,\,237).
+\]
+\end{theorem}
+
+Equation \eqref{eq:main} is a generalised Fermat equation of signature
+$(4,3,3)$ and height $H=40$. In the survey of Ratcliffe and Grechuk
+\cite{RatcliffeGrechuk} it is the smallest equation recorded as
+uninvestigated. Villines \cite{Villines} reduced it, with Magma, to rational
+points on six curves of genus $2$ and settled four of them, leaving open the
+two whose Jacobians have Mordell--Weil rank equal to the genus. The present
+paper closes that gap, and re-proves the remaining parts independently; all
+computations here run on PARI/GP alone.
+
+The proof has four parts.
+\begin{enumerate}[label=(\Alph*),leftmargin=2.4em]
+\item A descent over $K=\Q(\sqrt[3]{2})$ reducing \eqref{eq:main} to rational
+      points on six genus-$2$ curves (\S\ref{sec:descent}).
+\item The four accessible curves: three have empty fake $2$-Selmer set, and the
+      fourth has rank $1$ and is settled by Chabauty at an inert prime together
+      with a Mordell--Weil sieve (\S\ref{sec:easy}).
+\item The hard pair $B^{-}$, $C^{+}$, where $\rk J(\Q)=2=g$, by quadratic
+      Chabauty (\S\S\ref{sec:structure}--\ref{sec:sieve}). This is the new
+      contribution.
+\item The rank bounds used in (C), by a $2$-descent over $\Q$
+      (\S\ref{sec:rank}).
+\end{enumerate}
+
+\subsection{The obstruction, and the idea}
+
+Write $X$ for either curve of the hard pair and $J=\Jac(X)$. Classical
+Chabauty--Coleman needs $\rk J(\Q)<g$, and here $\rk J(\Q)=2=g$. Quadratic
+Chabauty in the form of Balakrishnan--Dogra \cite{BDii} needs a supply of
+N\'eron--Severi classes: the depth-$2$ Chabauty--Kim set $X(\Q_{p})_{2}$ is
+finite as soon as
+\begin{equation}\label{eq:BDcount}
+  \rk J(\Q) \;<\; g-1+\rk\NS(J)+\rk\NS(J_{\Qbar})^{c=-1},
+\end{equation}
+$c$ denoting complex conjugation. We show (Proposition~\ref{prop:NS}) that
+$\NS(J_{\Qbar})\otimes\Q$ has rank $4$ and, as a representation of
+$\Gal(M/\Q)\cong \Sym_{4}\times\Z/2$ for an explicit field $M$ of degree $48$,
+is
+\[
+  \NS(J_{\Qbar})\otimes\Q \;\cong\; \mathbf{1}\oplus(\sgn_{F}\otimes\sgn\otimes\stdrep),
+\]
+so that $\rk\NS(J)=1$ and complex conjugation has eigenvalues $(1,1,1,-1)$. The
+right-hand side of \eqref{eq:BDcount} is therefore $2-1+1+1=3>2$: finiteness
+holds, but the only usable class is the single anti-invariant one, and it is
+not defined over $\Q$. The same computation shows $\rho(J/F)=1$ for
+$F=\Q(\sqrt{-2})$, so quadratic Chabauty over $F$ --- the route suggested in
+\cite{Villines} --- has no class to use either.
+
+The anti-invariant class turns out to be visible. The M\"obius transformations
+permuting the six roots of $C_{3}$ form $\Sym_{4}$, so $\Aut(X_{\Qbar})\cong
+\mathrm{GL}_{2}(\FF_{3})$ has order $48$ and $X$ is a $\Q$-twist of the Bolza
+curve $y^{2}=x^{5}-x$. Six of the nine involutory M\"obius maps lift to genuine
+involutions $\tau$ of $X$, and these are defined over a field
+\[
+  L=\Q\bigl(\sqrt[3]{2},\;\sqrt{\sqrt[3]{2}-1},\;\sqrt{\kappa}\bigr),
+  \qquad [L:\Q]=12,
+\]
+whose degree is exactly what the N\'eron--Severi character predicts (the
+stabiliser of the anti-invariant class has order $4$ in a group of order $48$).
+Over $L$ the curve is bielliptic, with quotients $E_{1},E_{2}$ of $j$-invariant
+$8000$.
+
+This puts us in the situation of the explicit bielliptic quadratic Chabauty of
+Balakrishnan--Besser--Bianchi--M\"uller \cite{BBBM}, whose function is built
+from an idele class character $\chi$ of the base field. The point is a
+\emph{selection rule}: for $z\in X(\Q)\subset X(L)$ all Galois-conjugate places
+contribute the same local terms, so the identity survives on $\Q$-points only
+when the class and the character lie in the same Galois-isotypic component. The
+cyclotomic character lies in the trivial component and yields $0=0$. In the
+$3$-dimensional component $\sgn_{F}\otimes\sgn\otimes\stdrep$ that matches
+$\tau_{*}$ there is, we show, exactly one character $\chi_{Z}$ up to scaling
+(Proposition~\ref{prop:character}); and it vanishes on the uniformisers of every
+prime of $L$ above $2$ and $3$, which is what makes the resulting identity
+independent of the reduction types at the bad primes.
+
+The outcome (Theorem~\ref{thm:identity}) is that
+\[
+  \rho(z)\;=\;\sum_{i=1}^{12}c_{i}\bigl[\lambda_{i}(\varphi_{1}z)-\lambda_{i}(\varphi_{2}z)\bigr]
+  \;-\;2\sum_{i=1}^{12}c_{i}\log_{p}\sigma_{i}(X(z))\;-\;a(z)^{\mathsf T}Ga(z)
+\]
+is a locally analytic function on $X(\Q_{p})$ taking the single value
+$-\Omega_{397}$ on $X(\Q)$. Its zero set is computed disk by disk, and a
+Mordell--Weil sieve cuts the survivors down to the four known rational points on
+each curve.
+
+\subsection{What is new}
+
+\begin{enumerate}[label=(\arabic*),leftmargin=2.4em]
+\item An explicit quadratic Chabauty computation for a curve over $\Q$ whose
+      extra N\'eron--Severi class is defined only over a field of degree $12$,
+      found from the automorphism group of a twist of the Bolza curve, with
+      the field of definition matching the Galois character of
+      $\NS(J_{\Qbar})$.
+\item The identification of the character by linear algebra from the action of
+      the involutions on holomorphic forms together with the $p$-adic
+      logarithms of the units of $L$, with the vanishing above $2$ and $3$ as a
+      by-product.
+\item $p$-adic heights at twelve places of a degree-$12$ field, computed through
+      integer models congruent to the completions modulo $p^{30}$, and
+      division-polynomial recurrences for $\psi_{514}$ in place of a polynomial
+      of degree ${\approx}130{,}000$.
+\item An index-free Mordell--Weil sieve: $p$-integrality of the coefficient
+      vector removes the saturation hypothesis usually needed.
+\item The observation that the endgame proposed in \cite{Villines} over
+      $\Q(\sqrt{-2})$ cannot work, since $\rho(J/\Q(\sqrt{-2}))=1$.
+\end{enumerate}
+
+\subsection{What the proof rests on}\label{subsec:rests}
+
+Parts (A), (B) and (D) are self-contained exact or $p$-adic computations. Part
+(C) additionally imports:
+
+\begin{enumerate}[label=(\roman*),leftmargin=2.4em]
+\item $p$-adic heights on elliptic curves over a number field for a
+      non-cyclotomic idele class character: that $h^{\chi}$ is a quadratic form,
+      that it decomposes into local terms, that the local term at $w\nmid p$ of
+      good reduction is $\chi_{w}(\pi_{w})\max(0,-v_{w}(x(Q)))$ on a model
+      minimal at $w$, and that at $\pp\mid p$ of good ordinary reduction it is
+      the canonical Mazur--Tate height computed from the $\sigma$-function
+      \cite{MazurTate,Bianchi,BBBM}.
+\item The bielliptic quadratic Chabauty identity of \cite[Thm.~1.5]{BBBM} over a
+      number field, with the normalisation of the logarithmic term as in
+      \cite[Thm.~2.3]{BianchiPadurariu}.
+\item The finiteness theorem of \cite[Prop.~2]{BDii} (quoted in
+      \cite{Dogra}); this is used only as motivation, the finiteness of the
+      zero set being established computationally by Strassman bounds.
+\item Standard Coleman integration on residue disks.
+\item PARI's rigorous $p$-adic precision tracking. The only truncation is the
+      series tail on each residue disk, controlled by the observed linear growth
+      of coefficient valuations and confirmed at higher precision.
+\end{enumerate}
+
+\subsection{Provenance and credits}\label{subsec:status}
+
+This work was done in collaboration with Claude (Anthropic): the design of the
+computations, the PARI/GP and Python scripts, and the present write-up were all
+produced in that collaboration. The author is nonetheless answerable for
+everything asserted here, which is what the name on the title page means.
+Claude is not an author and could not be one: it can neither stand behind the
+result nor answer for it if the result is wrong.
+
+The reader should treat the mathematics accordingly --- that is,
+critically, and with the scripts and logs in hand. Everything needed to do so is
+public (\S\ref{sec:code}): every proposition names the script and the log that
+establish it (Table~\ref{tab:scripts}), and \texttt{RESULTS.md} in the
+repository is a chronological record of how the argument developed, including
+the several errors that were found and corrected and the checks that caught
+them.
+
+This is therefore a research record, not a refereed result. The computations
+have been repeated at a second prime and cross-checked against the independent
+Magma computations of \cite{Villines} wherever the two overlap, and they agree
+throughout; but the argument of \S\ref{sec:identity}, and in particular the
+precise relationship between the identity proved there and
+\cite[Thm.~1.5]{BBBM}, has not been examined by anyone else. The questions the
+author would most like an expert to consider are collected in
+\texttt{REFEREE\_NOTES.md} in the repository.
+
+\begin{convention}
+Throughout, $\iota$ denotes the hyperelliptic involution $(x,y)\mapsto(x,-y)$;
+$\theta=\sqrt[3]{2}$; $K=\Q(\theta)$; $F=\Q(\sqrt{-2})$; and
+\[
+  C_{3}(x)=17x^{6}-72x^{5}+90x^{4}+40x^{3}-180x^{2}+144x-40 .
+\]
+For a curve $C\colon y^{2}=f(x)$ of genus $2$ we write $J=\Jac(C)$. Every
+assertion labelled with a script name is established by that script; the
+scripts and their logs are in the repository (\S\ref{sec:code}), and
+Table~\ref{tab:scripts} indexes them.
+\end{convention}
+
+% ==============================================================================
+\section{Descent to six curves of genus two}\label{sec:descent}
+% ==============================================================================
+
+Let $\theta=\sqrt[3]{2}$ and $K=\Q(\theta)$. Then $K$ has class number $1$
+(certified with \texttt{bnfcertify}), fundamental unit $\varepsilon=\theta-1$ of
+norm $1$, and $2$ and $3$ are totally ramified.
+
+\begin{lemma}\label{lem:A1}
+Let $(x,y,z)$ be a primitive solution of \eqref{eq:main}. Then $\gcd(y,z)=1$ and
+$\alpha:=z+y\theta$ satisfies $\Nm_{K/\Q}(\alpha)=z^{3}+2y^{3}=-x^{4}$. The
+three conjugates of $\alpha$ are pairwise coprime away from the primes above
+$2$ and $3$, and primitivity forces the common factors there to be trivial;
+hence $(\alpha)=\aaa^{4}$ for an ideal $\aaa$. Since $h_{K}=1$ and
+$\Ocal_{K}^{\times}=\langle-1,\varepsilon\rangle$ we may write
+\[
+  \alpha=-\varepsilon^{k}\gamma^{4},\qquad \gamma\in\Z[\theta],\quad k\in\{0,1,2,3\},
+\]
+the sign being normalised by replacing $x$ with $-x$ if necessary.
+\end{lemma}
+
+\begin{proof}
+The ideal argument is the standard one for norm forms of cubic fields; see
+\texttt{descent\_explore.py}.
+\end{proof}
+
+\begin{lemma}\label{lem:A2}
+Write $\gamma=a+b\theta+c\theta^{2}$. The coefficient of $\theta^{2}$ in
+$-\varepsilon^{k}\gamma^{4}$ must vanish, which is a smooth plane quartic
+$C_{k}(a,b,c)=0$ over $\Q$, of genus $3$. Primitivity forces $\gamma$ to be a
+unit at the primes above $2$ and $3$, that is, $a$ odd and
+$a+2b+c\not\equiv0\pmod 3$. The curve $C_{3}$ has no $2$-adic points, and
+$C_{2}$ has no $2$-adic point with $a$ odd. Hence every primitive solution comes
+from a rational point of $C_{0}$ or $C_{1}$ satisfying the unit conditions, with
+$x=\Nm(\gamma)$ and $z+y\theta=-\varepsilon^{k}\gamma^{4}$.
+\end{lemma}
+
+\begin{proof}
+\texttt{descent\_explore.py}, \texttt{diagonal.py}; the explicit quartics are
+recorded in \texttt{RESULTS.md}.
+\end{proof}
+
+\begin{lemma}[\'Etale double covers and the twist set]\label{lem:A3}
+Put $\delta=\gamma^{2}$. The condition $[\theta^{2}](-\varepsilon^{k}\delta^{2})=0$
+is a smooth conic $Q_{k}(d_{0},d_{1},d_{2})=0$ in the coordinates of
+$\delta=d_{0}+d_{1}\theta+d_{2}\theta^{2}$ (Gram determinant $1$ for both $k$),
+with the rational point $(1:0:0)$. Parametrising by the lines through that point,
+\begin{align*}
+ k=0:\quad & Q_{0}=-d_{1}^{2}-2d_{0}d_{2},\qquad
+             \delta_{0}(s,t)=(s^{2},\,-2st,\,-2t^{2}),\\
+           & f_{0}(s,t)=\Nm(\delta_{0})=s^{6}-40s^{3}t^{3}-32t^{6};\\[3pt]
+ k=1:\quad & Q_{1}=d_{1}^{2}-2d_{0}d_{1}+2d_{0}d_{2}-2d_{2}^{2},\qquad
+             \delta_{1}(s,t)=(2t^{2}-s^{2},\,2s(t-s),\,2t(t-s)),\\
+           & f_{1}(s,t)=-t^{6}C_{3}(s/t).
+\end{align*}
+Every rational point of the conic is $\delta_{k}(s:t)$ for a unique
+$(s:t)\in\PP^{1}(\Q)$; with $s,t$ coprime integers,
+$\delta=\mu\cdot\delta_{k}(s,t)$ for a unique $\mu\in\Q^{\times}$, and taking
+norms, $\mu f_{k}(s,t)=(\Nm(\gamma)/\mu)^{2}$. Then $\mu\in\{\pm1,\pm\tfrac12\}$,
+and $\mu=\pm1$ when $k=0$. Consequently every primitive solution gives a
+rational point on one of the six curves
+\begin{align}
+ &A^{\pm}\colon y^{2}=\pm\bigl(x^{6}-40x^{3}-32\bigr), \label{eq:Apm}\\
+ &B^{\mp}\colon y^{2}=\mp C_{3}(x), \qquad
+  C^{\mp}\colon y^{2}=\mp 2\,C_{3}(x). \label{eq:BCpm}
+\end{align}
+\end{lemma}
+
+\begin{proof}
+Each point of $C_{k}(\Q)$ gives the rational point
+$\bigl(s/t,\ \Nm(\gamma)/(\mu t^{3})\bigr)$ on $H_{\mu}\colon w^{2}=\mu f_{k}(x,1)$,
+and the point of $C_{k}$ is recovered from it by $\delta=\mu\delta_{k}(s,t)$,
+$\gamma=\sqrt{\delta}$. It remains to pin down the twist class of $\mu$.
+
+\emph{(i) Content.} For coprime $(s,t)$ the content of $\delta_{k}(s,t)$ is $1$
+if $s$ is odd and $2$ if $s$ is even. Indeed an odd prime dividing all three
+coordinates would divide both $s$ and $t$: for $k=0$ it divides $s^{2}$ and
+$2t^{2}$; for $k=1$ it divides $2s(t-s)$ and $2t(t-s)$, hence $t-s$, hence
+$2t^{2}-s^{2}\equiv t^{2}$. The claim modulo $4$ follows by inspecting the
+coordinates $(s^{2},2st,2t^{2})$, resp.\ $(2t^{2}-s^{2},\dots)$ with the other
+two even.
+
+\emph{(ii) $\gamma^{2}$ is primitive.} $\gamma$ is primitive; if $p$ divided all
+coordinates of $\gamma^{2}$ then $\gamma$ would be nilpotent in
+$\Z[\theta]/(p)$, which is reduced for $p\nmid6$, while for $p=2,3$ the
+nilpotents are $(\theta)$ and $(\theta+1)$, excluded by the unit conditions of
+Lemma~\ref{lem:A2}. Hence
+$\mu=\pm1/\cont(\delta_{k}(s,t))\in\{\pm1,\pm\tfrac12\}$.
+
+\emph{(iii) The case $k=0$.} The $\theta^{0}$-coordinate of $\delta=\gamma^{2}$
+is $a^{2}+4bc$, which is odd, while that of $\mu\delta_{0}(s,t)$ is $\mu s^{2}$;
+so $s$ is odd, the content is $1$, and $\mu=\pm1$. For $k=1$ both contents
+occur. Multiplying $w^{2}=\pm\tfrac12 f_{1}$ by $4$ gives the models
+\eqref{eq:BCpm}.
+\end{proof}
+
+These are the six curves of \cite{Villines}. The known rational points transport
+as follows (\texttt{etale.py}): the points $(0,1,0)$, $(1,0,-1)$, $(1,0,0)$ of
+$C_{0}$ give $(0:1)$, $(1:-1)$, $(1:0)$ on $A^{+}$; and $(1,-2,0)$, $(1,0,0)$,
+$(1,-1,2)$, $(1,1,0)$ of $C_{1}$ give $(-1,\pm15)$, $(1,\pm1)$ on $B^{-}$ and
+$(6/5,\pm172/125)$, $(2,\pm12)$ on $C^{+}$. The point $(6/5,\pm172/125)$ is the
+solution $(\pm43,-203,237)$.
+
+\begin{remark}
+The sign of $\mu$ is the sign of $f_{k}(s,t)$. The point of $C_{0}$ with
+$\gamma=\theta$, i.e.\ $\delta=\theta^{2}$ and $(s,t)=(0,1)$, has $s$ even and is
+excluded by the unit condition ``$a$ odd''; it corresponds to an imprimitive
+solution. So the content-$2$ chart for $k=0$, which would land on the twists
+$y^{2}=\pm2(x^{6}-40x^{3}-32)$, never arises from a primitive solution.
+\end{remark}
+
+% ==============================================================================
+\section{The four accessible curves}\label{sec:easy}
+% ==============================================================================
+
+\begin{proposition}\label{prop:B1}
+$A^{-}(\Q)=B^{+}(\Q)=C^{-}(\Q)=\emptyset$.
+\end{proposition}
+
+\begin{proof}
+Let $C\colon y^{2}=f(x)$ be one of the three, with leading coefficient
+$f_{6}\in\{-1,17,-34\}$ respectively, let $L_{6}=\Q[x]/(f)$ --- so
+$L_{6}\cong\Q[u]/(u^{6}-3u^{4}-2u^{3}+3u^{2}+6u+1)$ for $A^{\pm}$ and
+$\Q[u]/(u^{6}-3u^{4}+3u^{2}-3)$ for $B^{\pm},C^{\pm}$, both of class number $1$
+(certified by \texttt{bnfcertify}) --- let $\vartheta$ be the image of $x$, and
+let $S$ be the set of primes dividing $2\disc(f)f_{6}$, namely $\{2,3\}$
+resp.\ $\{2,3,17\}$.
+
+Since $f$ has no rational root and $f_{6}$ is not a square, $C$ has no
+Weierstrass and no rational point at infinity. For an affine point
+$(x,y)\in C(\Q)$,
+\[
+  \Nm_{L_{6}/\Q}(x-\vartheta)=f(x)/f_{6}=y^{2}/f_{6}\equiv f_{6}
+  \pmod{\Q^{\times2}},
+\]
+and the class of $x-\vartheta$ in $L_{6}^{\times}/L_{6}^{\times2}\Q^{\times}$ is
+unramified outside $S$. (This is \cite[Lemma 4.3]{BruinStoll}: for $p\notin S$,
+$f$ is squarefree mod $p$ with unit leading coefficient, so $x\bmod p$ is a root
+of exactly one --- linear --- factor of $f$ mod $p$; a single prime $\pp\mid p$
+divides $x-\vartheta$, and $v_{\pp}(x-\vartheta)=v_{p}(y^{2}/f_{6})$ is even;
+and if $v_{p}(x)<0$ then $(x-\vartheta)/x\equiv1$ modulo every prime above $p$.)
+Multiplying by an element of $\Q^{\times}$ changes the norm by a sixth power, so
+a rational point would produce an $S$-unit $\delta$ of $L_{6}$ with
+$\Nm(\delta)\in f_{6}\Q^{\times2}$.
+
+The norms of the $S$-units modulo squares span the subgroup
+$\langle -2,-3\rangle$ of $\Q(S,2)$ for the sextic field of $A^{\pm}$ and
+$\langle -2,-3,-17\rangle$ for that of $B^{\pm},C^{\pm}$
+(\texttt{sel2/certify.gp}). Neither subgroup contains $-1$ (needed for
+$A^{-}$), $17$ (for $B^{+}$) or $-34$ (for $C^{-}$) --- while, as they must,
+they do contain $-17$ (for $B^{-}$) and $34$ (for $C^{+}$). Hence
+$C(\Q)=\emptyset$.
+\end{proof}
+
+This is the emptiness of the fake $2$-Selmer set of Bruin--Stoll
+\cite{BruinStoll} at their norm step, and reproduces the corresponding result of
+\cite{Villines}. The script \texttt{sel2/fakeselmerset.gp} implements the full
+fake Selmer set --- norm condition, real place, and the exact local images
+$\mu_{p}(C(\Q_{p}))$ by recursive subdivision of $p$-adic disks --- and returns
+$W=\emptyset$ for these three curves already at the norm step.
+
+\begin{proposition}\label{prop:B2}
+$A^{+}(\Q)=\{\infty_{\pm},\,(-1,\pm3)\}$.
+\end{proposition}
+
+\begin{proof}
+\emph{(a) Rank.} $f=x^{6}-40x^{3}-32$ is irreducible, so $J(\Q)[2]=0$, and
+\texttt{sel2/pipeline.gp} gives $\dim\Sel^{2}(J/\Q)=1$ --- the sextic field has
+the quadratic subfield $\Q(\sqrt3)$, since $f=(x^{3}-20)^{2}-432$, so here
+$\Sel^{2}=\Sel^{2}_{\fake}$ --- whence $\rk J(\Q)\le1$. The class
+$D=[(-1,3)-\infty_{+}]$ has infinite order, its images on the elliptic quotients
+below having infinite order. So $\rk J(\Q)=1$. The torsion subgroup is
+$\Z/3$, generated by $T=[\infty_{-}-\infty_{+}]$: the gcd of $\#J(\FF_{\ell})$
+over $5\le\ell<400$ is $3$, and $T$ has order $3$.
+
+\emph{(b) Bielliptic structure.} Since $f(c/x)=-32f(x)/x^{6}$ for $c^{3}=-32$,
+$X=A^{+}$ carries the involution $\tau(x,y)=(c/x,\,4\sqrt{-2}\,y/x^{3})$ over
+$M_{0}=\Q(\sqrt[3]{2},\sqrt{-2})=\Q(\sqrt[6]{-2})$, with fixed points
+$x_{\pm}=\pm w^{5}$ where $w^{6}=-2$, $\sqrt[3]{2}=-w^{2}$, $\sqrt{-2}=-w^{3}$
+and $c=-2w^{4}$. In the coordinates $\mathcal{X}=(x-x_{+})/(x-x_{-})$,
+$\mathcal{Y}=y(1-\mathcal{X})^{3}$ the curve becomes
+$\mathcal{Y}^{2}=A\mathcal{X}^{6}+B\mathcal{X}^{4}+C\mathcal{X}^{2}+D$ with
+$A=-64+160w^{3}$, $B=-960-480w^{3}$, $C=-960+480w^{3}$, $D=-64-160w^{3}$ (all in
+$\Q(\sqrt{-2})$), and $\tau\iota$ is $(\mathcal{X},\mathcal{Y})\mapsto(-\mathcal{X},\mathcal{Y})$.
+The quotients
+\[
+  E_{1}\colon v^{2}=u^{3}+Bu^{2}+ACu+A^{2}D,\qquad
+  E_{2}\colon v^{2}=u^{3}+Cu^{2}+BDu+AD^{2},
+\]
+with $\varphi_{1}=(A\mathcal{X}^{2},A\mathcal{Y})$ and
+$\varphi_{2}=(D/\mathcal{X}^{2},D\mathcal{Y}/\mathcal{X}^{3})$, have $j=8000$ (CM
+by $\Z[\sqrt{-2}]$), conductor of norm $9$ over $M_{0}$,
+$E_{i}(M_{0})_{\tors}\cong\Z/6$, and $E_{2}$ is the quadratic twist of $E_{1}$
+by $-2$. $J$ is isogenous to $E_{1}\times E_{2}$ over $M_{0}$
+(\texttt{aplus/bi\_Aplus.gp}).
+
+\emph{(c) Chabauty at $p=5$.} The prime $5$ is inert in $\Q(\sqrt{-2})$ and has
+three primes of degree $2$ in $M_{0}$; fix $\pp\mid5$, so
+$M_{0,\pp}=\Q_{25}=\Q_{5}(\sqrt2)$. Let
+$\mathcal{L}_{i}(z)=\Log_{E_{i},\pp}(\varphi_{i}(z))\in\Q_{25}$ be the
+formal-group logarithms, computed from the formal group law of the
+$a_{1}=a_{3}=0$ model after multiplication by $\#E_{i}(\FF_{25})=36$
+(\texttt{aplus/chab5\_Aplus.gp}). The differentials
+$\varphi_{i}^{*}\omega_{E_{i}}$ form a basis of $H^{0}(X_{M_{0}},\Omega^{1})$,
+so for $z\in X(\Q)$, writing $[z-\infty_{+}]=\lambda D+\epsilon T$ with
+$\lambda\in\Q$ and $\epsilon\in\Z/3$ (and $\Log T=0$),
+\[
+  (\mathcal{L}_{1}(z),\mathcal{L}_{2}(z))
+   =\lambda\cdot(\mathcal{L}_{1}(D),\mathcal{L}_{2}(D)),\qquad \lambda\in\Q_{5},
+\]
+where $\mathcal{L}_{i}(D):=\mathcal{L}_{i}((-1,3))$. At $(-1,\pm3)$ this holds
+with $\lambda=\pm1$ exactly, to $O(5^{44})$, and
+$\rho(z):=\mathcal{L}_{2}(D)\mathcal{L}_{1}(z)-\mathcal{L}_{1}(D)\mathcal{L}_{2}(z)$
+vanishes at all four known points. On each of the six residue disks of
+$X(\Q_{5})$ --- $x\equiv1,4 \bmod 5$ with two signs of $y$, and the two disks at
+infinity --- expand $\mathcal{L}_{i}$ by termwise integration of
+$\varphi_{i}^{*}\omega_{E_{i}}$ and solve $\rho=0$. Because $E_{2}\cong E_{1}$
+over $\Q_{25}$ the $\Q_{5}$-component of $\rho$ vanishes identically and the
+condition is the $\sqrt2$-component; its Strassman indices are $1,1,2,2,1,1$,
+giving exactly $8$ zeros in $X(\Q_{5})$:
+\begin{itemize}[leftmargin=2.4em]
+\item $\infty_{\pm}$ and $(-1,\pm3)$, with $\lambda=0,0,\pm1$;
+\item $(-2\sqrt[3]{2},\pm12\sqrt6)$ with $\lambda=0$, a torsion class of order
+      $3$ --- verified exactly over $\Q(\sqrt[6]{-2},\sqrt{-3})$
+      (\texttt{aplus/tors12.gp}), so no rational point lies in its disk, that
+      disk having a unique zero;
+\item one pair $z_{1},\iota z_{1}$ in the disk $x\equiv1\pmod5$ with
+      $\lambda\equiv\pm8316\pmod{5^{6}}$, so $\lambda\not\equiv0,\pm1\pmod{25}$.
+\end{itemize}
+
+\emph{(d) Sieve.} A rational point $z$ in the disk $x\equiv1$ would have
+$\lambda(z)=n/m\in\Q$ with $5\nmid m$: the logarithms of $E_{i}(\Q_{25})$ have
+valuation $\ge1$ (formal group, and $\#E_{i}(\FF_{25})=36$ is a $5$-unit) while
+$\mathcal{L}_{i}(D)$ has valuation exactly $1$, so if $D=mG$ for a generator $G$
+then $5\nmid m$. Hence for every prime $\qq$ of $M_{0}$ with
+$5^{k}\mid \#E_{i}(\FF_{\qq})$ the $5$-primary parts satisfy
+$\pi_{i}(\varphi_{i}(\bar z)-\varphi_{i}(\infty_{+}))=\lambda(z)\pi_{i}(\varphi_{i}(\bar D))$
+in $E_{i}(\FF_{\qq})$ (the class $T$ has order $3$), with
+$\lambda(z)\equiv\lambda(z_{1})\pmod{5^{6}}$ if $z$ lies in the disk of $z_{1}$.
+The script \texttt{aplus/sieve5\_Aplus.gp} enumerates $A^{+}(\FF_{q})$ and
+collects the residues $\lambda \bmod 5^{4}$ realised: at the three degree-$2$
+primes above $q=149$ (where $\#E_{i}(\FF_{\qq})=22500=2^{2}3^{2}5^{4}$) $175$ of
+the $625$ residues occur, and at a degree-$2$ prime above $q=599$ (where
+$\#E_{i}=360000=2^{6}3^{2}5^{4}$) $275$ of $625$. The residues $0,\pm1$ of the
+known points occur at both, while $\lambda(z_{1})\equiv191$ and
+$\lambda(\iota z_{1})\equiv434 \pmod{625}$ occur at neither $q=599$. So the disk
+$x\equiv1$ contains no rational point. The disks $x\equiv4$ have Strassman index
+$2$ and contain the exhibited zeros $(-1,\pm3)$ and
+$(-2\sqrt[3]{2},\pm12\sqrt6)$; the disks at infinity have index $1$ and contain
+$\infty_{\pm}$.
+\end{proof}
+
+\begin{remark}
+At a prime split in $\Q(\sqrt{-2})$ --- we first used $p=43$,
+\texttt{aplus/linchab\_Aplus.gp} --- the same computation has $66$ zeros: the $4$
+rational points, $12$ algebraic points carrying torsion classes ($x^{3}=2$,
+$x^{3}=-16$, over $\Q(\sqrt[6]{-2},\sqrt{-3})$, of exact orders $3$ and $6$),
+and $50$ others, of which the $43$-adic sieve removes all but $14$. The
+survivors include the $\Q(\sqrt{-2})$-points $(2,\pm12\sqrt{-2})$ and
+$(\pm2\sqrt{-2},\pm(16\pm20\sqrt{-2}))$, whose classes have $43$-adic logarithms
+on the line of $J(\Q)$ because the CM action of $\Z[\sqrt{-2}]$ on $E_{i}$
+commutes with the $43$-adic logarithms when $43$ splits in $\Q(\sqrt{-2})$:
+Chabauty at a split prime sees $J(\Q(\sqrt{-2}))$ rather than $J(\Q)$. This is
+why the inert prime $5$ is the right choice.
+\end{remark}
+
+% ==============================================================================
+\section{The hard pair: automorphisms and N\'eron--Severi}\label{sec:structure}
+% ==============================================================================
+
+From here on $X$ denotes $B^{-}\colon y^{2}=-C_{3}(x)$; the argument for
+$C^{+}\colon y^{2}=2C_{3}(x)$, its quadratic twist by $-2$, is identical with
+the twisted data, and all numerical values quoted are those for $B^{-}$ unless
+stated otherwise. $X$ has the rational points $P_{1}=(1,1)$, $P_{2}=(-1,15)$ and
+their $\iota$-images; $J=\Jac(X)$.
+
+\begin{proposition}\label{prop:aut}
+\begin{enumerate}[label=(\roman*),leftmargin=2.4em]
+\item $\Aut(X_{\Qbar})\cong\mathrm{GL}_{2}(\FF_{3})$, of order $48$; $X$ is a
+      $\Q$-twist of the Bolza curve $y^{2}=x^{5}-x$.
+\item The M\"obius maps permuting the six roots of $C_{3}$ form $\Sym_{4}$;
+      nine of them are involutions, and the six that lift to involutions $\tau$
+      of $X$ are $x\mapsto(-x+b)/(cx+1)$ with
+      \[
+        81b^{6}-540b^{5}+1494b^{4}-2240b^{3}+1980b^{2}-1008b+232=0,
+      \]
+      the lift being
+      $(x,y)\mapsto\bigl(\mu(x),\,\kappa s\,y/(cx+1)^{3}\bigr)$, where
+      $\kappa=1+bc$ and $s^{2}=\kappa$. (The other three involutory M\"obius
+      maps, those with $b^{3}-18b^{2}+36b-20=0$, lift to automorphisms of order
+      $4$.)
+\item The M\"obius parts are defined over
+      $K_{6}=\Q(\sqrt[3]{2},\sqrt{\sqrt[3]{2}-1})$ and the involutions over
+      $L=K_{6}(\sqrt{\kappa})$, a field of degree $12$ with
+      \[
+        L=\Q[t]/(t^{12}+6t^{10}+3t^{8}-28t^{6}-33t^{4}+6t^{2}-3),
+      \]
+      of signature $(2,5)$, discriminant $2^{28}3^{13}$ and class number $1$, in
+      which $2$ is totally ramified and $3=\pp_{1}^{3}\pp_{2}^{6}\pp_{3}^{3}$.
+\item Over $L$, $X$ is bielliptic: with $x_{\pm}=(-1\pm s)/c$ the fixed points of
+      $\mu$ and
+      \[
+        \mathcal{X}=\frac{x-x_{+}}{x-x_{-}},\qquad
+        \mathcal{Y}=y(\mathcal{X}-1)^{3},
+      \]
+      the curve becomes
+      $\mathcal{Y}^{2}=F(\mathcal{X})=A\mathcal{X}^{6}+B\mathcal{X}^{4}+C\mathcal{X}^{2}+D$
+      with $A=f(x_{-})$, $D=f(x_{+})$, and
+      $\tau(\mathcal{X},\mathcal{Y})=(-\mathcal{X},\mathcal{Y})$. The quotients
+      \[
+        E_{1}\colon Y'^{2}=X'^{3}+BX'^{2}+ACX'+A^{2}D,\qquad
+        E_{2}\colon Y'^{2}=X'^{3}+CX'^{2}+BDX'+AD^{2},
+      \]
+      reached by $\varphi_{1}=(A\mathcal{X}^{2},A\mathcal{Y})$ and
+      $\varphi_{2}=(D/\mathcal{X}^{2},D\mathcal{Y}/\mathcal{X}^{3})$, have
+      $j=8000$ (CM by $\Z[\sqrt{-2}]$), admit global minimal models over $L$,
+      have minimal discriminants supported on the prime above $2$ and one prime
+      above $3$, and $E_{i}(L)_{\tors}\cong\Z/2$.
+\end{enumerate}
+\end{proposition}
+
+\begin{proof}
+Exact computation. \texttt{invol.gp} finds the $24$ M\"obius maps numerically,
+and \texttt{invol4.gp}, \texttt{invol8.gp} identify them exactly by resultants:
+the nine involutory maps have $b$ a root of
+$(b^{3}-18b^{2}+36b-20)\cdot(81b^{6}-\cdots)\cdot(-C_{3}(b))$, the last factor
+being spurious. One has $\lambda/(1+bc)^{3}=+1$ for the six genuine involutions
+and $-1$ for the three lifts of order $4$. Fields, discriminants, class numbers,
+minimal models and torsion: \texttt{invol8.gp}, \texttt{step2a.gp}. The
+normalisation of the quotient maps follows \cite{BianchiPadurariu}.
+\end{proof}
+
+\begin{remark}
+The natural quotient models are non-minimal at two degree-$1$ primes above
+$397$, where $A$ and $D$ respectively have valuation $-6$. This is the source of
+the constant $\Omega_{397}$ in Theorem~\ref{thm:identity}.
+\end{remark}
+
+\begin{proposition}[Galois action on $\NS$]\label{prop:NS}
+Let $N$ be the $\Sym_{4}$-field obtained as the Galois closure of
+$\Q(\sqrt[3]{2},\omega,\sqrt{-1-\sqrt[3]{2}})$, let $F=\Q(\sqrt{-2})$ and
+$M=NF$, so $[M:\Q]=48$ and $\Gal(M/\Q)\cong\Sym_{4}\times\Z/2$. Then
+\[
+  \NS(J_{\Qbar})\otimes\Q\;\cong\;\mathbf{1}\oplus(\sgn_{F}\otimes\sgn\otimes\stdrep).
+\]
+In particular $\rho(J/\Q)=\rho(J/F)=1$, and complex conjugation acts with
+eigenvalues $(1,1,1,-1)$: there is exactly one anti-invariant class, namely the
+class $Z=\tau_{*}$ of an involution, defined over $L$.
+\end{proposition}
+
+\begin{proof}
+Frobenius traces (\texttt{nschar2.gp}). Every prime inert in $F$ has trace $0$,
+so $V_{\ell}(J)=\Ind_{F}^{\Q}\psi$; at split primes the Frobenius polynomial
+factors over $F$ (constant terms $\pm\pi^{2},\pm\bar\pi^{2}$) but over $\Z$ only
+when it is even. Hence $\End^{0}_{F}(J)=F$, and since the Rosati involution on
+an imaginary quadratic field is complex conjugation, $\rho(J/F)=1$.
+
+The trace of Frobenius on $\NS(J_{\Qbar})\otimes\Q_{\ell}$ --- the count of
+root-of-unity eigenvalues among the $\alpha_{i}\alpha_{j}/p$, the $2$-dimensional
+transcendental part contributing $0$ at inert primes --- depends only on the
+splitting of $p$ in $F$ and in $N$:
+\begin{center}\small
+\begin{tabular}{@{}llcc@{}}
+\toprule
+class in $N$ & condition on $p$ & $F$-split & $F$-inert\\
+\midrule
+$3$-cycles        & $p\equiv1\ (3)$, $x^{3}-2$ irred.\ mod $p$              & $1$ & $1$\\
+double transp.    & $p\equiv1\ (3)$, three roots, $(-1-r\mid p)=[-1,-1,1]$  & $0$ & $2$\\
+identity          & $p\equiv1\ (3)$, three roots, all $(-1-r\mid p)=1$      & $4$ & $-2$\\
+transpositions    & $p\equiv2\ (3)$, $(-1-r\mid p)=-1$                      & $0$ & $2$\\
+$4$-cycles        & $p\equiv2\ (3)$, $(-1-r\mid p)=+1$                      & $2$ & $0$\\
+\bottomrule
+\end{tabular}
+\end{center}
+These are the values of the character of
+$\mathbf{1}\oplus(\sgn_{F}\otimes\sgn\otimes\stdrep)$ for
+$\Gal(M/\Q)\cong\Sym_{4}\times\Z/2$, and the observed class densities match the
+orders of the conjugacy classes. The element (transposition, $\sigma_{F}$) is
+complex conjugation and has trace $2$, so its eigenvalues are $(1,1,1,-1)$. The
+stabiliser of the anti-invariant class has order $4$ in a group of order $48$,
+giving a field of definition of degree $12$ --- which is the field $L$ of
+Proposition~\ref{prop:aut}.
+\end{proof}
+
+\begin{remark}
+Proposition~\ref{prop:NS} also records where local height contributions can
+arise: at $3$ the stable model is smooth (potentially good reduction), and at
+$2$ the stable model is a pair of supersingular elliptic curves.
+\end{remark}
+
+% ==============================================================================
+\section{The quadratic Chabauty identity}\label{sec:identity}
+% ==============================================================================
+
+\subsection{The imported statements}
+
+\begin{theorem}[Balakrishnan--Dogra {\cite[Prop.~2]{BDii}}, as quoted in {\cite{Dogra}}]
+\label{thm:BD}
+Let $X/\Q$ be a curve of genus $g$ with Jacobian $J$. The depth-$2$
+Chabauty--Kim set $X(\Q_{p})_{2}$ is finite whenever
+\[
+  \rk J(\Q)\;<\;g-1+\rk\NS(J)+\rk\NS(J_{\Qbar})^{c=-1}.
+\]
+\end{theorem}
+
+Here $2<2-1+1+1$, by Proposition~\ref{prop:NS}.
+
+\begin{theorem}[Balakrishnan--Besser--Bianchi--M\"uller {\cite[Thm.~1.5]{BBBM}}]
+\label{thm:BBBM}
+Let $X$ be a bielliptic curve of genus $2$ over a number field $L$, with
+quotient maps $\varphi_{1},\varphi_{2}$ to elliptic curves $E_{1},E_{2}$, and let
+$\chi\colon \Ad_{L}^{\times}/L^{\times}\to\Q_{p}$ be a non-trivial continuous
+idele class character. Then
+\[
+  \rho^{\chi}(z)=\sum_{\pp\mid p}\Bigl(h^{\chi}_{\pp}(\varphi_{1}(z_{\pp}))
+   -h^{\chi}_{\pp}(\varphi_{2}(z_{\pp}))-2\chi_{\pp}(x(z_{\pp}))\Bigr)
+   -\sum\alpha\, q_{1}(\varphi_{1}(z))+\sum\beta\, q_{2}(\varphi_{2}(z))
+\]
+maps $X(L)$ into an explicitly computable finite set $T^{\chi}$.
+\end{theorem}
+
+We apply Theorem~\ref{thm:BBBM} to $X_{L}$, restricted to
+$X(\Q)\subset X(L)$, for one specific character. The role of the term
+$\rk\NS(J_{\Qbar})^{c=-1}$ in Theorem~\ref{thm:BD} is the following selection
+rule, which is what makes the restriction useful: for $z\in X(\Q)$ all
+Galois-conjugate places contribute the same local terms, so the identity
+survives on $\Q$-points only for pairs (class, character) lying in the same
+Galois-isotypic component. The cyclotomic character pairs with the trivial
+component and gives $0=0$; the usable classes are the
+complex-conjugation-anti-invariant ones.
+
+\subsection{The character}
+
+\begin{proposition}\label{prop:character}
+Let $p=499$, the smallest prime that splits completely in $M$, so that
+$L\otimes\Q_{p}=\Q_{p}^{12}$ and every endomorphism is $p$-rational. Under the
+twelve embeddings $\sigma_{i}\colon L\to\Q_{p}$ the involutions act on
+$H^{0}(X,\Omega^{1})$, in the basis $dx/y,\,x\,dx/y$, by
+\[
+  A_{i}=s_{i}^{-1}\begin{pmatrix}-1&-c_{i}\\-b_{i}&1\end{pmatrix}.
+\]
+Because $H^{0}(\Omega^{1})$ is one of the two CM eigenspaces of Frobenius on
+$H^{1}_{\mathrm{dR}}$, one has $\NS(J)\otimes\Q_{p}\cong M_{2}(\Q_{p})$ through
+this action, and the $A_{i}$ span $\mathfrak{sl}_{2}$, the non-trivial
+$3$-dimensional part. Let $R\subset\Q_{p}^{12}$ be the orthogonal complement of
+$\ker\bigl((c_{i})\mapsto\sum_{i}c_{i}A_{i}\bigr)$; then $\dim R=3$ and $R$ is
+the isotypic component of $\sgn_{F}\otimes\sgn\otimes\stdrep$ in the permutation
+representation on the places above $p$. The six fundamental units of $L$ have
+$p$-adic logarithms of rank $6$, meeting $R$ in a $2$-dimensional space. Hence
+there is, up to scaling, exactly one idele class character $\chi_{Z}$ of $L$
+whose local components at the places above $p$ lie in $R$:
+\[
+  \chi_{Z}=(c_{1},\dots,c_{12}),\quad c_{1}=1,
+\]
+extended to all places by $h_{L}=1$ via
+$\chi_{w}(\pi_{w})=\sum_{i}c_{i}\log_{p}\sigma_{i}(\alpha_{w})$ for a generator
+$\alpha_{w}$ of $w$. Moreover $\chi_{Z}$ vanishes at the uniformisers of every
+prime of $L$ above $2$ and above $3$.
+\end{proposition}
+
+\begin{proof}
+\texttt{step1\_character.gp}: the kernel has dimension $9$, so $\dim R=3$;
+$R\perp(1,\dots,1)$; the unit logarithms have rank $6$ and
+$\dim(R\cap\operatorname{span}(\text{unit logs}))=2$; and the values at the four
+uniformisers above $2$ and $3$ are $O(499^{30})$.
+\end{proof}
+
+\begin{remark}
+The vanishing at $2$ and $3$ is what makes the identity below independent of the
+reduction types there: no analysis of the bad fibres is required. Whether it has
+a structural explanation is one of the questions the author would put to an
+expert.
+\end{remark}
+
+\subsection{The identity}
+
+Set $D_{1}=[P_{1}-\iota P_{1}]$, $D_{2}=[P_{2}-\iota P_{2}]\in J(\Q)$ and
+$Q_{i}=\varphi_{1}(P_{i})\in E_{1}(L)$, $Q'_{i}=\varphi_{2}(P_{i})\in E_{2}(L)$.
+The $499$-adic logarithms of $Q_{1},Q_{2}$ at two places are independent, so
+$D_{1},D_{2}$ span $J(\Q)\otimes\Q$; the rank is exactly $2$ by
+\S\ref{sec:rank}.
+
+\begin{theorem}\label{thm:identity}
+For $z\in X(\Q)$ write $[z-\iota z]=a_{1}D_{1}+a_{2}D_{2}$ in $J(\Q)\otimes\Q$
+and set $a(z)=(a_{1},a_{2})^{\mathsf T}$, and let
+\[
+  G_{ij}=\langle Q_{i},Q_{j}\rangle_{\chi}-\langle Q'_{i},Q'_{j}\rangle_{\chi}
+\]
+be the difference of the $\chi_{Z}$-height pairings on $E_{1}(L)$ and
+$E_{2}(L)$. Then for every $z\in X(\Q)$,
+\begin{equation}\label{eq:identity}
+  \rho(z):=\sum_{i=1}^{12}c_{i}\bigl[\lambda_{i}(\varphi_{1}z)-\lambda_{i}(\varphi_{2}z)\bigr]
+  \;-\;2\sum_{i=1}^{12}c_{i}\log_{p}\sigma_{i}(\mathcal{X}(z))
+  \;-\;a(z)^{\mathsf T}Ga(z)\;=\;-\Omega_{397},
+\end{equation}
+where $\lambda_{i}$ is the canonical Mazur--Tate local height at the $i$-th place
+above $p$ on the $b$-model of the relevant quotient, and $\Omega_{397}$ is the
+constant $2\chi'_{w_{1}}(\pi)-2\chi'_{w_{2}}(\pi)$ attached to the two degree-$1$
+primes $w_{1},w_{2}$ of $L$ above $397$.
+\end{theorem}
+
+\begin{proof}
+Since $\varphi_{1}(z)=a_{1}Q_{1}+a_{2}Q_{2}+T$ with $T\in E_{1}(L)[2]$, and
+heights kill torsion, $h_{\chi}(\varphi_{1}z)-h_{\chi}(\varphi_{2}z)=a^{\mathsf T}Ga$.
+Decompose $h_{\chi}$ into local terms: at the twelve places above $p$,
+$c_{w}\lambda_{w}(Q)+d_{w}m_{w}(Q)$ with $m_{w}=\max(0,-v_{w}(x(Q)))$; at a
+place $w\nmid p$ of good reduction of the minimal model, $\chi'_{w}(\pi_{w})m_{w}(Q)$;
+and at the places above $2$ and $3$, nothing, by Proposition~\ref{prop:character}.
+
+On the natural quotient models $x(\varphi_{1}z)=A\mathcal{X}^{2}$ and
+$x(\varphi_{2}z)=D/\mathcal{X}^{2}$, so at every place $w$ not above $2,3,397$ ---
+where $A,D$ are units and the models are minimal ---
+\begin{equation}\label{eq:mdiff}
+  m_{w}(\varphi_{1}z)-m_{w}(\varphi_{2}z)=-2v_{w}(\mathcal{X}(z)),
+\end{equation}
+and the same holds at $w\mid p$. Summing $\chi'_{w}(\pi_{w})\cdot(-2v_{w}(\mathcal{X}(z)))$
+over $w\nmid p$, and using that $\chi_{Z}$ kills the global element
+$\mathcal{X}(z)\in L^{\times}$, produces
+\[
+  -2\sum_{i}c_{i}\log_{p}\sigma_{i}(\mathcal{X}(z))
+  \;+\;2\sum_{i}d_{i}v_{p}(\sigma_{i}\mathcal{X}(z)),
+\]
+and the $d_{i}$-terms cancel against the terms
+$d_{i}(m_{i}(\varphi_{1}z)-m_{i}(\varphi_{2}z))$ at $p$, by \eqref{eq:mdiff}
+again. What remains is the contribution of the two primes above $397$, where the
+natural models are not minimal; this is Lemma~\ref{lem:397} below, which shows
+it to be the constant $\Omega_{397}$.
+\end{proof}
+
+\begin{lemma}\label{lem:397}
+Let $w$ be one of the two degree-$1$ primes of $L$ above $397$, with
+$v_{w}(A)=-6$ at the first and $v_{w}(D)=-6$ at the second, and let $u_{1},u_{2}$
+be the scalings to the minimal models, of valuations $v_{w}(u_{1})=-2$ and
+$v_{w}(u_{2})=-1$ (discriminant exponents $-24$ and $-12$). Then, computing
+$m_{w}$ on the minimal models,
+\[
+  m_{w}(\varphi_{1}z)-m_{w}(\varphi_{2}z)+2v_{w}(\mathcal{X}(z))=+2
+\]
+at the first prime, for every $397$-adic point $z$, and $-2$ at the second.
+Hence the correction in \eqref{eq:identity} is the constant
+$\Omega_{397}=2\chi'_{w_{1}}(\pi)-2\chi'_{w_{2}}(\pi)$.
+\end{lemma}
+
+\begin{proof}
+Case analysis on $v:=v_{w}(\mathcal{X}(z))$, using $v_{w}(x_{-})=-1$ and
+$x_{+}$ integral. For $v\le0$: $m_{w}(\varphi_{1})=2-2v$ and
+$m_{w}(\varphi_{2})=0$. For $v=1$: both vanish. For $v\ge2$:
+$m_{w}(\varphi_{1})=0$ and $m_{w}(\varphi_{2})=2v-2$. In each case the stated
+combination equals $2$; the value $-2$ at the second prime follows by the
+conjugation symmetry exchanging the roles of $A$ and $D$.
+\end{proof}
+
+\begin{remark}
+The constant is computed from a generator of the two primes and from
+$\mathcal{X}(P_{1})$. Numerically $\rho(P_{k})+\Omega_{397}=O(499^{19})$ at both
+known points with the sign $-2\log\mathcal{X}$ of \eqref{eq:identity}, and this
+fails with the opposite sign (\texttt{step2b.gp}); so the numerics pin the
+normalisation independently of the derivation.
+\end{remark}
+
+\subsection{Computing the heights}
+
+Throughout we use the $\sigma$-function description of the local height at $p$,
+which replaces a double Coleman integral by an evaluation of the Mazur--Tate
+$\sigma$-function \cite{MazurTate} and is what makes the computation below
+practical; we follow \cite{Bianchi} for that description and \cite{BBBM} for its
+extension to a number field and a non-cyclotomic character.
+
+The heights were computed as follows (\texttt{step2b.gp}). Each
+$E_{k}\otimes_{\sigma_{i}}\Q_{p}$ is replaced by an integer model congruent to it
+modulo $499^{30}$, so that PARI's \texttt{ellpadics2} supplies the $\sigma$-constant;
+$\sigma$ itself comes from the formal group. With $m=\#E(\FF_{p})=514$, the
+division polynomial $\psi_{m}(Q)$ is evaluated by the classical recurrences
+rather than by expanding a polynomial of degree ${\approx}130{,}000$, calibrated
+by
+\[
+  \log\sigma(kQ_{0})-k^{2}\log\sigma(Q_{0})=\log\psi_{k}(Q_{0})
+  \qquad (k=2,3,4)
+\]
+to $O(499^{19})$ --- which also fixes PARI's division-polynomial parity
+convention and the $a_{1}=a_{3}=0$ requirement of the $\sigma$-identities ---
+and then
+\[
+  \lambda(Q)=-\frac{2}{m^{2}}\bigl(\log\sigma(mQ)-\log\psi_{m}(Q)\bigr).
+\]
+
+\emph{Validation.} The $\chi_{Z}$-height is a quadratic form: on both quotients
+\[
+  h(Q_{1}+Q_{2})+h(Q_{1}-Q_{2})-2h(Q_{1})-2h(Q_{2})=O(499^{19}),
+  \qquad h(2Q_{1})=4h(Q_{1}).
+\]
+The relative sign between the $p$-adic and away-from-$p$ terms was wrong in a
+first version, and this test is what caught it.
+
+% ==============================================================================
+\section{Zeros and the Mordell--Weil sieve}\label{sec:sieve}
+% ==============================================================================
+
+\begin{proposition}\label{prop:zeros}
+$\rho$ extends to a locally analytic function on $X(\Q_{p})$. On the disks where
+some $\sigma_{i}(\mathcal{X}(z))$ tends to $0$ or $\infty$, the singular pair of
+terms is replaced by its analytic form $2c_{i}[\log(s/\mathcal{X})+v(s)]$ with
+$s$ the formal parameter, as in \cite[Rem.~2.5]{BianchiPadurariu}; the
+logarithmic singularities of $\lambda_{i}$ and of $\log\mathcal{X}$ cancel.
+
+At $p=499$, $X(\Q_{499})$ has $528$ residue disks and no Weierstrass disk
+($C_{3}$ has no root mod $499$). Expanded to $O(T^{14})$ with $14$-digit
+coefficients, $\rho$ has Strassman index $2$ on every disk, with coefficient
+valuations $[\,\cdot\,,1,1,2,3,\dots]$ --- the quadratic term dominates because
+every logarithm lies in $499\Z_{499}$ and the inverse log-matrix has valuation
+$-1$. The $\Z_{499}$-roots of the truncated series number $524$ for $B^{-}$
+($262$ disks with two roots, $266$ with none) and $504$ for $C^{+}$.
+Recomputation with $20$ digits and $O(T^{20})$ reproduces the roots to $8$
+digits and the counts, the valuations continuing linearly to $18$, so the
+truncation loses nothing. Finally $\rho$ vanishes to $O(499^{13})$ at the known
+points.
+\end{proposition}
+
+\begin{proof}
+The expansion and the root-finding are \texttt{step3\_setup.gp},
+\texttt{step3\_disk.gp} and \texttt{step3\_run.gp}, aggregated by
+\texttt{step3\_aggregate.py}; the higher-precision rerun is
+\texttt{step3\_\allowbreak precision\_check.gp}. The per-disk output is in
+\texttt{logs/\allowbreak step3\_disks.txt}, at $0.74$ s per disk, run in four
+parallel chunks.
+\end{proof}
+
+\begin{proposition}[The sieve]\label{prop:sieve}
+Every point of $J(\Q_{499})$ has a $499$-integral coefficient vector $a$: all
+logarithms lie in $499\Z_{499}$, and the log-matrix of $Q_{1},Q_{2}$ has
+determinant of valuation $2$. Hence
+$[J(\Q):\langle D_{1},D_{2}\rangle+J(\Q)_{\tors}]$ is a $499$-unit, and for a
+degree-$1$ prime $\qq$ of $L$ above $q$ with
+$499\mid\#E_{1}(\FF_{\qq})=\#E_{2}(\FF_{\qq})$, projecting to the $499$-parts
+$\xi\colon E_{k}(\FF_{\qq})\to\Z/499$, a rational point $z$ must satisfy
+\[
+  \xi\bigl(a(z)\cdot(\bar Q,\bar Q')\bigr)
+   \in\bigl\{\xi(\varphi_{1}(w),\varphi_{2}(w)) : w\in X(\FF_{q})\bigr\}
+   \subset(\Z/499)^{2},
+\]
+with no torsion and no index ambiguity, both $2$-torsion translates and unit
+indices vanishing mod $499$.
+
+Such primes $q$ are: four above $997$ (with $\#E=998$), four above $12973$, two
+above $47903$, two above $59879$, and twelve above $88339$. The first prime above
+$997$ eliminates $518$ of the $524$ zeros on $B^{-}$ (and $494$ of $504$ on
+$C^{+}$); the primes above $12973$ eliminate all the rest but four. On each
+curve the four survivors are the four known points: $(1,\pm1)$ and $(-1,\pm15)$
+with $a=(\pm1,0),(0,\pm1)$ on $B^{-}$, and $(2,\pm12)$, $(6/5,\pm172/125)$
+likewise on $C^{+}$.
+\end{proposition}
+
+\begin{proof}
+\texttt{step4\_scan.gp}, \texttt{step4\_sieve.gp}; \texttt{logs/step4\_sieve.log}.
+\end{proof}
+
+\subsection{An independent second prime}
+
+The whole of \S\ref{sec:identity}--\S\ref{sec:sieve} was repeated at $p=1459$,
+the next prime that splits completely in $L$ and at which $C_{3}$ has no root
+(\texttt{second\_prime/\allowbreak make\_p1459.py}, which regenerates the
+pipeline from the $p=499$ scripts; logs in \texttt{logs/p1459/}). The structural
+facts recur: the
+character is again unique in its isotypic component and vanishes at the
+uniformisers above $2$ and $3$; the $\chi_{Z}$-heights satisfy the parallelogram
+law to $O(1459^{19})$; $\rho(P_{1})=\rho(P_{2})=-\Omega_{397}$ to
+$O(1459^{19})$ on both curves; and $\#E_{k}(\FF_{\pp})=1462$ at all twelve
+places, so the reduction is ordinary. Each curve has $1464$ residue disks, all of
+Strassman index $2$ except the two disks at infinity (index $1$), and $\rho$ has
+$1546$ zeros on $B^{-}$ and $1426$ on $C^{+}$. The sieve primes are the degree-$1$
+primes of $L$ above $q=2917,\,26261,\,96293$, all $\equiv-1\pmod{1459}$ with
+$\#E_{1}(\FF_{\qq})=\#E_{2}(\FF_{\qq})=q+1$; the first prime above $2917$
+removes $1538$ of the $1546$ zeros on $B^{-}$, and $26261$ removes all the rest
+but four, which are the known points.
+
+On $C^{+}$ the same primes leave the four known points together with the two
+zeros of each of the two disks $x\equiv103\pmod{1459}$. On those disks the
+logarithms at places $1$ and $2$ lose all precision, and the $14$-digit run had
+returned coefficient vectors with no significant digits. Recomputing them with
+$22$ working digits (\texttt{logs/p1459/Cplus/disk103.log} and the two follow-up
+logs) gives the same two zeros to five digits and ordinary coefficient vectors
+$a\equiv(243,104),(1453,735),(1216,1355),(6,724)\pmod{1459}$, which the prime
+above $2917$ removes. So at $p=1459$ too, $B^{-}(\Q)$ and $C^{+}(\Q)$ consist of
+exactly the four known points each.
+
+\begin{remark}
+This is the one place where the pipeline required a per-disk precision
+intervention. A systematic per-disk precision check on $a(z)$, and not only on
+$\rho$, would be the right way to handle it; the present runs check it by hand
+on the one disk where it was needed.
+\end{remark}
+
+\begin{corollary}\label{cor:hardpair}
+Granting $\rk J(\Q)=2$ for both Jacobians (\S\ref{sec:rank}),
+\[
+  B^{-}(\Q)=\{(1,\pm1),\,(-1,\pm15)\},\qquad
+  C^{+}(\Q)=\{(2,\pm12),\,(6/5,\pm172/125)\}.
+\]
+\end{corollary}
+
+% ==============================================================================
+\section{The rank bounds}\label{sec:rank}
+% ==============================================================================
+
+\begin{proposition}\label{prop:rank}
+For $X=B^{-}$ and for $X=C^{+}$: $J(\Q)[2]=0$ and $\dim_{\FF_{2}}\Sel^{2}(J/\Q)=2$.
+Hence $\rk J(\Q)\le2$, so $\rk J(\Q)=2$ and $\Sha(J/\Q)[2]=0$.
+\end{proposition}
+
+\begin{proof}
+Write $f$ for the sextic ($-C_{3}$ for $B^{-}$, $2C_{3}$ for $C^{+}$), let
+$L_{6}=\Q[x]/(f)$ and let $\vartheta$ be the image of $x$. In both cases $L_{6}$
+has class number $1$, signature $(2,2)$ and Galois group $2\wr \Sym_{3}$ of order
+$48$, and no quadratic subfield (\texttt{nfsubfields}).
+
+\emph{(a) Torsion.} $J[2](\Qbar)$ is the group of even-cardinality subsets of the
+roots of $f$ modulo complementation, so a $\Q$-rational $2$-torsion point is a
+Galois-stable such subset, that is, a union of irreducible factors. Since $f$ is
+irreducible, $J(\Q)[2]=0$.
+
+\emph{(b) The fake Selmer group.} Let
+$H=\ker\bigl(\Nm\colon L_{6}^{\times}/L_{6}^{\times2}\Q^{\times}\to\Q^{\times}/\Q^{\times2}\bigr)$.
+The map $D=\sum n_{P}P\mapsto\prod(x_{P}-\vartheta)^{n_{P}}$ induces a
+homomorphism $x-T\colon J(\Q)\to H$, and likewise over every completion, and the
+fake $2$-Selmer group is
+\[
+  \Sel^{2}_{\fake}(J)=\{\delta\in H:\delta_{v}\in(x-T)(J(\Q_{v}))\ \text{for all }v\}
+\]
+\cite[\S\S12--13]{PoonenSchaefer}, \cite[\S5]{Stoll2001}; see also
+\cite{Creutz}. It is a quotient of the
+true Selmer group: there is an exact sequence
+$\mu_{2}\to\Sel^{2}(J)\to\Sel^{2}_{\fake}(J)\to0$
+(\cite[\S5]{StollvanLuijk}, with \cite[Thm.~13.2]{PoonenSchaefer} for the
+injectivity of the first map), whence
+\[
+  \dim\Sel^{2}(J)\le\dim\Sel^{2}_{\fake}(J)+1 .
+\]
+(In fact this is an equality here, the first map being injective because $f$ has
+no odd-degree factor over $\Q$ and is not a constant times a product of two
+conjugate cubics over a quadratic field, and the image of $\mu_{2}$ being the
+class of $[P-\iota P]$ for a rational point $P$, which is a Selmer element. Only
+the inequality is used.)
+
+\emph{(c) Local images.} For a finite place $v$, let $m_{v}$ be the number of
+irreducible factors of $f$ over $\Q_{v}$ and $o_{v}\in\{0,1\}$ indicate whether
+one has odd degree. Then $\dim J(\Q_{v})[2]=m_{v}-1-o_{v}$, by the same count as
+in (a), and $\dim J(\Q_{v})/2J(\Q_{v})=d_{v}:=\dim J(\Q_{v})[2]+2\cdot[v=2]$.
+The kernel of $x-T$ on $J(\Q_{v})/2J(\Q_{v})$ is generated by the class $c_{v}$
+of $[P-\iota P]$ for $P\in X(\Q_{v})$, which does not depend on $P$ (the
+difference of two such classes is $2[P-P']$); and $c_{v}=0$ exactly when the
+canonical class is twice a $\Q_{v}$-rational degree-$1$ class, i.e.\ when one of
+the $16$ theta characteristics --- the six $[w_{i}]$ and the ten
+$[w_{i}+w_{j}-w_{k}]$, one for each partition of the Weierstrass points into two
+triples --- is Galois-invariant, i.e.\ when $o_{v}=1$ or all local factors of $f$
+share a quadratic subfield $\Q_{v}(\sqrt{d})$ (the two orbits of
+$\Gal(\Qbar_{v}/\Q_{v}(\sqrt d))$ on the roots of each factor then assembling
+into a stable partition into triples). Writing $\epsilon_{v}=1$ in the remaining
+case, the image $(x-T)(J(\Q_{v}))$ has dimension exactly $d_{v}-\epsilon_{v}$;
+the computation generates it by $\Q_{v}$-points and conjugate pairs of quadratic
+points and stops when that dimension is reached, so the local conditions imposed
+are exactly the fake Selmer conditions. At the real place the image is given by
+sign vectors \cite[\S5]{BruinStoll}, and is trivial because $f$ has two real
+roots. At $p\nmid2\disc(f)$ the image is the unramified subgroup, so
+$\Sel^{2}_{\fake}(J)\subseteq H(S):=\{\delta\in H: v_{\pp}(\delta)\text{ even for }\pp\nmid S\}$
+for any $S\supseteq\{p\mid 2\disc(f)\}=\{2,3\}$; we used $S=\{2,3,17\}$, the
+prime $17$ dividing the leading coefficient, which is harmless.
+
+\emph{(d) Computation} (\texttt{sel2/pipeline.gp}; logs in
+\texttt{logs/sel2/\allowbreak descent\_Bminus.log} and
+\texttt{descent\_Cplus.log}). $L_{6}$ is
+taken in a reduced model (\texttt{polredbest}; this matters --- in the model
+$c^{5}f(y/c)$ PARI's local Hilbert symbols at the primes above $2$ are
+unreliable). $H(S)$ is computed from the $S$-units, the class number being $1$,
+as the norm-square subgroup of $L_{6}(S,2)$ modulo the image of $\Q(S,2)$, with
+an assertion that the exponent vectors reconstruct $-1$ and the primes of $S$.
+Local square classes at $\PPr\mid p$ are coordinates with respect to a basis of
+$L_{6,\PPr}^{\times}/L_{6,\PPr}^{\times2}$ chosen by the rank of the Hilbert
+pairing matrix (\texttt{nfhilbert}), and the local symbols are checked against
+the product formula on $60$ random pairs.
+
+For $B^{-}$: $\dim H(S)=2$. At $p=3$, $f$ is irreducible over $\Q_{3}$ and $3$ is
+a square in $L_{6}\otimes\Q_{3}$, so $d=0$, $\epsilon=0$ and the image is $0$. At
+$p=17$ the factors have degrees $1,1,4$, so $d=1$, $\epsilon=0$, and the image
+has dimension $1$, generated by $\Q_{17}$-points. At $p=2$, $f$ is irreducible
+over $\Q_{2}$ and no non-square of $\Q_{2}$ becomes a square in
+$L_{6}\otimes\Q_{2}$, so $d=2$, $\epsilon=1$, and the image has dimension $1$,
+generated by conjugate pairs of quadratic points ($72289$ pairs tested; the
+$\Q_{2}$-points give nothing). The subgroup of $H(S)$ satisfying the three
+conditions has dimension $1$, so $\dim\Sel^{2}_{\fake}(J)=1$ and
+$\dim\Sel^{2}(J)\le2$. Since $\rk J(\Q)\ge2$, by the independent points of
+\S\ref{sec:identity}, and $J(\Q)[2]=0$, we get $\dim\Sel^{2}(J)=2$ and
+$\Sha[2]=0$.
+
+For $C^{+}$: $\dim H(S)=2$ and the local data are the same (image of dimension
+$1$ at $2$, from $151$ quadratic pairs; $0$ at $3$; $1$ at $17$), so
+$\dim\Sel^{2}_{\fake}=1$ and $\dim\Sel^{2}=2$.
+\end{proof}
+
+\subsection{Validation of the implementation}
+
+The pipeline was run on $24$ curves of the genus-$2$ database of Booker et
+al.\ \cite{BSSVY} having rational points and irreducible sextic models
+(\texttt{sel2/validation\_curve\_*.gp}; scorecard in
+\texttt{logs/sel2/validation\_scorecard.txt}). For a curve with a rational point
+and no $2$-torsion one has $\dim\Sel^{2}(J)=\rk J(\Q)+\dim\Sha[2]$ with
+$\dim\Sha[2]$ even \cite{PoonenStoll}, so $\dim\Sel^{2}\ge\rk J(\Q)$ with
+equality exactly when $\Sha[2]=0$. On all $24$ curves the computed
+$\dim\Sel^{2}$ equals the database's analytic rank --- including curves with four
+real roots, with class groups $\Z/2$ and $\Z/3$, with a quadratic subfield, and
+of ranks $1$, $2$ and $3$.
+
+Two curves with leading coefficient $4$, a $2$-adic square, needed
+$\Q_{2}$-points near infinity, with $x$ of denominator up to $2^{9}$, to
+complete the $2$-adic local image; the pipeline searches that chart when the
+standard search falls short, and flags any image that remains incomplete, in
+which case its output is only a lower bound.
+
+Three earlier bugs --- the exponent ordering of \texttt{bnfissunit}, the Hilbert
+symbols in the non-reduced model, and an empty local image at a prime with
+trivial target --- had produced $\rk+1$ on ten of the validation curves, which the
+parity of $\dim\Sha[2]$ rules out; that is how they were found.
+
+% ==============================================================================
+\section{Proof of the Theorem}\label{sec:conclusion}
+% ==============================================================================
+
+\begin{proof}[Proof of Theorem~\ref{thm:main}]
+By Lemmas~\ref{lem:A1}--\ref{lem:A3}, every primitive solution of
+\eqref{eq:main} gives a rational point on one of the six curves \eqref{eq:Apm},
+\eqref{eq:BCpm}. By Proposition~\ref{prop:B1}, three of them have no rational
+point; by Proposition~\ref{prop:B2}, $A^{+}(\Q)=\{\infty_{\pm},(-1,\pm3)\}$,
+which contributes only $(\pm1,0,-1)$. By Corollary~\ref{cor:hardpair} together
+with Proposition~\ref{prop:rank}, $B^{-}(\Q)$ and $C^{+}(\Q)$ consist of the
+four known points each; transporting them back through Lemma~\ref{lem:A3},
+the points $(1,\pm1)$ give $(\pm1,-1,1)$, the points $(-1,\pm15)$ and
+$(2,\pm12)$ give an imprimitive solution, and $(6/5,\pm172/125)$ gives
+$(\pm43,-203,237)$. That exhausts the primitive solutions, and each of the three
+listed is checked directly to satisfy \eqref{eq:main}.
+\end{proof}
+
+The result is subject to the imported statements listed in
+\S\ref{subsec:rests}: the theorems of Balakrishnan--Dogra and of
+Balakrishnan--Besser--Bianchi--M\"uller, the standard theory of Coleman
+integration used in Proposition~\ref{prop:B2} and in \S\ref{sec:identity}, and
+the theory of $p$-adic heights on elliptic curves over number fields. The
+$\sigma$-function local heights used here were validated against PARI's
+canonical heights over $\Q$ in the companion implementation
+(\texttt{supporting/qc\_sigma.py}). The $p$-adic computations carry PARI's
+rigorous precision tracking; the only truncation is the series tail on each
+residue disk, controlled by the observed linear growth of coefficient valuations
+and confirmed at higher precision.
+
+% ==============================================================================
+\section{Code and data}\label{sec:code}
+% ==============================================================================
+
+All scripts and the logs of every run cited above are public at
+\url{https://github.com/marchfederico/fermat433}: the code under the GNU
+General Public License, version 3 or later, and this paper and the other
+written documents under CC BY 4.0. The scripts in \texttt{exploration/}, which
+nothing here depends on, are Denis Simon's and carry his copyright.
+Everything runs on PARI/GP
+2.17.4; the Python scripts need only \texttt{sympy}. No Magma or Sage is used.
+The long runs are the residue-disk expansions (\texttt{step3\_run.gp} in four
+chunks, about $10$ minutes at $p=499$ and about $40$ minutes at $p=1459$) and
+the $2$-adic point searches of \texttt{sel2/pipeline.gp}, up to about $1.5$
+hours per curve.
+
+\begin{table}[ht]
+\caption{Where each statement is established.}\label{tab:scripts}
+\footnotesize
+\renewcommand{\arraystretch}{1.15}
+\begin{tabular}{@{}>{\raggedright\arraybackslash}p{0.19\textwidth}
+                  >{\raggedright\arraybackslash}p{0.44\textwidth}
+                  >{\raggedright\arraybackslash}p{0.29\textwidth}@{}}
+\toprule
+Statement & Scripts & Logs \\
+\midrule
+Lemmas~\ref{lem:A1}--\ref{lem:A2} &
+  \texttt{descent\_explore.py}, \texttt{diagonal.py} & --- \\
+Lemma~\ref{lem:A3} &
+  \texttt{etale.py}, \texttt{twistset.py} & --- \\
+Prop.~\ref{prop:B1} &
+  \texttt{sel2/certify.gp}, \texttt{sel2/fakeselmerset.gp} &
+  \texttt{logs/sel2/certify.log} \\
+Prop.~\ref{prop:B2} &
+  \texttt{aplus/bi\_Aplus.gp}, \texttt{aplus/chab5\_Aplus.gp},
+  \texttt{aplus/sieve5\_Aplus.gp}, \texttt{aplus/tors12.gp} &
+  \texttt{logs/aplus/} \\
+Prop.~\ref{prop:aut} &
+  \texttt{invol.gp}, \texttt{invol4.gp}, \texttt{invol8.gp}, \texttt{step2a.gp} & --- \\
+Prop.~\ref{prop:NS} &
+  \texttt{nschar2.gp}, \texttt{splitF.gp} & --- \\
+Prop.~\ref{prop:character} &
+  \texttt{step1\_character.gp} & \texttt{logs/step1\_data.txt} \\
+Thm.~\ref{thm:identity} &
+  \texttt{step2a.gp}, \texttt{step2b.gp} & \texttt{logs/step2b\_data.txt} \\
+Prop.~\ref{prop:zeros} &
+  \texttt{step3\_*.gp}, \texttt{step3\_aggregate.py} &
+  \texttt{logs/step3\_disks.txt} \\
+Prop.~\ref{prop:sieve} &
+  \texttt{step4\_scan.gp}, \texttt{step4\_sieve.gp} &
+  \texttt{logs/step4\_sieve.log} \\
+Second prime &
+  \texttt{second\_prime/make\_p1459.py} & \texttt{logs/p1459/} \\
+$C^{+}$ throughout \S\S\ref{sec:structure}--\ref{sec:sieve} &
+  \texttt{twist/} & \texttt{logs/twist/} \\
+Prop.~\ref{prop:rank} &
+  \texttt{sel2/pipeline.gp} & \texttt{logs/sel2/} \\
+Validation &
+  \texttt{sel2/validation\_\allowbreak curve\_*.gp} &
+  \texttt{logs/sel2/\allowbreak validation\_\allowbreak scorecard.txt} \\
+\bottomrule
+\end{tabular}
+\end{table}
+
+\section*{Acknowledgements}
+
+The collaboration with Claude (Anthropic) in which this work was done is
+described in \S\ref{subsec:status}. The independent Magma computations of
+G.~Villines \cite{Villines} agree with the present ones wherever the two
+overlap, and that reduction is the starting point for \S\ref{sec:descent}.
+
+% ================================================================== biblio ===
+\begin{thebibliography}{BBBM}
+
+\bibitem[BBBM]{BBBM}
+J.~S. Balakrishnan, A.~Besser, F.~Bianchi, J.~S. M\"uller,
+\emph{Explicit quadratic Chabauty over number fields},
+Israel J. Math. \textbf{243} (2021), no.~1, 185--232. arXiv:1910.04653.
+
+\bibitem[BD]{BDii}
+J.~S. Balakrishnan, N.~Dogra,
+\emph{Quadratic Chabauty and rational points II: Generalised height functions on
+Selmer varieties},
+Int. Math. Res. Not. IMRN \textbf{2021}, no.~15, 11923--12008.
+arXiv:1705.00401.
+
+\bibitem[Bi]{Bianchi}
+F.~Bianchi,
+\emph{Quadratic Chabauty for (bi)elliptic curves and Kim's conjecture},
+Algebra Number Theory \textbf{14} (2020), no.~9, 2369--2416. arXiv:1904.04622.
+
+\bibitem[BP]{BianchiPadurariu}
+F.~Bianchi, O.~Padurariu,
+\emph{Rational points on rank 2 genus 2 bielliptic curves in the LMFDB}, in:
+LuCaNT: LMFDB, computation, and number theory, Contemp. Math. \textbf{796},
+Amer. Math. Soc., Providence, RI, 2024, pp.~215--242. arXiv:2212.11635.
+
+\bibitem[BSSVY]{BSSVY}
+A.~R. Booker, J.~Sijsling, A.~V. Sutherland, J.~Voight, D.~Yasaki,
+\emph{A database of genus-2 curves over the rational numbers},
+LMS J. Comput. Math. \textbf{19} (2016), 235--254. arXiv:1602.03715.
+
+\bibitem[BS]{BruinStoll}
+N.~Bruin, M.~Stoll,
+\emph{Two-cover descent on hyperelliptic curves},
+Math. Comp. \textbf{78} (2009), no.~268, 2347--2370. arXiv:0803.2052.
+
+\bibitem[Cr]{Creutz}
+B.~Creutz,
+\emph{Explicit descent in the Picard group of a cyclic cover of the projective
+line}, in: ANTS X --- Proceedings of the Tenth Algorithmic Number Theory
+Symposium, Open Book Ser.~\textbf{1}, Math. Sci. Publ., 2013.
+arXiv:1204.5803.
+
+\bibitem[Do]{Dogra}
+N.~Dogra,
+\emph{Unlikely intersections and the Chabauty--Kim method over number fields},
+Math. Ann. \textbf{389} (2024), 1--62. arXiv:1903.05032.
+
+\bibitem[MT]{MazurTate}
+B.~Mazur, J.~Tate,
+\emph{The $p$-adic sigma function},
+Duke Math. J. \textbf{62} (1991), no.~3, 663--688.
+
+\bibitem[PS]{PoonenSchaefer}
+B.~Poonen, E.~Schaefer,
+\emph{Explicit descent for Jacobians of cyclic covers of the projective line},
+J. reine angew. Math. \textbf{488} (1997), 141--188.
+
+\bibitem[PSt]{PoonenStoll}
+B.~Poonen, M.~Stoll,
+\emph{The Cassels--Tate pairing on polarized abelian varieties},
+Ann. of Math. (2) \textbf{150} (1999), no.~3, 1109--1149.
+
+\bibitem[RG]{RatcliffeGrechuk}
+A.~Ratcliffe, B.~Grechuk,
+\emph{Generalized Fermat equation: a survey of solved cases},
+Expo. Math. (2025), article 125688. arXiv:2412.11933.
+
+\bibitem[St]{Stoll2001}
+M.~Stoll,
+\emph{Implementing 2-descent for Jacobians of hyperelliptic curves},
+Acta Arith. \textbf{98} (2001), no.~3, 245--277.
+
+\bibitem[SvL]{StollvanLuijk}
+M.~Stoll, R.~van Luijk,
+\emph{Explicit Selmer groups for cyclic covers of $\PP^{1}$},
+Acta Arith. \textbf{159} (2013), no.~2, 133--148. arXiv:1108.3364.
+
+\bibitem[Vi]{Villines}
+G.~Villines,
+\emph{The Diophantine equation $x^{4}+2y^{3}+z^{3}=0$: reduction and partial
+resolution}, Zenodo, \texttt{10.5281/zenodo.20672504} (June 2026).
+
+\end{thebibliography}
+
+\end{document}

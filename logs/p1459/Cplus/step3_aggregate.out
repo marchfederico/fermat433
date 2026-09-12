@@ -1,0 +1,13 @@
+disks: 1464  (errors: 0)
+Strassman index histogram: {1: 2, 2: 1462}
+minimal-valuation histogram: {1: 1464}
+Z_p-zeros of rho found: 1426  per-disk histogram: {0: 750, 1: 2, 2: 712}
+rational-looking a(z) (algdep coefficients < 10^6): 8
+   disk x0=2 sg=1  a(z) = [0, 1]   T = O(1459^6)
+   disk x0=2 sg=-1  a(z) = [0, -1]   T = O(1459^6)
+   disk x0=103 sg=1  a(z) = [0, 0]   T = 198 + 901*1459 + 857*1459^2 + 500*1459^3
+   disk x0=103 sg=1  a(z) = [0, 0]   T = 108 + 1128*1459 + 572*1459^2 + 301*1459^
+   disk x0=103 sg=-1  a(z) = [0, 0]   T = 198 + 901*1459 + 857*1459^2 + 500*1459^3
+   disk x0=103 sg=-1  a(z) = [0, 0]   T = 108 + 1128*1459 + 572*1459^2 + 301*1459^
+   disk x0=293 sg=1  a(z) = [-1, 0]   T = 1167 + 291*1459 + 1167*1459^2 + 291*1459
+   disk x0=293 sg=-1  a(z) = [1, 0]   T = 1167 + 291*1459 + 1167*1459^2 + 291*1459

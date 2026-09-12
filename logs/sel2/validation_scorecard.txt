@@ -1,0 +1,28 @@
+# Validation of sel2/pipeline.gp on 24 curves of the genus-2 database (BSSVY / LMFDB raw data gce_1000000_lmfdb.txt).
+# dimSel2 = computed dim Sel^2(J) (= dim fake Selmer group + [no quadratic subfield]); rank = analytic rank from the database (field 13).
+# For a curve with a rational point and no 2-torsion, dim Sel^2 = rank + dim Sha[2] with dim Sha[2] even; complete=[..] flags the local images.
+# 'cond' in the tags is the absolute discriminant of the curve (field 2).
+c00_cond424342_stoll2 dimH=5 dimF=1 complete=[1, 1, 1] quadsubfield=0 realroots=2 clgp=[] dimSel2=2 rank=2  [rerun with the near-infinity chart]
+c01_cond948432_stoll1 dimH=5 dimF=0 complete=[1, 1, 1] quadsubfield=0 realroots=2 clgp=[] dimSel2=1 rank=1
+c02_cond437312_stoll1 dimH=4 dimF=1 complete=[1, 1] quadsubfield=1 realroots=0 clgp=[] dimSel2=1 rank=1
+c03_cond34154_stoll1 dimH=3 dimF=0 complete=[1, 1, 1] quadsubfield=0 realroots=2 clgp=[] dimSel2=1 rank=1
+c04_cond798725_stoll2 dimH=5 dimF=1 complete=[1, 1, 1, 1] quadsubfield=0 realroots=2 clgp=[] dimSel2=2 rank=2
+c05_cond232124_stoll3 dimH=5 dimF=2 complete=[1, 1] quadsubfield=0 realroots=2 clgp=[] dimSel2=3 rank=3
+c06_cond631689_stoll2 dimH=4 dimF=1 complete=[1, 1, 1, 1] quadsubfield=0 realroots=2 clgp=[] dimSel2=2 rank=2
+c07_cond54983_stoll3 dimH=2 dimF=2 complete=[1, 1] quadsubfield=0 realroots=0 clgp=[2] dimSel2=3 rank=3
+c08_cond911861_stoll2 dimH=4 dimF=1 complete=[1, 1] quadsubfield=0 realroots=2 clgp=[] dimSel2=2 rank=2
+c09_cond191954_stoll1 dimH=4 dimF=0 complete=[1, 1, 1] quadsubfield=0 realroots=2 clgp=[] dimSel2=1 rank=1
+c10_cond967877_stoll2 dimH=3 dimF=1 complete=[1, 1, 1] quadsubfield=0 realroots=2 clgp=[] dimSel2=2 rank=2
+c11_cond979043_stoll2 dimH=5 dimF=1 complete=[1, 1, 1, 1] quadsubfield=0 realroots=0 clgp=[3] dimSel2=2 rank=2
+c12_cond183319_stoll2 dimH=3 dimF=1 complete=[1, 1] quadsubfield=0 realroots=4 clgp=[] dimSel2=2 rank=2
+c13_cond214069_stoll2 dimH=2 dimF=1 complete=[1, 1] quadsubfield=0 realroots=2 clgp=[] dimSel2=2 rank=2  [rerun after the empty-image fix]
+c14_cond783312_stoll1 dimH=4 dimF=0 complete=[1, 1, 1] quadsubfield=0 realroots=2 clgp=[] dimSel2=1 rank=1
+c15_cond614483_stoll2 dimH=4 dimF=1 complete=[1, 1] quadsubfield=0 realroots=2 clgp=[] dimSel2=2 rank=2
+c16_cond481153_stoll2 dimH=5 dimF=1 complete=[1, 1, 1] quadsubfield=0 realroots=4 clgp=[] dimSel2=2 rank=2
+c17_cond627609_stoll1 dimH=3 dimF=0 complete=[1, 1, 1] quadsubfield=0 realroots=2 clgp=[] dimSel2=1 rank=1  [rerun with the near-infinity chart]
+c18_cond5476_stoll2 dimH=3 dimF=1 complete=[1, 1] quadsubfield=0 realroots=4 clgp=[] dimSel2=2 rank=2
+c19_cond303579_stoll2 dimH=4 dimF=1 complete=[1, 1, 1, 1] quadsubfield=0 realroots=2 clgp=[] dimSel2=2 rank=2
+c20_cond417913_stoll3 dimH=4 dimF=2 complete=[1, 1, 1] quadsubfield=0 realroots=2 clgp=[] dimSel2=3 rank=3
+c21_cond7200_stoll1 dimH=3 dimF=1 complete=[1, 1, 1] quadsubfield=1 realroots=2 clgp=[] dimSel2=1 rank=1
+c22_cond242332_stoll2 dimH=2 dimF=1 complete=[1, 1, 1] quadsubfield=0 realroots=2 clgp=[] dimSel2=2 rank=2
+c23_cond641143_stoll3 dimH=4 dimF=2 complete=[1, 1] quadsubfield=0 realroots=0 clgp=[] dimSel2=3 rank=3

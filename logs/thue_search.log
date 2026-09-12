@@ -1,0 +1,17 @@
+solution: x=1 y=0 z=-1
+solution: x=1 y=-1 z=1
+solution: x=43 y=-203 z=237
+checked x <= 250  [1 s]
+checked x <= 500  [8 s]
+checked x <= 750  [20 s]
+checked x <= 1000  [38 s]
+checked x <= 1250  [63 s]
+checked x <= 1500  [99 s]
+checked x <= 1750  [137 s]
+checked x <= 2000  [186 s]
+checked x <= 2250  [247 s]
+checked x <= 2500  [314 s]
+checked x <= 2750  [393 s]
+checked x <= 3000  [486 s]
+done
+exit 0

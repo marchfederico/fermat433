@@ -1,0 +1,36 @@
+  ***   Warning: new stack size = 2000000000 (1907.349 Mbytes).
+setup done. G = [304*499 + 266*499^2 + 307*499^3 + 385*499^4 + 161*499^5 + 295*499^6 + 452*499^7 + 188*499^8 + 463*499^9 + 492*499^10 + 63*499^11 + 346*499^12 + O(499^13), 176*499 + 442*499^2 + 325*499^3 + 58*499^4 + 136*499^5 + 233*499^6 + 35*499^7 + 291*499^8 + 195*499^9 + 249*499^10 + 214*499^11 + 5*499^12 + O(499^13); 176*499 + 442*499^2 + 325*499^3 + 58*499^4 + 136*499^5 + 233*499^6 + 35*499^7 + 291*499^8 + 195*499^9 + 249*499^10 + 214*499^11 + 5*499^12 + O(499^13), 173*499 + 425*499^2 + 59*499^3 + 98*499^4 + 46*499^5 + 120*499^6 + 481*499^7 + 97*499^8 + 386*499^9 + 304*499^10 + 156*499^11 + 241*499^12 + O(499^13)]
+Omega_397 = 446*499 + 107*499^2 + 51*499^3 + 462*499^4 + 372*499^5 + 282*499^6 + 222*499^7 + 272*499^8 + 160*499^9 + 295*499^10 + 168*499^11 + 360*499^12 + 380*499^13 + 50*499^14 + 341*499^15 + 454*499^16 + 345*499^17 + 107*499^18 + 254*499^19 + 160*499^20 + 387*499^21 + 307*499^22 + 236*499^23 + 409*499^24 + 442*499^25 + 377*499^26 + 478*499^27 + 339*499^28 + 47*499^29 + O(499^30)
+special residues (phi2 -> O): [495, 260, 387, 290, 445, 269, 422, 172, 151, 228, 299, 294]
+special residues (phi1 -> O): [294, 299, 228, 151, 172, 422, 269, 445, 290, 387, 260, 495]
+-17 square mod p (infinity disks exist)? 1
+usable primes (q, root): [[997, 35], [997, 42], [997, 955], [997, 962], [12973, 775], [12973, 1277], [12973, 11696], [12973, 12198], [47903, 18924], [47903, 28979], [59879, 22967], [59879, 36912], [88339, 5918], [88339, 7647], [88339, 15335], [88339, 20757], [88339, 25100], [88339, 43216], [88339, 45123], [88339, 63239], [88339, 67582], [88339, 73004], [88339, 80692], [88339, 82421]]
+q=997 r=35: #E1=998 #E2=998  |X(F_q)| = 998  |allowed| = 997  off-curve images: 0  killed 518, still alive 6
+q=997 r=42: #E1=998 #E2=998  |X(F_q)| = 998  |allowed| = 997  off-curve images: 0  killed 0, still alive 6
+q=997 r=955: #E1=998 #E2=998  |X(F_q)| = 998  |allowed| = 997  off-curve images: 0  killed 0, still alive 6
+q=997 r=962: #E1=998 #E2=998  |X(F_q)| = 998  |allowed| = 997  off-curve images: 0  killed 0, still alive 6
+q=12973 r=775: #E1=12974 #E2=12974  |X(F_q)| = 12974  |allowed| = 12677  off-curve images: 0  killed 2, still alive 4
+q=12973 r=1277: #E1=12974 #E2=12974  |X(F_q)| = 12974  |allowed| = 12677  off-curve images: 0  killed 0, still alive 4
+q=12973 r=11696: #E1=12974 #E2=12974  |X(F_q)| = 12974  |allowed| = 12677  off-curve images: 0  killed 0, still alive 4
+q=12973 r=12198: #E1=12974 #E2=12974  |X(F_q)| = 12974  |allowed| = 12677  off-curve images: 0  killed 0, still alive 4
+q=47903 r=18924: #E1=47904 #E2=47904  |X(F_q)| = 47904  |allowed| = 43601  off-curve images: 0  killed 0, still alive 4
+q=47903 r=28979: #E1=47904 #E2=47904  |X(F_q)| = 47904  |allowed| = 43601  off-curve images: 0  killed 0, still alive 4
+q=59879 r=22967: #E1=59880 #E2=59880  |X(F_q)| = 59880  |allowed| = 53195  off-curve images: 0  killed 0, still alive 4
+q=59879 r=36912: #E1=59880 #E2=59880  |X(F_q)| = 59880  |allowed| = 53195  off-curve images: 0  killed 0, still alive 4
+q=88339 r=5918: #E1=88822 #E2=88822  |X(F_q)| = 89304  |allowed| = 74760  off-curve images: 0  killed 0, still alive 4
+q=88339 r=7647: #E1=88822 #E2=88822  |X(F_q)| = 89304  |allowed| = 74760  off-curve images: 0  killed 0, still alive 4
+q=88339 r=15335: #E1=88822 #E2=88822  |X(F_q)| = 89304  |allowed| = 74760  off-curve images: 0  killed 0, still alive 4
+q=88339 r=20757: #E1=88822 #E2=88822  |X(F_q)| = 89304  |allowed| = 74760  off-curve images: 0  killed 0, still alive 4
+q=88339 r=25100: #E1=88822 #E2=88822  |X(F_q)| = 89304  |allowed| = 74760  off-curve images: 0  killed 0, still alive 4
+q=88339 r=43216: #E1=88822 #E2=88822  |X(F_q)| = 89304  |allowed| = 74760  off-curve images: 0  killed 0, still alive 4
+q=88339 r=45123: #E1=88822 #E2=88822  |X(F_q)| = 89304  |allowed| = 74760  off-curve images: 0  killed 0, still alive 4
+q=88339 r=63239: #E1=88822 #E2=88822  |X(F_q)| = 89304  |allowed| = 74760  off-curve images: 0  killed 0, still alive 4
+q=88339 r=67582: #E1=88822 #E2=88822  |X(F_q)| = 89304  |allowed| = 74760  off-curve images: 0  killed 0, still alive 4
+q=88339 r=73004: #E1=88822 #E2=88822  |X(F_q)| = 89304  |allowed| = 74760  off-curve images: 0  killed 0, still alive 4
+q=88339 r=80692: #E1=88822 #E2=88822  |X(F_q)| = 89304  |allowed| = 74760  off-curve images: 0  killed 0, still alive 4
+q=88339 r=82421: #E1=88822 #E2=88822  |X(F_q)| = 89304  |allowed| = 74760  off-curve images: 0  killed 0, still alive 4
+SURVIVORS:
+   disk x0=1 sg=1  a mod 499^5 = [1, 0]  rational-looking: 1
+   disk x0=1 sg=-1  a mod 499^5 = [30938747502498, 0]  rational-looking: 1
+   disk x0=498 sg=1  a mod 499^5 = [0, 1]  rational-looking: 1
+   disk x0=498 sg=-1  a mod 499^5 = [0, 30938747502498]  rational-looking: 1

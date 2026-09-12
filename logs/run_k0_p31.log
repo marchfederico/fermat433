@@ -1,0 +1,42 @@
+  ***   Warning: new maximum stack size = 4000006144 (3814.703 Mbytes).
+E^(1): v_p(disc) = 0, #E(F_p) = 32
+E^(2): v_p(disc) = 0, #E(F_p) = 32
+E^(3): v_p(disc) = 0, #E(F_p) = 32
+#C(F_p) = 32; all smooth: 1
+E^(1): pullback in the canonical basis; residual valuation on coefficients 3..12 >= 30
+E^(2): pullback in the canonical basis; residual valuation on coefficients 3..12 >= 30
+E^(3): pullback in the canonical basis; residual valuation on coefficients 3..12 >= 30
+log vector of [0, 1, 0]: valuations [1, 1, 1]
+log vector of [1, 0, -1]: valuations [1, 1, 1]
+log vector of [1, 0, 0]: valuations [+oo, +oo, +oo]
+annihilating differential, valuations of coefficients: [0, 0, 29]
+disk [0, 17, 1]: bound 1, known rational points 0
+disk [0, 22, 1]: bound 1, known rational points 0
+disk [0, 23, 1]: bound 1, known rational points 0
+disk [1, 13, 1]: bound 1, known rational points 0
+disk [2, 25, 1]: bound 1, known rational points 0
+disk [3, 6, 1]: bound 1, known rational points 0
+disk [4, 28, 1]: bound 1, known rational points 0
+disk [5, 15, 1]: bound 1, known rational points 0
+disk [6, 0, 1]: bound 1, known rational points 0
+disk [7, 16, 1]: bound 1, known rational points 0
+disk [10, 5, 1]: bound 1, known rational points 0
+disk [11, 27, 1]: bound 1, known rational points 0
+disk [13, 30, 1]: bound 1, known rational points 0
+disk [15, 26, 1]: bound 1, known rational points 0
+disk [17, 20, 1]: bound 1, known rational points 0
+disk [18, 12, 1]: bound 1, known rational points 0
+disk [19, 1, 1]: bound 1, known rational points 0
+disk [20, 18, 1]: bound 1, known rational points 0
+disk [21, 8, 1]: bound 1, known rational points 0
+disk [22, 7, 1]: bound 1, known rational points 0
+disk [23, 4, 1]: bound 1, known rational points 0
+disk [24, 24, 1]: bound 1, known rational points 0
+disk [25, 3, 1]: bound 1, known rational points 0
+disk [26, 0, 1]: bound 1, known rational points 0
+disk [27, 11, 1]: bound 1, known rational points 0
+disk [28, 21, 1]: bound 1, known rational points 0
+disk [29, 9, 1]: bound 1, known rational points 0
+
+C_0 at p = 31: total Strassman bound 30, undetermined disks 0, known rational points 3
+exit 0

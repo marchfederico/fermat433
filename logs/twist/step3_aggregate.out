@@ -1,0 +1,9 @@
+disks: 528  (errors: 0)
+Strassman index histogram: {2: 528}
+minimal-valuation histogram: {1: 528}
+Z_p-zeros of rho found: 504  per-disk histogram: {0: 276, 2: 252}
+rational-looking a(z) (algdep coefficients < 10^6): 4
+   disk x0=2 sg=1  a(z) = [0, 1]   T = O(499^6)
+   disk x0=2 sg=-1  a(z) = [0, -1]   T = O(499^6)
+   disk x0=101 sg=1  a(z) = [1, 0]   T = 399 + 99*499 + 399*499^2 + 99*499^3 + 39
+   disk x0=101 sg=-1  a(z) = [-1, 0]   T = 399 + 99*499 + 399*499^2 + 99*499^3 + 39

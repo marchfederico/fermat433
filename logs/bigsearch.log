@@ -1,0 +1,2 @@
+C_0: primitive points with max |coordinate| <= 250: [(0, 1, 0), (1, 0, -1), (1, 0, 0)]  [1s]
+C_1: primitive points with max |coordinate| <= 250: [(1, -2, 0), (1, -1, 2), (1, 0, 0), (1, 1, 0)]  [2s]

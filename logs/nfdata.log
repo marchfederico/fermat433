@@ -1,0 +1,10 @@
+E0: j = Mod(1728, w^3 - 2)
+E0: torsion over K [4, [2, 2]]
+E0: conductor norm 147456  factored [14, 2]
+E0: root number over K 1
+E1: j = Mod(1728, w^3 - 2)
+E1: torsion over K [4, [2, 2]]
+E1: conductor norm 147456  factored [14, 2]
+E1: root number over K 1
+done
+exit 0

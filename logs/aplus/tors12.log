@@ -1,0 +1,14 @@
+K' = Q[w]/(w^12 + 6*w^10 - 44*w^6 + 60*w^4 - 24*w^2 + 4), degree 12
+6 sixth roots of -2 and 2 square roots of -3 in K'
+x = cbrt2, y = +6*sqrt(-3):  order of [z - inf+] on E1 = 3, on E2 = 3
+x = cbrt2, y = -6*sqrt(-3):  order of [z - inf+] on E1 = 3, on E2 = 3
+x = -2*cbrt2, y = +12*sqrt(6):  order of [z - inf+] on E1 = 3, on E2 = 3
+x = -2*cbrt2, y = -12*sqrt(6):  order of [z - inf+] on E1 = 3, on E2 = 3
+x = z3^1*cbrt2, y = +6*sqrt(-3):  order of [z - inf+] on E1 = 6, on E2 = 6
+x = z3^1*cbrt2, y = -6*sqrt(-3):  order of [z - inf+] on E1 = 6, on E2 = 6
+x = z3^1*-2*cbrt2, y = +12*sqrt(6):  order of [z - inf+] on E1 = 6, on E2 = 6
+x = z3^1*-2*cbrt2, y = -12*sqrt(6):  order of [z - inf+] on E1 = 6, on E2 = 6
+x = z3^2*cbrt2, y = +6*sqrt(-3):  order of [z - inf+] on E1 = 6, on E2 = 6
+x = z3^2*cbrt2, y = -6*sqrt(-3):  order of [z - inf+] on E1 = 6, on E2 = 6
+x = z3^2*-2*cbrt2, y = +12*sqrt(6):  order of [z - inf+] on E1 = 6, on E2 = 6
+x = z3^2*-2*cbrt2, y = -12*sqrt(6):  order of [z - inf+] on E1 = 6, on E2 = 6

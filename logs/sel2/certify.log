@@ -1,0 +1,24 @@
+L_A (curves A+-): field y^6 - 3*y^4 - 2*y^3 + 3*y^2 + 6*y + 1  disc [2, 8; 3, 7]  class group []  regulator 6.0963601000328882290424205533864707879
+   bnfcertify: 1
+   norm classes of the S-unit generators (rows -1, [2, 3]): rank 2 of 3
+   -1 is a norm class of L(S,2): 0
+   2 is a norm class of L(S,2): 0
+   -2 is a norm class of L(S,2): 1
+   3 is a norm class of L(S,2): 0
+   -3 is a norm class of L(S,2): 1
+   6 is a norm class of L(S,2): 1
+   -6 is a norm class of L(S,2): 0
+L_6 (curves B+-, C+-): field y^6 - 3*y^4 + 3*y^2 - 3  disc [2, 10; 3, 7]  class group []  regulator 16.325952823774068820798688164989258414
+   bnfcertify: 1
+   norm classes of the S-unit generators (rows -1, [2, 3, 17]): rank 3 of 4
+   -1 is a norm class of L(S,2): 0
+   2 is a norm class of L(S,2): 0
+   -2 is a norm class of L(S,2): 1
+   3 is a norm class of L(S,2): 0
+   -3 is a norm class of L(S,2): 1
+   17 is a norm class of L(S,2): 0
+   -17 is a norm class of L(S,2): 1
+   34 is a norm class of L(S,2): 1
+   -34 is a norm class of L(S,2): 0
+   6 is a norm class of L(S,2): 1
+   -6 is a norm class of L(S,2): 0
