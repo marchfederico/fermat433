@@ -1,4 +1,4 @@
-# Proving x⁴ + 2y³ + z³ = 0: how I got here
+# The minus sign that cracked x⁴ + 2y³ + z³ = 0
 
 I've always loved puzzles and knowing how things work, and AI has made it easier to dig into new things.
 
