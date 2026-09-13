@@ -105,4 +105,4 @@ One last thing, since I started with the paper. Did tensor logic solve this? No.
 proof. What carried over was the habit it put me in: guess numerically, check exactly, believe nothing on a single
 source. I went in to test somebody else's claims and came out with a result I wasn't looking for.
 
-On to the next one.
+Now back to the original paper.

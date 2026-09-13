@@ -165,3 +165,5 @@ plain. Say "probably" when it's probably.
 And the two best moments weren't moments of brilliance. One was a computation quietly showing us a minus sign we
 weren't looking for. The other was refusing to believe a pipeline that looked perfect. That's what puzzles have
 always been like. The only thing that changed is how far a person can now get before the puzzle wins.
+
+Now back to the original paper.
