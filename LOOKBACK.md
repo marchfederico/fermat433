@@ -19,10 +19,11 @@ wanted and had it running before I lost interest. That is the part people undere
 things I don't. It's that the gap between "I wonder whether" and "here's the answer" collapsed from weeks to an
 afternoon, and curiosity survives an afternoon.
 
-So we tested it. The first results were clean and mostly negative: the paper's headline feature, reasoning in
-embedding space, was the weak part. Its reliability came from computing the logical consequences exactly, not from
-the embeddings. I wrote that down, including the parts that were unflattering, because a result you only keep when
-it agrees with you isn't a result.
+So we tested it. The first results were clean and mostly negative. Not because the paper was wrong, but because we
+were working out how best to represent the knowledge, and most of what you try doesn't work. What the numbers said
+was that the reliability came from computing the logical consequences exactly rather than from the embeddings. I
+wrote that down as it came out. Trial and error is the process, and a result you only keep when it agrees with you
+isn't a result.
 
 ## The part that surprised me
 
