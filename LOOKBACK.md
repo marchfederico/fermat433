@@ -9,8 +9,8 @@ paper was right.
 
 ## Reading with my hands
 
-The paper was Pedro Domingos's "Tensor Logic: The Language of AI". Its big claim is that logic and neural
-networks are secretly the same mathematics, and that if you write them in one language you can reason inside an
+The paper was Pedro Domingos's ["Tensor Logic: The Language of AI"](https://arxiv.org/abs/2510.12269). Its big claim is that logic and
+neural networks are secretly the same mathematics, and that if you write them in one language you can reason inside an
 AI's "embedding space" without the machine making things up.
 
 I've read a lot of papers like that over the years and mostly had to take them on faith. Checking a claim used to
@@ -73,8 +73,8 @@ that doesn't come from the same machine. That rule is why I believe the rest of 
 
 ## The equation
 
-There's a survey that lists equations of this family by size and marks the ones nobody has solved. The smallest
-unsolved one was
+There's a [survey](https://arxiv.org/abs/2412.11933) that lists equations of this family by size and marks the ones nobody has
+solved. The smallest unsolved one was
 
   x⁴ + 2y³ + z³ = 0.
 
@@ -87,8 +87,8 @@ cube root of 2, follow where that forces things, and the original puzzle turns i
 curves. Four of them we could handle. Two of them hit the wall: that number was exactly too big, and the method
 went silent.
 
-Halfway through this I found that a mathematician named Greg Villines had walked the same road in June, with
-professional software, and had got to the same six curves and the same two survivors. He'd stopped at the same
+Halfway through this I found that a mathematician named [Greg Villines](https://github.com/gvillines-hub/h40-x4-2y3-z3) had walked the
+same road in June, with professional software, and had got to the same six curves and the same two survivors. He'd stopped at the same
 wall, and left a note suggesting a way around it. We tested his suggestion and showed it couldn't work. So: same
 wall, several months later, with a smaller toolkit.
 

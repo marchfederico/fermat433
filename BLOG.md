@@ -7,8 +7,8 @@ nobody had solved. I didn't plan that. I just wanted to see if I could implement
 
 ## Trying it out
 
-The paper was Pedro Domingos's "Tensor Logic: The Language of AI". The claim is that logic and neural networks are
-the same math underneath, and that you can reason inside an AI without it making things up.
+The paper was Pedro Domingos's ["Tensor Logic: The Language of AI"](https://arxiv.org/abs/2510.12269). The claim is that logic and neural
+networks are the same math underneath, and that you can reason inside an AI without it making things up.
 
 I've read a lot of papers like that and mostly had to take them on faith. Trying one used to mean weeks of setup
 before you learned anything. This time I described the experiment I wanted and it was running in an hour.
@@ -47,8 +47,8 @@ source. That's why I trust the rest of this.
 
 ## The equation
 
-There's a list of equations like this, ordered by size, with the unsolved ones marked. The smallest one nobody had
-done was
+There's a [list of equations like this](https://arxiv.org/abs/2412.11933), ordered by size, with the unsolved ones marked. The
+smallest one nobody had done was
 
   x⁴ + 2y³ + z³ = 0
 
@@ -60,8 +60,8 @@ A day of standard work turned it into a question about six curves. Four we handl
 classical method that finds every solution, and it only works when a number attached to your curve is small enough.
 Ours was one too big. The method doesn't struggle. It says nothing.
 
-Then I found that Greg Villines had done the same thing in June with professional software, reached the same six
-curves, and stopped at the same wall.
+Then I found that [Greg Villines](https://github.com/gvillines-hub/h40-x4-2y3-z3) had done the same thing in June with professional
+software, reached the same six curves, and stopped at the same wall.
 
 ## One minus sign
 
