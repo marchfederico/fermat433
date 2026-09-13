@@ -146,8 +146,8 @@ name to. Those explanations are in the repository now, next to the formal ones.
 
 ## Where it stands
 
-I say "probable solution" on purpose. Everything is written down, everything runs on free software anyone can
-install, and the parts that overlap with Villines' independent work agree with it. What's left is what's always
+I say "probable solution" on purpose. [Everything is written down](https://github.com/marchfederico/fermat433), everything runs on
+free software anyone can install, and the parts that overlap with Villines' independent work agree with it. What's left is what's always
 left: an expert needs to read the new step, someone should redo the delicate parts with different tools, and it
 needs to go through review. Until then it's a complete argument that hasn't been checked by anyone outside the room.
 I'd rather say that clearly than oversell it and be corrected later.
