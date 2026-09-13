@@ -2,140 +2,106 @@
 
 I've always loved puzzles and knowing how things work, and AI has made it easier to dig into new things.
 
-That sentence is the whole reason this happened. Four days in September 2026, starting with a paper about
-artificial intelligence I wanted to understand properly, ending somewhere I had no business ending up: a proof of
-a number puzzle nobody had solved. I didn't set out to do that. I set out to find out whether a paper was right.
+Four days in September. Started with an AI paper I wanted to understand. Ended with a proof of a math problem
+nobody had solved. I didn't plan that. I just wanted to know if the paper was right.
 
-## Reading with my hands
+## Testing the paper
 
-The paper was Pedro Domingos's "Tensor Logic: The Language of AI". Its big claim is that logic and neural networks
-are secretly the same mathematics, and that if you write them in one language you can reason inside an AI's
-"embedding space" without the machine making things up.
+The paper was Pedro Domingos's "Tensor Logic: The Language of AI". The claim is that logic and neural networks are
+the same math underneath, and that you can reason inside an AI without it making things up.
 
-I've read a lot of papers like that and mostly had to take them on faith. Checking a claim used to mean weeks of
-setup before the first honest result, and life is short. This time I described the experiment I wanted and had it
-running before I lost interest. That's the part people underestimate. It isn't that the AI knows things I don't.
-It's that the gap between "I wonder whether" and "here's the answer" collapsed from weeks to an afternoon, and
-curiosity survives an afternoon.
+I've read a lot of papers like that and mostly had to take them on faith. Checking one used to mean weeks of setup
+before you learned anything. This time I described the experiment I wanted and it was running in an hour.
 
-The first results were clean and mostly negative. The paper's headline feature was the weak part; its reliability
-came from computing logical consequences exactly, not from the embeddings. I wrote that down, including the
-unflattering parts, because a result you only keep when it agrees with you isn't a result.
+That's the part I'd underline. It's not that the AI knows things I don't. It's that the distance between "I wonder"
+and "here's the answer" went from weeks to an afternoon. Curiosity survives an afternoon.
 
-## The part that surprised me
+The results were mostly negative. The headline feature turned out to be the weak part. I wrote that down too.
 
-Then something happened I still think about. We gave the system 25 examples of adding small numbers and 16 of
-multiplying them, written as tally marks, nothing else. It worked out the rules of arithmetic. Not approximately,
-not "a pattern that usually works". The actual axioms, and only the true ones.
+## Then it learned arithmetic
 
-Then we gave it multiplication examples and a blank symbol to fill in, and it worked out that it needed addition
-first, and invented it. Give it exponentiation, it invents multiplication.
+We gave it 25 examples of adding small numbers and 16 of multiplying them, written as tally marks. Nothing else. It
+worked out the rules of arithmetic. Not a pattern that usually works. The actual rules, and only the true ones.
 
-That was the moment this stopped being a book review. If a machine can rediscover arithmetic from tally marks, what
-else is sitting there waiting? Which is really one question: could any of this find something genuinely new, or was
-it only ever going to hand me back things humanity already knew?
+Then we gave it multiplication examples and a blank symbol to fill in. It worked out that it needed addition first,
+and invented it.
 
-## The bug that taught me the most
+That's when I stopped reviewing the paper and started wondering what else was sitting there. Could this find
+something new, or would it only ever hand back things people already knew?
 
-Trying to answer that took me into equations: find every whole-number solution of some polynomial, prove there are
-no others. We built a big automated pipeline producing proofs about thousands of curves. It ran clean. Every sanity
-check passed.
+## The bug
 
-It was wrong. One step was quietly assuming two things it had never verified, and the failure mode was vicious: a
-false result looked exactly like a true one from the outside. No batch check could have caught it, because there was
-nothing to compare against. The only way to find it was to stop and ask, of each step, what does this actually
-assume? We found it, fixed it, and had to withdraw about half of a batch of earlier claims.
+Chasing that took me to equations. Find every whole number solution, prove there are no others. We built a pipeline
+that produced proofs about thousands of curves. It ran clean. Every check passed.
 
-I've had that experience in every technical thing I've ever done and the lesson never changes. The danger is never
-the part you know is shaky. It's the part that looks finished. After that, the rule for the whole project was: if we
-can prove it ourselves, we don't borrow it, and anything a machine tells us gets checked against something that
-doesn't come from the same machine. That rule is why I believe the rest of this.
+It was wrong. One step was assuming two things it never verified, and a wrong answer looked exactly like a right one
+from the outside. No batch test could catch it. The only way to find it was to go through each step and ask what it
+was taking for granted. We found it, fixed it, and threw out about half of a batch of earlier results.
+
+Same lesson as every technical project I've worked on. The danger isn't the part you know is shaky. It's the part
+that looks finished.
+
+After that the rule was simple. If we can prove it ourselves, we don't borrow it. Nothing gets believed on one
+source. That's why I trust the rest of this.
 
 ## The equation
 
-There's a survey that lists equations of this family by size and marks the ones nobody has solved. The smallest
-unsolved one was
+There's a list of equations like this, ordered by size, with the unsolved ones marked. The smallest one nobody had
+done was
 
-  x⁴ + 2y³ + z³ = 0.
+  x⁴ + 2y³ + z³ = 0
 
-Three solutions are known. Two are small and obvious. The third is x = 43, y = −203, z = 237, which is the whole
-problem in one line: you cannot search your way to confidence. A computer can check billions of possibilities, find
-nothing, and the answer is still sitting out there past where you looked.
+Three solutions are known. Two are obvious. The third is 43, −203, 237, which is the whole problem in one line. You
+can't search your way to certainty. A computer can check billions, find nothing, and the answer is still out past
+where you looked.
 
-The classical machinery took us a long way in a day. Follow where the equation forces things and the puzzle turns
-into a question about six specific curves. Four we could handle. Two hit a wall, and it's a real wall, not a
-"try harder" one: there's a beautiful classical method that finds every solution, and it works only when a certain
-number attached to your curve is small enough. Ours was exactly too big. The method doesn't struggle. It says
-nothing at all.
+A day of standard work turned it into a question about six curves. Four we handled. Two hit a wall. There's a
+classical method that finds every solution, and it only works when a number attached to your curve is small enough.
+Ours was one too big. The method doesn't struggle. It says nothing.
 
-Halfway through I found that a mathematician named Greg Villines had walked the same road in June, with
-professional software, reached the same six curves and the same two survivors, and stopped at the same wall. He'd
-left a note suggesting a way around it. We tested his suggestion and showed it couldn't work. So: same wall, months
-later, with a smaller toolkit.
+Then I found that Greg Villines had done the same thing in June with professional software, reached the same six
+curves, and stopped at the same wall.
 
-## The way through
+## One minus sign
 
-What broke it open was a naive question. Our two stubborn curves look plain, but only because of where you're
-standing. Seen from a larger number system they have 48 hidden symmetries. I asked whether we could use one, even
-though it lives somewhere the problem doesn't.
+Our two curves look plain from where we were standing. From a bigger number system they have 48 hidden symmetries. I
+asked whether we could use one, even though it doesn't live where the problem does.
 
-There's a known method that uses exactly such a symmetry, but it answers a bigger question than mine: it finds
-solutions in the larger number system, and I only wanted ordinary whole numbers. Those symmetries get shuffled
-around as you move between number systems, and the natural worry is that anything built from them averages away to
-nothing when you ask about ordinary solutions.
+The worry is that a symmetry borrowed from somewhere else washes out when you ask about ordinary whole numbers. So
+we counted how it washes out. One symmetry flips where all the others stay put. One minus sign in a table.
 
-So we counted. We worked out exactly how the shuffling acts, and the answer had one strange feature: one single
-symmetry gets flipped where all the others stay put. One minus sign in a table.
+That was the whole thing. Build the machinery with a matching flip and it doesn't cancel. And there was exactly one
+way to build it. Not a family to search through. One.
 
-That minus sign was the whole thing. It meant that if you built the machinery with a matching flip, the
-contributions wouldn't cancel — they'd survive and say something about ordinary solutions. And when we asked how
-many ways there were to build it that way, the answer was exactly one. Not a family to search. One candidate,
-forced.
+It gave the same answer at both known solutions, matching to nineteen digits, and the version with the sign the
+other way round failed, which is how you know you understood it instead of got lucky. Then a lot of grinding, and
+four solutions left standing at the end. The four we already had.
 
-We built it. It gave the same answer at both known solutions, agreeing to nineteen digits, and the variant with the
-sign the other way round failed, which is how you know you understood it rather than got lucky. Then the grind:
-chop the space into 528 pieces, solve on each, get 524 candidates, sieve away the impostors. Four survivors. The
-four we already knew.
+## Checking it
 
-Afterwards I found that two mathematicians had proved a general theorem saying a count like ours guarantees this
-kind of thing is possible. The possibility was known. What seems to be new is actually doing it, with a symmetry
-that only exists somewhere else.
+A proof leaning on someone else's software isn't really yours, so the next day went to replacing the borrowed parts.
+We tested our version against 24 curves with published answers. Half came out wrong by one.
 
-## Making it honest
+I'd misread a column and was comparing against the wrong number entirely. The mistake made the test better. The two
+numbers I was accidentally comparing had to line up in a way that made "wrong by one" impossible, so chasing it
+turned up three real bugs. After the fixes all 24 matched. Then we ran the whole thing again from a different
+starting point, to be sure the answer wasn't an accident of one choice we'd made. Same four solutions.
 
-A proof that leans on someone else's software for its hard parts isn't really yours, so the next day went into
-removing every borrowed piece. That meant implementing a twenty-five-year-old algorithm from a paper and testing it
-against 24 curves whose answers were published.
+I also kept asking for it explained like I'm twelve. Not as a joke. If I can't say a step in plain words I don't
+know whether I believe it, and "the computer said so" isn't something I'll put my name on.
 
-Half came out wrong by one.
+## What's next
 
-The embarrassing part: I'd misread a column in the reference data and was comparing against the wrong number
-entirely. But the mistake made the test better, not worse, because the numbers I was accidentally comparing had to
-match in a way that made "wrong by one" impossible. Chasing that impossibility turned up three real bugs, all
-subtle, all of the kind that quietly poisons a result. Fixed, all 24 agreed. Then we ran the whole main computation
-again from a different starting point, to be sure the answer wasn't an artifact of a choice we'd made. Same four
-solutions.
+It isn't done. Everything is written down, it all runs on free software anyone can install, and where it overlaps
+with Villines' work it agrees. But nobody outside the room has read it. So it's a probable solution until an expert
+goes through the new part and somebody redoes the delicate bits with different tools. I'd rather say that now than
+get corrected later.
 
-And I kept asking for the explanation like I was twelve. Repeatedly, not as a joke. If I can't say a step in plain
-words, I don't know whether I believe it, and "the computer said so" isn't something I'll sign my name to.
+Next: write to Villines, find that expert, submit it. The code and the write-up are public, mistakes included. If
+this is your corner of math, take it apart.
 
-## Where it stands
+One last thing, since I started with the paper. Did tensor logic solve this? No. Not one idea from it is in the
+proof. What carried over was the habit it put me in: guess numerically, check exactly, believe nothing on a single
+source. I went in to test somebody else's claims and came out with a result I wasn't looking for.
 
-I say "probable solution" on purpose. Everything is written down, everything runs on free software anyone can
-install, and the parts that overlap with Villines' independent work agree with it. What's left is what's always
-left: an expert needs to read the new step, someone should redo the delicate parts with different tools, and it
-needs review. Until then it's a complete argument nobody outside the room has checked. I'd rather say that clearly
-than oversell it and be corrected later.
-
-## What I take from this
-
-The AI didn't solve it. Neither did I, alone. What happened is that one curious person could run a research program
-that used to need a small team and a year.
-
-My job in it was judgment, not cleverness. Choose what to aim at. Refuse to borrow what we could prove. Check
-things against sources that can't be wrong in the same direction. Ask for it in plain words until it's plain. Say
-"probably" when it's probably.
-
-The two best moments weren't moments of brilliance. One was a computation quietly showing us a minus sign we
-weren't looking for. The other was refusing to believe a pipeline that looked perfect. That's what puzzles have
-always been like. The only thing that changed is how far one person can get before the puzzle wins.
+On to the next one.
