@@ -16,7 +16,8 @@ before you learned anything. This time I described the experiment I wanted and i
 That's the part I'd underline. It's not that the AI knows things I don't. It's that the distance between "I wonder"
 and "here's the answer" went from weeks to an afternoon. Curiosity survives an afternoon.
 
-The results were mostly negative. The headline feature turned out to be the weak part. I wrote that down too.
+The results were mostly negative. Not because the paper was wrong, but because we were working out how best to
+represent the knowledge, and most of what you try doesn't work. Trial and error is the process.
 
 ## Then it learned arithmetic
 
