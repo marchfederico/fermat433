@@ -1,160 +1,166 @@
-# How I got here: from a paper about AI to x⁴ + 2y³ + z³ = 0
+# How I got here
 
-I've always loved puzzles and knowing how things work, and AI has made it easier to dig into new things. This is the
-story of how, over four days in September 2026, a wish to understand one paper about artificial intelligence turned
-into a probable solution of a hundred-year-old kind of number puzzle. It was not planned. Most of it happened because
-each experiment answered one question and raised a better one.
+I've always loved puzzles and knowing how things work, and AI has made it easier to dig into new things.
 
-## The paper I wanted to understand
+That sentence is the whole reason this happened. Four days in September 2026, starting with a paper about
+artificial intelligence that I wanted to understand properly, ending somewhere I had no business ending up: a
+proof of a number puzzle that nobody had solved. I did not set out to do that. I set out to find out whether a
+paper was right.
 
-In October 2025 Pedro Domingos published "Tensor Logic: The Language of AI". Its central claim is simple and bold: a
-logical rule and an Einstein summation are the same operation, so neural networks and symbolic reasoning can be
-written in one language, and reasoning can be done in "embedding space" without the hallucinations of language
-models. I wanted to know whether that was true, not just read that it was.
+## Reading with my hands
 
-Ten years ago that would have meant weeks of coding before the first result. Now I could describe the experiment I
-had in mind and have it running in an hour. On September 9 I asked Claude for a set of experiments extending the
-paper and said "go ahead with the first three". By that night we had formulas: the error of a superposed embedding
-is exactly Φ(−√(D/N)/2), you need about ninety dimensions per stored item for one error in a million, and chaining
-rules in embedding space has a sharp cliff, a critical dimension around two hundred times the largest closure degree,
-below which nothing works. The next day we tested the paper's "temperature dial" for analogical reasoning and found
-it maximally hallucinatory at every temperature; the only reliable corner was the purely deductive one. The kindest
-honest summary of the first five experiments was that the advantage the paper describes belongs to computing the
-logical closure exactly, not to the embeddings.
+The paper was Pedro Domingos's "Tensor Logic: The Language of AI". Its big claim is that logic and neural
+networks are secretly the same mathematics, and that if you write them in one language you can reason inside an
+AI's "embedding space" without the machine making things up.
 
-That was the first lesson of the whole adventure: with an AI collaborator that can implement and run an experiment
-while you think about the next one, you can test a paper's claims instead of taking them on faith.
+I've read a lot of papers like that over the years and mostly had to take them on faith. Checking a claim used to
+mean weeks of setup before the first honest result, and life is short. This time I described the experiment I
+wanted and had it running before I lost interest. That is the part people underestimate. It isn't that the AI knows
+things I don't. It's that the gap between "I wonder whether" and "here's the answer" collapsed from weeks to an
+afternoon, and curiosity survives an afternoon.
 
-## Learning rules, and then learning arithmetic
+So we tested it. The first results were clean and mostly negative: the paper's headline feature, reasoning in
+embedding space, was the weak part. Its reliability came from computing the logical consequences exactly, not from
+the embeddings. I wrote that down, including the parts that were unflattering, because a result you only keep when
+it agrees with you isn't a result.
 
-If embedding-space reasoning was the weak part, the learning part was stronger than I expected. A learnable rule
-tensor recovered all 62 kinship rules of a standard benchmark from about four hundred stories. Then came the
-experiment that changed my sense of what was possible: from 25 examples of addition and 16 of multiplication in unary
-notation, gradient descent through an exact rewriting engine learned the Peano axioms, the true ones and only the
-true ones. Given only multiplication examples and a spare symbol, the system invented addition, because addition is
-the unique helper function that makes multiplication computable. Given exponentiation, it invented multiplication.
-We added equality saturation, Knuth–Bendix completion, Gröbner bases; a loop that conjectures in finite models and
-proves by saturation found and proved 22 theorems about groups on its own. Along the way we wrote the tensor-logic
-findings up as a paper of their own.
+## The part that surprised me
 
-By then a different question was nagging me. All of this proved things that were already known. Could the machinery
-prove something new?
+Then something happened that I still think about. We gave the system 25 examples of adding small numbers and 16 of
+multiplying them, written as tally marks, nothing else. It worked out the rules of arithmetic. Not approximately,
+not "learned a pattern that usually works". It produced the actual axioms, and only the true ones.
 
-## Trying to prove something new
+Then we gave it multiplication examples and a blank symbol to fill in, and it discovered that it needed addition
+first, and invented it. Give it exponentiation, it invents multiplication.
 
-The first attempt was the OEIS, the online encyclopedia of integer sequences. We built a machine for sequences that
-satisfy linear recurrences: it validated 35,857 recurrences against the listed terms, proved 108,547 identities
-between sequences in eight minutes, and proved 5,779 closed forms unconditionally. It solved exactly zero open
-conjectures. The lesson was worth having: the machinery was real, and the open problems were open for a reason.
+I sat with that one for a while. It was the moment the project stopped being a book review and started being
+something I cared about. If a machine can rediscover arithmetic from tally marks, what else is sitting there
+waiting to be rediscovered? Which is really the question: could any of this find something genuinely new, or was
+it only ever going to give me back things humanity already knew?
 
-So we went where the open problems are stated precisely: Diophantine equations. We built a verifier for Chabauty's
-method, the classical way to find all rational points on a curve of genus 2 when the rank of its Jacobian is
-smaller than 2, and turned it into a "certificate factory" on a public database of 66,158 genus-2 curves. It
-determined the rational points on 108 of the first 200 eligible curves.
+## Failing at that, usefully
 
-And it had a bug. The Mordell–Weil sieve, the step that eliminates false candidates, assumed two things it should
-have proved: that it had found all the torsion, and that its generator was not a multiple of a smaller point. A batch
-check comparing bounds with known points could never have caught this, because a false exclusion looks exactly like a
-correct one. We found it by asking what each step actually assumed, fixed it with certified saturation witnesses,
-and 21 of 46 earlier sieve claims had to be withdrawn. That was the most important lesson of the whole project, and
-it shaped everything that followed: every input to a sieve must be proved, and a computation that has not been
-validated against an independent source is not evidence.
+The first attempt was a flop, and a good one. There's a giant catalogue of number sequences online, with a few
+hundred unsolved guesses recorded in it. We built a machine to settle them. It proved a hundred thousand facts in
+eight minutes. It solved zero of the open problems.
 
-Two more experiments mattered later. One was a proposer for "bielliptic" curves, curves with a hidden symmetry that
-splits their Jacobian into two elliptic curves: it computed the roots of the defining polynomial to sixty digits,
-searched pairings of roots for a Möbius symmetry, rationalised the result and verified it exactly. It found the
-symmetry on 1,111 of 1,111 candidate curves in 34 seconds, including deliberately disguised ones, and pushed 63 curves
-past what Chabauty alone could do. A language-model arm of the same experiment produced no output in an hour and was
-stopped; the numerical method had solved the problem completely. The other was writing the sieve itself as one of
-the paper's tensor equations: correct, elegant, and useless, slower than the plain exact version. I recorded that
-too.
+Zero is a real answer. The open ones are open because they're hard, not because nobody got around to them, and the
+machinery being genuinely good at proving things is not the same as it being good at proving the things that are
+left. I kept the machine and changed the target.
+
+Where I went next was equations: find all the whole-number solutions of some polynomial, prove there are no others.
+That field has a precise wall in it, a beautiful one. There's a classical method that finds every solution, and it
+works only when a certain number attached to your equation is small enough. When that number is too big, the method
+says nothing at all. Not "try harder", nothing.
+
+Before we got anywhere near that wall, we hit the episode that taught me the most.
+
+## The bug
+
+We had a big automated pipeline producing proofs about thousands of curves. It was running clean. Every sanity
+check passed.
+
+It was wrong. One step was quietly assuming two things it had never verified, and the failure mode was vicious: a
+false result looked exactly like a true one from the outside. No batch check could have caught it, because there
+was nothing to compare against. The only way to find it was to stop and ask, of each step, what does this actually
+assume? We found it, fixed it, and had to withdraw about half of a batch of earlier claims.
+
+I've had that experience in every technical thing I've ever done, and the lesson is always the same. The danger is
+never the part you know is shaky. It's the part that looks finished. After that, the rule for the whole project was:
+if we can prove it ourselves, we don't borrow it, and anything a machine tells us gets checked against something
+that doesn't come from the same machine. That rule is why I believe the rest of this.
 
 ## The equation
 
-A 2024 survey by Ratcliffe and Grechuk lists generalized Fermat equations ordered by a size measure H and marks the
-ones nobody has solved. The smallest open one was
+There's a survey that lists equations of this family by size and marks the ones nobody has solved. The smallest
+unsolved one was
 
-  x⁴ + 2y³ + z³ = 0,
+  x⁴ + 2y³ + z³ = 0.
 
-with H = 40. Three primitive solutions are known: (±1, 0, −1), (±1, −1, 1) and (±43, −203, 237). The last one is a
-warning that a computer search proves nothing.
+Three solutions are known. Two are small and obvious. The third is x = 43, y = −203, z = 237, which is the whole
+problem in one line: you cannot search your way to confidence. A computer can check billions of possibilities and
+find nothing, and the answer can still be sitting out there past where you looked.
 
-On September 11 we started a separate line of work on it. The classical attack went smoothly: factor in the number
-field Q(∛2), which has unique factorisation and a single fundamental unit; conclude that z + y∛2 is a unit times a
-fourth power; expand and get four plane quartic curves; kill two of them by 2-adic arguments; pass to a conic and its
-Pythagorean-style parametrisation; arrive at six curves of genus 2. Halfway through, we found that Greg Villines had
-done exactly this in June 2026, with Magma, and had solved four of the six curves. The other two had rank 2, equal to
-the genus, and everything stopped there. His notes suggested trying quadratic Chabauty over Q(√−2). We computed the
-Galois action on the Néron–Severi group and showed that route cannot work: over Q(√−2) there is still no extra class.
+The classical machinery took us a long way in a day. Factor the equation inside a number system that includes the
+cube root of 2, follow where that forces things, and the original puzzle turns into a question about six specific
+curves. Four of them we could handle. Two of them hit the wall: that number was exactly too big, and the method
+went silent.
 
-We were at the same wall, with better tools than I had expected to own.
+Halfway through this I found that a mathematician named Greg Villines had walked the same road in June, with
+professional software, and had got to the same six curves and the same two survivors. He'd stopped at the same
+wall, and left a note suggesting a way around it. We tested his suggestion and showed it couldn't work. So: same
+wall, several months later, with a smaller toolkit.
 
-## The trick
+## The way through
 
-I asked a naive question: is there a way to use the paper and our learning techniques to develop a new method for
-quadratic Chabauty? The honest answer, in hindsight, is that the paper had nothing to say, but the habit from the
-bielliptic experiment did. The two hard curves are twists of the Bolza curve, which has 48 symmetries over the complex
-numbers. We found them numerically, exactly as the proposer had done for the database curves, and identified them
-exactly. Six of them are involutions, and each is defined over a field of degree 12. Over that field each hard curve
-is bielliptic, and quadratic Chabauty for bielliptic curves over number fields exists, in work of Balakrishnan,
-Besser, Bianchi and Müller. But their function lives on the points over the big field, and we only cared about
-rational points.
+What broke it open was a naive question. Our two stubborn curves look plain, but only because of where you're
+standing. Seen from a larger number system they turn out to have 48 hidden symmetries. I asked whether we could
+use one of those, even though it lives somewhere the problem doesn't.
 
-The computation that turned into the idea was counting points modulo many primes to work out how the Galois group
-shuffles the 48 symmetries. The Néron–Severi group turned out to be one trivial class plus a three-dimensional
-irreducible piece, and complex conjugation flips exactly one class: the class of our involution. That single flipped
-sign suggested a rule. The quadratic Chabauty function over the big field is a sum over the twelve embeddings,
-weighted by a p-adic character of the field; for a rational point the twelve contributions are permuted by Galois,
-and only the part of the character that transforms like the flipped class survives. We called it the sign rule. The
-units of the field then cut the candidates down to exactly one character. Then a small miracle: that character
-vanishes at every prime above 2 and 3, exactly the primes where the elliptic quotients have bad reduction, so the
-usually painful bad-prime terms simply disappear.
+There's a known method that uses exactly such a symmetry, but it answers a bigger question than mine: it finds
+solutions in the larger number system, and I only wanted the ordinary whole-number ones. Those extra symmetries
+come in a group that gets shuffled around when you move between number systems, and the natural worry is that
+anything you build from them gets averaged away to nothing when you ask about ordinary solutions.
 
-We built the function at p = 499. It took the same value at both known points to nineteen digits, and the version
-with the opposite sign of one term failed, which told us the derivation was right rather than lucky. On the 528
-residue disks it had 524 zeros; a Mordell–Weil sieve, made index-free by a divisibility property we could prove,
-removed all but the four known points. The twisted curve behaved the same way. Only afterwards did we find that a
-theorem of Balakrishnan and Dogra predicts finiteness from exactly the count we had computed. The finiteness was
-theirs; the explicit identity for Q-points, built from a class defined only over an extension field, appears to be
-new.
+So we counted. We worked out exactly how the shuffling acts, and the answer had one strange feature: one single
+symmetry gets flipped where all the others stay put. One minus sign in a table.
 
-## Closing every gap
+That minus sign was the whole thing. It meant that if you built the method's machinery with a matching flip, the
+contributions wouldn't cancel; they'd survive and say something about ordinary solutions. And when we asked how
+many ways there were to build it that way, the answer was exactly one. Not a family to search through. One
+candidate, forced.
 
-A proof that borrows its hardest inputs is not a proof, so the next day went into removing every import. We wrote our
-own 2-descent in PARI/GP to bound the rank, following Stoll's 2001 algorithm, and validated it against 24 database
-curves. Our first version was off by one on half of them. It turned out I had misread a column of the database file:
-what I took for a 2-Selmer rank was the analytic rank. That made the test sharper, not weaker, because for those
-curves the two numbers must have the same parity, and "rank + 1" is impossible. Chasing the parity violation exposed
-three genuine bugs, including one in how PARI orders the exponents of S-units and one where its local symbols
-misbehave unless the number field is given by a reduced polynomial. After the fixes, 24 of 24 curves agreed.
+We built it. It gave the same answer at both known solutions, agreeing to nineteen digits, and the variant with the
+sign the other way round failed, which is how you know you understood it rather than got lucky. Then a small gift:
+the construction happened to vanish in exactly the places where these problems normally get ugly, so the worst part
+of the computation simply wasn't there.
 
-We re-derived the list of six curves from first principles with an elementary argument about common factors. We
-proved three of the easy curves empty with a norm condition on certified class groups. The fourth easy curve taught
-one more lesson: at the prime 43 the method kept insisting on ghost points with coordinates in Q(√−2), because 43
-splits in that field and the complex multiplication makes those points indistinguishable from rational ones; at the
-inert prime 5 the ghosts vanished, which is the prime Villines had used. We repeated the entire hard-pair computation
-at a second prime, 1459, and it gave the same four points, after one disk taught us to check the precision of every
-quantity the sieve consumes and not only of the function itself.
+Then the grind: chop the space into 528 pieces, solve on each, get 524 candidate solutions, and sieve away the 520
+impostors. Four survivors. The four we already knew.
 
-Then the writing: a formal proof record, a narrative companion, a chronological lab record with every bug in it, a
-referee's checklist stating exactly which published theorems the argument rests on and what an expert should check
-first, explanations for a general reader, and finally a fifteen-page paper with licences chosen. The proof, its code
-and its logs now live in a repository of their own.
+Afterwards I found that two mathematicians had proved a general theorem saying that a count like ours guarantees
+this kind of thing is possible. So the possibility was known. What seems to be new is actually doing it: building
+the thing with a symmetry that only exists somewhere else.
+
+## Making it honest
+
+A proof that leans on someone else's software for its hard parts isn't really yours, so the next day went into
+removing every borrowed piece. That meant implementing a twenty-five-year-old algorithm from a paper, and testing
+it against 24 curves whose answers were published.
+
+Half of them came out wrong by one.
+
+The embarrassing part: I had misread a column in the reference data. I was comparing against the wrong number
+entirely. But the mistake made the test better, not worse, because the numbers I was accidentally comparing had to
+match in a way that made "wrong by one" impossible. Chasing that impossibility turned up three real bugs in our
+code, all subtle, all of the kind that would have quietly poisoned the result. Fixed, all 24 agreed.
+
+Then we did the whole main computation over again with a different starting prime, to make sure the answer wasn't
+an artifact of a choice we'd made. Same four solutions. One piece of it threw a small scare, which turned out to be
+our own numbers being rounded too aggressively in one spot. Fixed that too, and wrote down the lesson.
+
+And I kept asking for the explanation like I was twelve. Repeatedly. Not as a joke. If I can't explain a step in
+plain words, I don't know whether I believe it, and "the computer said so" is not a thing I'm willing to sign my
+name to. Those explanations are in the repository now, next to the formal ones.
 
 ## Where it stands
 
-I am careful to say "probable solution". Every part of the proof is in the record and reproducible on free software,
-and the two computations that could be cross-checked against Villines' independent Magma work agree with it. What
-remains is what always remains: an expert should read the new step, someone should redo the delicate computations
-with different software, and the paper should go through review. Until then it is a complete argument that has not
-yet been refereed, and I would rather say that plainly than claim more.
+I say "probable solution" on purpose. Everything is written down, everything runs on free software anyone can
+install, and the parts that overlap with Villines' independent work agree with it. What's left is what's always
+left: an expert needs to read the new step, someone should redo the delicate parts with different tools, and it
+needs to go through review. Until then it's a complete argument that hasn't been checked by anyone outside the room.
+I'd rather say that clearly than oversell it and be corrected later.
 
-## What I learned
+## What I actually take from this
 
-The AI did not "solve" the equation, and neither did I. What happened is that a curious person could run a four-day
-research program that would have taken a small team months: read the papers, implement a twenty-five-year-old
-algorithm, run tens of thousands of computations, catch its own mistakes by validation, and write everything up at
-three levels of difficulty. My part was steering: choosing the target, insisting on checks, refusing to import what
-could be proved, and asking for the explanation "like I'm 12" often enough to be sure I understood what I was
-signing. The best idea in the whole story came from a computation, not from a theory, and the second-best from
-distrusting a computation. That is how puzzles have always worked; the difference is how far one person can now dig.
+The AI didn't solve it. Neither did I, alone. What happened is that one curious person with a full-time job could
+run a research program that used to need a small team and a year: read the literature, build the tools, run tens of
+thousands of computations, catch its own errors, write it all up.
+
+My job in it was judgment, not cleverness. Choose what to aim at. Refuse to borrow what we could prove. Insist on
+checking things against sources that couldn't be wrong in the same direction. Ask for it in plain words until it's
+plain. Say "probably" when it's probably.
+
+And the two best moments weren't moments of brilliance. One was a computation quietly showing us a minus sign we
+weren't looking for. The other was refusing to believe a pipeline that looked perfect. That's what puzzles have
+always been like. The only thing that changed is how far a person can now get before the puzzle wins.
