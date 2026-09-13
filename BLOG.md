@@ -3,7 +3,7 @@
 I've always loved puzzles and knowing how things work, and AI has made it easier to dig into new things.
 
 Four days in September. Started with an AI paper I wanted to understand. Ended with a proof of a math problem
-nobody had solved. I didn't plan that. I just wanted to know if the paper was right.
+nobody had solved. I didn't plan that. I just wanted to see if I could implement some of what was in the paper.
 
 ## Testing the paper
 
