@@ -96,10 +96,8 @@ know whether I believe it, and "the computer said so" isn't something I'll put m
 It isn't done. Everything is written down, it all runs on free software anyone can install, and where it overlaps
 with Villines' work it agrees. But nobody outside the room has read it. So it's a probable solution until an expert
 goes through the new part and somebody redoes the delicate bits with different tools. I'd rather say that now than
-get corrected later.
-
-Next: write to Villines, find that expert, submit it. The code and the write-up are public, mistakes included. If
-this is your corner of math, take it apart.
+get corrected later. The code and the write-up are public, mistakes included. If this is your corner of math, take
+it apart.
 
 One last thing, since I started with the paper. Did tensor logic solve this? No. Not one idea from it is in the
 proof. What carried over was the habit it put me in: guess numerically, check exactly, believe nothing on a single
