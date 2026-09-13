@@ -5,12 +5,12 @@ I've always loved puzzles and knowing how things work, and AI has made it easier
 Four days in September. Started with an AI paper I wanted to understand. Ended with a proof of a math problem
 nobody had solved. I didn't plan that. I just wanted to see if I could implement some of what was in the paper.
 
-## Testing the paper
+## Trying it out
 
 The paper was Pedro Domingos's "Tensor Logic: The Language of AI". The claim is that logic and neural networks are
 the same math underneath, and that you can reason inside an AI without it making things up.
 
-I've read a lot of papers like that and mostly had to take them on faith. Checking one used to mean weeks of setup
+I've read a lot of papers like that and mostly had to take them on faith. Trying one used to mean weeks of setup
 before you learned anything. This time I described the experiment I wanted and it was running in an hour.
 
 That's the part I'd underline. It's not that the AI knows things I don't. It's that the distance between "I wonder"
