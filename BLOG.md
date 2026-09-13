@@ -1,4 +1,4 @@
-# How I got here
+# Proving x⁴ + 2y³ + z³ = 0: how I got here
 
 I've always loved puzzles and knowing how things work, and AI has made it easier to dig into new things.
 
