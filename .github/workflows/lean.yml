@@ -1,0 +1,27 @@
+name: Lean
+
+on:
+  push:
+    paths:
+      - 'lean/**'
+      - '.github/workflows/lean.yml'
+  pull_request:
+    paths:
+      - 'lean/**'
+      - '.github/workflows/lean.yml'
+  workflow_dispatch:
+
+jobs:
+  build:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - uses: leanprover/lean-action@v1
+        with:
+          lake-package-directory: lean
+      - name: Check axioms
+        working-directory: lean
+        run: |
+          lake env lean scripts/axioms.lean | tee axioms.out
+          # fermat433 must rest only on Lean's standard axioms: no sorryAx, no added axioms
+          grep -q "'fermat433' depends on axioms: \[propext, Classical.choice, Quot.sound\]" axioms.out

@@ -47,6 +47,7 @@ than on every rebuild; the reasoning is in the comments at the top of paper/Make
 | RESULTS.md | chronological lab record, including the bugs found and how |
 | REFEREE_NOTES.md | for an informal referee of Part C: claims, imported results with hypotheses, checks, open questions |
 | EXPLAINER.md | the proof and the discovery of the trick, for a general reader |
+| lean/ | a Lean 4 / Mathlib proof of the theorem from Lemma A.1 and the rational points of the six curves — see lean/README.md |
 
 ## Scripts, by part of the proof
 
