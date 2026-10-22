@@ -12,3 +12,6 @@ paper/*.blg
 paper/*.synctex.gz
 paper/.check-a/
 paper/.check-b/
+
+# Unsent drafts (emails, arXiv form text); kept local
+paper/submission/
