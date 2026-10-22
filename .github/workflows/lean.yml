@@ -25,6 +25,7 @@ jobs:
           lake env lean scripts/axioms.lean | tee axioms.out
           # fermat433 must rest only on Lean's standard axioms: no sorryAx, no added axioms
           grep -q "'fermat433' depends on axioms: \[propext, Classical.choice, Quot.sound\]" axioms.out
+          grep -q "'fermat433_qc' depends on axioms: \[propext, Classical.choice, Quot.sound\]" axioms.out
           # the sieve certificate is checked by the kernel, not the compiler (no Lean.ofReduceBool)
           grep -q "'Fermat433.Sieve.sieve_B_minus' depends on axioms: \[propext\]" axioms.out
           grep -q "'Fermat433.Sieve.sieve_C_plus' depends on axioms: \[propext\]" axioms.out

@@ -154,6 +154,10 @@ needs (f has seven coefficients, F at most seven, A = f(x₋), D = f(x₊), valu
 
 ## What is not established
 
+The p = 499 sieves are used in the main Lean theorem: `fermat433_qc` (`lean/Fermat433/Assembled.lean`)
+takes the following two facts as hypotheses, for each rational point of B⁻ and C⁺, and derives the
+rational points of the hard pair from them with the sieve proved here.
+
 - That the candidate vectors are the zeros of the quadratic Chabauty function (§6,
   Proposition 6.1). The certificate takes them as given.
 - That the sieve condition above is the right one, i.e. that a rational point's coefficient vector

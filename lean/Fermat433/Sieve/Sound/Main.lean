@@ -59,6 +59,34 @@ def SieveRemoves (I : Inputs) (C : PrimeCert) (a : ℕ × ℕ) : Prop :=
               a.1 • (Nat.card (W2 I C.q C.r).Point / I.ell) • G21 +
                 a.2 • (Nat.card (W2 I C.q C.r).Point / I.ell) • G22)
 
+/-- The sieve condition holds for `a` at `C`: some point `P` of `X(𝔽_q)` (for a rational point, its
+reduction) satisfies both equations. This is what Proposition 6.2 asserts for the coefficient
+vector of a rational point; `SieveRemoves` is its negation. -/
+def SieveCompatible (I : Inputs) (C : PrimeCert) (a : ℕ × ℕ) : Prop :=
+  ∃ hq : C.q.Prime,
+    haveI : Fact C.q.Prime := ⟨hq⟩
+    ∃ (G11 G12 : (W1 I C.q C.r).Point) (G21 G22 : (W2 I C.q C.r).Point),
+      Im1 (I := I) (r := C.r) (toEv (vals I C.q C.r) (.ofRat I.p1)) G11 ∧
+      Im1 (I := I) (r := C.r) (toEv (vals I C.q C.r) (.ofRat I.p2)) G12 ∧
+      Im2 (I := I) (r := C.r) (toEv (vals I C.q C.r) (.ofRat I.p1)) G21 ∧
+      Im2 (I := I) (r := C.r) (toEv (vals I C.q C.r) (.ofRat I.p2)) G22 ∧
+      ∃ P : XPt C.q, P.Valid I.f ∧
+      ∃ (Q1 : (W1 I C.q C.r).Point) (Q2 : (W2 I C.q C.r).Point),
+        Im1 (I := I) (r := C.r) (toEv (vals I C.q C.r) P) Q1 ∧
+        Im2 (I := I) (r := C.r) (toEv (vals I C.q C.r) P) Q2 ∧
+        (Nat.card (W1 I C.q C.r).Point / I.ell) • Q1 =
+            a.1 • (Nat.card (W1 I C.q C.r).Point / I.ell) • G11 +
+              a.2 • (Nat.card (W1 I C.q C.r).Point / I.ell) • G12 ∧
+          (Nat.card (W2 I C.q C.r).Point / I.ell) • Q2 =
+            a.1 • (Nat.card (W2 I C.q C.r).Point / I.ell) • G21 +
+              a.2 • (Nat.card (W2 I C.q C.r).Point / I.ell) • G22
+
+lemma SieveRemoves.not_compatible {I : Inputs} {C : PrimeCert} {a : ℕ × ℕ}
+    (hr : SieveRemoves I C a) (hc : SieveCompatible I C a) : False := by
+  obtain ⟨_, hr⟩ := hr
+  obtain ⟨_, G11, G12, G21, G22, h11, h12, h21, h22, P, hP, Q1, Q2, h1, h2, heq⟩ := hc
+  exact hr G11 G12 G21 G22 h11 h12 h21 h22 P hP Q1 Q2 h1 h2 heq
+
 /-- **Soundness of the checker.** If `run` returns `L`, every candidate not in `L` is removed, in
 the sense of `SieveRemoves`, at one of the primes. -/
 theorem run_sound {I : Inputs} {certs : List PrimeCert} {L : List (ℕ × ℕ)}

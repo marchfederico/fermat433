@@ -14,3 +14,4 @@ import Fermat433
 #print axioms Fermat433.Sieve.sieve_C_plus_p1459
 #print axioms Fermat433.Sieve.sieve_B_minus_p1459_sound
 #print axioms Fermat433.Sieve.sieve_C_plus_p1459_sound
+#print axioms fermat433_qc

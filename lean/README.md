@@ -26,6 +26,38 @@ and none is an `axiom`, so `#print axioms fermat433` reports only Lean's three s
 Only the x-coordinates of affine points are used; the points at infinity correspond to the tangent
 direction of the conic and are handled inside the proof.
 
+## With the sieve proved: `fermat433_qc`
+
+`Fermat433/Assembled.lean` proves the same theorem with the Mordell–Weil sieve of Part C proved
+rather than assumed. Its hypotheses, `InputsQC`, are not logically weaker (they imply `Inputs`, which
+is how the proof goes); they move the assumption from the conclusion of Part C to its inputs:
+
+```lean
+theorem fermat433_qc (H : InputsQC) (x y z : ℤ) (hp : Primitive x y z) :
+    x ^ 4 + 2 * y ^ 3 + z ^ 3 = 0 ↔ (x, y, z) ∈ solutions
+```
+
+`InputsQC` keeps `descent`, `A_minus`, `B_plus`, `C_minus` and `A_plus`. It replaces `B_minus` and
+`C_plus`, which assume the rational points of the hard pair outright, with what quadratic Chabauty
+and the setup of the sieve provide (Propositions 6.1–6.2). For a rational point (X, W) of B⁻
+(`B_minus_qc`), and likewise of C⁺ (`C_plus_qc`):
+
+1. its coefficient vector modulo 499 is one of the quadratic Chabauty candidates
+   (`Bminus.inputs.cands`, 524 of them);
+2. at each sieving prime (q = 997 and 12973), the sieve condition holds for that vector
+   (`SieveCompatible`: a point of X(𝔽_q), the reduction of (X, W), satisfies both equations in
+   the 499-parts of E₁(𝔽_q) and E₂(𝔽_q));
+3. if the vector is one of the four surviving ones, then X = 1 or −1 (on C⁺: X = 6/5 or 2).
+
+The Mordell–Weil sieve that connects these to `B_minus` and `C_plus` is proved in Lean
+(`InputsQC.B_minus`, `InputsQC.C_plus`): every candidate other than the four survivors is ruled out
+by `sieve_B_minus_sound` / `sieve_C_plus_sound`, which rest on the kernel computations
+`sieve_B_minus`, `sieve_C_plus` and the soundness proof of the checker (see below).
+`#print axioms fermat433_qc` reports only Lean's three standard axioms.
+
+The known points satisfy these hypotheses, so they are not vacuous: a known point's vector is a
+survivor, and its own reduction witnesses `SieveCompatible`.
+
 ## What is proved
 
 Everything between Lemma A.1 and the six curves, and everything from the curves back to the
@@ -57,8 +89,9 @@ at p = 499 and in the rerun at p = 1459, without PARI, in two steps:
   sound, so every other candidate is ruled out at one of the sieving primes by a statement about
   Mathlib elliptic curves over `ZMod q` (`SieveRemoves`).
 
-It is not connected to `fermat433`: the candidate lists and the sieve condition itself
-(Propositions 6.1–6.2) remain outside Lean. See `../sieve_cert/README.md`.
+The p = 499 sieves feed into `fermat433_qc` (above); the p = 1459 sieves are an independent check
+and are not needed for it. The candidate lists and the sieve condition itself (Propositions
+6.1–6.2) remain hypotheses. See `../sieve_cert/README.md`.
 
 ## Building
 
