@@ -45,6 +45,16 @@ solutions:
   u ∈ {±m², ±2m²}), and small facts about primes.
 - `Main.lean`: the theorem, plus checks that the six triples are solutions and are primitive.
 
+## The sieve certificate
+
+`Fermat433/Sieve/` checks the finite arithmetic of the Mordell–Weil sieve for B⁻ (Proposition 6.2 of
+the paper), independently of PARI. The theorem `Fermat433.Sieve.sieve_B_minus` is proved by
+evaluating a checker in Lean's kernel (`decide +kernel`, about 35 seconds, axioms: `propext` only).
+It confirms that the primes above 997 and 12973 remove all 524 quadratic Chabauty candidates except
+the four known points. It is separate from `fermat433`, and is not yet connected to it: the
+checker's soundness (that it computes the group law on the elliptic curves correctly) is not
+proved. See `../sieve_cert/README.md`.
+
 ## Building
 
 Install [elan](https://github.com/leanprover/elan), then from this directory:

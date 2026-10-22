@@ -1,0 +1,297 @@
+/-
+Copyright (C) 2026 Marcello Federico
+SPDX-License-Identifier: GPL-3.0-or-later
+-/
+
+/-!
+# A checker for the Mordell–Weil sieve certificate (Proposition 6.2)
+
+The sieve of §6 removes every zero of the quadratic Chabauty function on `B⁻ : y² = −C₃(x)` except
+the four known points. Each zero `z` comes with a vector `a(z) = (a₁, a₂) ∈ ℤ₄₉₉²` such that, at a
+prime `𝔮` of `L` of degree one where `499 ∥ #E_i(𝔽_q)`, the 499-parts satisfy
+`c_i·φ_i(z̄) = a₁·c_i·φ_i(P̄₁) + a₂·c_i·φ_i(P̄₂)` on both quotients `E₁, E₂`, where `c_i = #E_i(𝔽_q)/499`
+and `P₁ = (1, 1)`, `P₂ = (−1, 15)`. A zero is removed when no point of `X(𝔽_q)` has that image.
+
+`run` recomputes this from the exact inputs: it reduces `L` at `𝔮`, builds `E₁, E₂`, counts their
+points and checks that their 499-parts are cyclic of order 499. To remove a candidate it does not
+enumerate `X(𝔽_q)`; it works backwards from the target `(T₁, T₂)`. Multiplication by `c₁` maps
+`E₁(𝔽_q)` onto its 499-part with every fibre of size exactly `c₁`, so a list of `c₁` distinct points
+`Q` with `c₁·Q = T₁` is the whole fibre. Each `Q` comes from at most two points of `X`, the two
+square roots `±X` of `u/A` in the even model `Y² = AX⁶ + BX⁴ + CX² + D`. The candidate is removed
+when none of them is sent to `T₂` by `c₂·φ₂`. The certificate supplies the fibre and the square
+roots; the checker verifies every one, and a false witness makes it fail.
+
+What is *not* proved here: that the sieve condition above is the right one (that is Proposition 6.2
+of the paper), and that the candidate vectors are the zeros of the quadratic Chabauty function (§6,
+Proposition 6.1). This file only checks the finite arithmetic. `run` is ordinary code; the theorem
+in `Fermat433.Sieve.Data` evaluates it in the kernel.
+-/
+
+namespace Fermat433.Sieve
+
+/-- The prime of the sieve. -/
+def ell : Nat := 499
+
+/-- `−C₃(x)`, lowest degree first. -/
+def f1 : List Int := [40, -144, 180, -40, -90, 72, -17]
+
+/-- The exact inputs: the defining polynomial of `L` (lowest degree first), the fixed points `x±`
+of the involution as polynomials in the generator of `L` with rational coefficients `(num, den)`,
+and the candidate vectors `a(z) mod 499`. -/
+structure Inputs where
+  pl : List Int
+  xp : List (Int × Nat)
+  xm : List (Int × Nat)
+  cands : List (Nat × Nat)
+
+/-! ### Arithmetic modulo `q` on representatives `0 ≤ a < q` -/
+
+def powModAux : Nat → Nat → Nat → Nat → Nat
+  | 0, _, _, q => 1 % q
+  | fuel + 1, b, e, q =>
+    if e = 0 then 1 % q else
+      let h := powModAux fuel (b * b % q) (e / 2) q
+      if e % 2 = 1 then h * b % q else h
+
+def powMod (b e q : Nat) : Nat := powModAux 64 (b % q) e q
+
+def inv (a q : Nat) : Nat := powMod a (q - 2) q
+
+def ofInt (z : Int) (q : Nat) : Nat := (z % (q : Int)).toNat
+
+def sub (a b q : Nat) : Nat := (a + q - b % q) % q
+
+/-- Euler's criterion: `1` for a nonzero square, `q − 1` for a non-square, `0` for `0`. -/
+def euler (a q : Nat) : Nat := powMod a ((q - 1) / 2) q
+
+def isPrime (q : Nat) : Bool :=
+  2 ≤ q && (List.range q).all fun d => d < 2 || q < d * d || q % d != 0
+
+/-- Evaluate a polynomial (lowest degree first) at `x`. -/
+def evalPoly (cs : List Nat) (x q : Nat) : Nat := cs.foldr (fun c acc => (acc * x + c) % q) 0
+
+/-- Evaluate an element of `L` (rational coefficients) at `t = r`. -/
+def evalL (cs : List (Int × Nat)) (r q : Nat) : Nat :=
+  evalPoly (cs.map fun (n, d) => ofInt n q * inv (d % q) q % q) r q
+
+def denomsOk (cs : List (Int × Nat)) (q : Nat) : Bool := cs.all fun (_, d) => d % q != 0
+
+/-! ### Polynomials over `𝔽_q` (lowest degree first) -/
+
+def padd (a b : List Nat) (q : Nat) : List Nat :=
+  match a, b with
+  | [], b => b
+  | a, [] => a
+  | x :: a, y :: b => (x + y) % q :: padd a b q
+
+def pscale (c : Nat) (a : List Nat) (q : Nat) : List Nat := a.map fun x => c * x % q
+
+def pmul (a b : List Nat) (q : Nat) : List Nat :=
+  match a with
+  | [] => []
+  | x :: a => padd (pscale x b q) (0 :: pmul a b q) q
+
+def ppow (a : List Nat) (n q : Nat) : List Nat := (List.replicate n a).foldl (pmul · · q) [1]
+
+def trim (a : List Nat) : List Nat := (a.reverse.dropWhile (· == 0)).reverse
+
+def pderiv (a : List Nat) (q : Nat) : List Nat :=
+  (a.zipIdx.drop 1).map fun (c, i) => c * i % q
+
+/-- Remainder of `a` by a nonzero trimmed `b`. -/
+def pmodAux : Nat → List Nat → List Nat → Nat → List Nat
+  | 0, a, _, _ => a
+  | fuel + 1, a, b, q =>
+    let a := trim a
+    if a.length < b.length then a else
+      let s := a.length - b.length
+      let c := a.getLast! * inv b.getLast! q % q
+      let sub := (List.replicate s 0) ++ pscale ((q - c) % q) b q
+      pmodAux fuel (padd a sub q) b q
+
+def pgcdAux : Nat → List Nat → List Nat → Nat → List Nat
+  | 0, a, _, _ => a
+  | fuel + 1, a, b, q =>
+    let b := trim b
+    if b.isEmpty then trim a else pgcdAux fuel b (pmodAux (a.length + 1) a b q) q
+
+/-- `f` is squarefree of degree 6 modulo `q`. -/
+def squarefree (f : List Nat) (q : Nat) : Bool :=
+  (trim f).length == 7 && (pgcdAux 16 f (pderiv f q) q).length == 1
+
+/-! ### Elliptic curves `y² = x³ + a₂x² + a₄x + a₆` over `𝔽_q` -/
+
+inductive Pt
+  | inf
+  | pt (x y : Nat)
+  deriving DecidableEq
+
+structure Curve where
+  q : Nat
+  a2 : Nat
+  a4 : Nat
+  a6 : Nat
+
+namespace Curve
+
+def rhs (E : Curve) (x : Nat) : Nat := (x * x % E.q * x + E.a2 * x % E.q * x + E.a4 * x + E.a6) % E.q
+
+def onCurve (E : Curve) : Pt → Bool
+  | .inf => true
+  | .pt x y => y * y % E.q == E.rhs x
+
+/-- The discriminant of the cubic, up to a unit: `−4a₂³a₆ + a₂²a₄² + 18a₂a₄a₆ − 4a₄³ − 27a₆²`. -/
+def disc (E : Curve) : Nat :=
+  let q := E.q
+  let (a, b, c) := (E.a2, E.a4, E.a6)
+  let pos := (a * a % q * b % q * b + 18 * a % q * b % q * c) % q
+  let neg := (4 * a % q * a % q * a % q * c + 4 * b % q * b % q * b + 27 * c % q * c) % q
+  sub pos neg q
+
+def add (E : Curve) : Pt → Pt → Pt
+  | .inf, Q => Q
+  | P, .inf => P
+  | .pt x1 y1, .pt x2 y2 =>
+    let q := E.q
+    if x1 = x2 ∧ (y1 + y2) % q = 0 then .inf else
+      let lam :=
+        if x1 = x2 then (3 * x1 % q * x1 + 2 * E.a2 % q * x1 + E.a4) % q * inv (2 * y1 % q) q % q
+        else sub y2 y1 q * inv (sub x2 x1 q) q % q
+      let x3 := (lam * lam % q + 3 * q - E.a2 - x1 - x2) % q
+      .pt x3 (sub (lam * sub x1 x3 q % q) y1 q)
+
+def mulAux (E : Curve) : Nat → Nat → Pt → Pt → Pt
+  | 0, _, _, R => R
+  | fuel + 1, n, P, R =>
+    if n = 0 then R else
+      mulAux E fuel (n / 2) (E.add P P) (if n % 2 = 1 then E.add R P else R)
+
+def mul (E : Curve) (n : Nat) (P : Pt) : Pt := E.mulAux 64 n P .inf
+
+/-- `#E(𝔽_q) = q + 1 + Σₓ (rhs(x) / q)`. -/
+def order (E : Curve) : Int :=
+  (List.range E.q).foldl (fun acc x =>
+    let e := euler (E.rhs x) E.q
+    if e = 1 then acc + 1 else if e = 0 then acc else acc - 1) ((E.q : Int) + 1)
+
+end Curve
+
+/-- The witness that a candidate is removed at a prime: the candidate `a`, and the fibre
+`{Q : c₁·Q = T₁}` with, for each `Q = (u, v)`, a square root of `u/A` (for `Q = O`, of `f(x₋)`), or
+`q` if there is none. -/
+structure Removal where
+  a : Nat × Nat
+  fibre : List (Pt × Nat)
+
+/-- A prime `𝔮 = (q, t − r)` of `L` and the candidates removed there. -/
+structure PrimeCert where
+  q : Nat
+  r : Nat
+  removals : List Removal
+
+/-! ### One prime -/
+
+/-- The setting at `𝔮`: `x±`, the even sextic `A X⁶ + B X⁴ + C X² + D`, and the two quotients
+`E₁ : y² = x³ + Bx² + ACx + A²D`, `E₂ : y² = x³ + Cx² + BDx + AD²`, as in `step3_setup.gp`. -/
+structure Setting where
+  q : Nat
+  xp : Nat
+  xm : Nat
+  A : Nat
+  D : Nat
+  E1 : Curve
+  E2 : Curve
+
+def setting (I : Inputs) (q r : Nat) : Setting :=
+  let xp := evalL I.xp r q
+  let xm := evalL I.xm r q
+  let F := (f1.zipIdx).foldl (fun acc (c, k) =>
+    padd acc (pmul (pscale (ofInt c q) (ppow [(q - xp) % q, xm] k q) q)
+      (ppow [q - 1, 1] (6 - k) q) q) q) []
+  let co := fun i => F.getD i 0
+  let (A, B, C, D) := (co 6, co 4, co 2, co 0)
+  { q, xp, xm, A, D,
+    E1 := ⟨q, B, A * C % q, A * A % q * D % q⟩,
+    E2 := ⟨q, C, B * D % q, A * D % q * D % q⟩ }
+
+/-- `F` is even: its odd coefficients vanish. -/
+def evenOk (I : Inputs) (q r : Nat) : Bool :=
+  let xp := evalL I.xp r q
+  let xm := evalL I.xm r q
+  let F := (f1.zipIdx).foldl (fun acc (c, k) =>
+    padd acc (pmul (pscale (ofInt c q) (ppow [(q - xp) % q, xm] k q) q)
+      (ppow [q - 1, 1] (6 - k) q) q) q) []
+  F.getD 1 0 == 0 && F.getD 3 0 == 0 && F.getD 5 0 == 0
+
+/-- `(φ₁, φ₂)` of an affine point of `X`. -/
+def phi (S : Setting) (x y : Nat) : Pt × Pt :=
+  let q := S.q
+  if x = S.xm then (.inf, .pt 0 (S.D * y % q))
+  else if x = S.xp then (.pt 0 (sub 0 (S.A * y % q) q), .inf)
+  else
+    let X := sub x S.xp q * inv (sub x S.xm q) q % q
+    let Y := y * powMod (sub X 1 q) 3 q % q
+    (.pt (S.A * X % q * X % q) (S.A * Y % q),
+     .pt (S.D * inv (X * X % q) q % q) (S.D * Y % q * inv (powMod X 3 q) q % q))
+
+/-- No point of `X(𝔽_q)` over `Q ∈ E₁(𝔽_q)` is sent to `T₂` by `c₂·φ₂`, given a square-root
+witness `w`. Over `Q = (u, v)` the points of `X` are `(X, Y) = (±√(u/A), v/A)` in the even model;
+over `Q = O` they are the points with `x = x₋`, where `φ₂ = (0, D·y)`. -/
+def fibreOk (S : Setting) (f : List Nat) (c2 : Nat) (T2 : Pt) (Q : Pt) (w : Nat) : Bool :=
+  let q := S.q
+  let hit : Pt → Bool := fun P => S.E2.mul c2 P == T2
+  match Q with
+  | .inf =>
+    let fx := evalPoly f S.xm q
+    if w = q then euler fx q == q - 1
+    else w * w % q == fx && !hit (.pt 0 (S.D * w % q)) && !hit (.pt 0 (sub 0 (S.D * w % q) q))
+  | .pt u v =>
+    let s := u * inv S.A q % q
+    let Y := v * inv S.A q % q
+    let img : Nat → Pt := fun X =>
+      if X = 0 then .inf
+      else .pt (S.D * inv (X * X % q) q % q) (S.D * Y % q * inv (powMod X 3 q) q % q)
+    if w = q then euler s q == q - 1
+    else w * w % q == s && !hit (img w) && !hit (img ((q - w) % q))
+
+/-- The points of a list are pairwise distinct. -/
+def distinct : List Pt → Bool
+  | [] => true
+  | P :: Ps => !Ps.contains P && distinct Ps
+
+/-- Sieve the candidates still alive at one prime; `none` if any check fails. -/
+def sievePrime (I : Inputs) (C : PrimeCert) (alive : List (Nat × Nat)) :
+    Option (List (Nat × Nat)) := do
+  let q := C.q
+  let f := f1.map (ofInt · q)
+  -- the prime 𝔮 = (q, t − r) of L, and good reduction of X, E₁, E₂ there
+  unless isPrime q && q ≠ ell && 3 < q do none
+  unless evalPoly (I.pl.map (ofInt · q)) C.r q = 0 do none
+  unless denomsOk I.xp q && denomsOk I.xm q do none
+  unless squarefree f q do none
+  unless evenOk I q C.r do none
+  let S := setting I q C.r
+  unless S.xp ≠ S.xm && S.A ≠ 0 && S.D ≠ 0 && S.E1.disc ≠ 0 && S.E2.disc ≠ 0 do none
+  -- the 499-parts are cyclic of order 499
+  let N1 := S.E1.order
+  let N2 := S.E2.order
+  unless N1 % 499 = 0 && N1 % (499 * 499) ≠ 0 && N2 % 499 = 0 && N2 % (499 * 499) ≠ 0 do none
+  let c1 := (N1 / 499).toNat
+  let c2 := (N2 / 499).toNat
+  -- the generator images; P₂ = (−1, 15)
+  let img : Pt × Pt → Pt × Pt := fun (P1, P2) => (S.E1.mul c1 P1, S.E2.mul c2 P2)
+  let G1 := img (phi S 1 1)
+  let G2 := img (phi S (q - 1) 15)
+  let target : Nat × Nat → Pt × Pt := fun (a1, a2) =>
+    (S.E1.add (S.E1.mul a1 G1.1) (S.E1.mul a2 G2.1), S.E2.add (S.E2.mul a1 G1.2) (S.E2.mul a2 G2.2))
+  let removed : Removal → Bool := fun R =>
+    let T := target R.a
+    R.fibre.length == c1 && distinct (R.fibre.map Prod.fst) &&
+      R.fibre.all fun (Q, w) => S.E1.onCurve Q && S.E1.mul c1 Q == T.1 && fibreOk S f c2 T.2 Q w
+  some (alive.filter fun a => !(C.removals.any fun R => R.a == a && removed R))
+
+/-- Run the sieve over all primes in order. -/
+def run (I : Inputs) (certs : List PrimeCert) : Option (List (Nat × Nat)) :=
+  certs.foldlM (fun alive C => sievePrime I C alive) I.cands
+
+end Fermat433.Sieve
