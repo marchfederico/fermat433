@@ -87,7 +87,17 @@ these inputs, returns the four survivors. That the program computes what its com
 yet proved. That proof would show that `run` returning `some` implies the statement about the
 elliptic curves over 𝔽_q, using Mathlib's Weierstrass curves. It needs, for example, that the
 addition formulas give the group law, and that the fibres of multiplication by c₁ have c₁ points.
-That soundness proof is the next step, and it is what would turn the checker into a proof.
+That soundness proof is what turns the checker into a proof. It is in progress, in
+`lean/Fermat433/Sieve/Sound/`, in four layers:
+
+| layer | statement | status |
+|---|---|---|
+| 1. arithmetic (`Arith.lean`) | `powMod`, `inv`, `sub`, `ofInt` compute exponentiation, inverses, subtraction and casts in `ZMod q`; `euler` returning `q − 1` means "not a square" | proved |
+| 2. group law (`Curve.lean`) | `Curve.add` and `Curve.mul` are Mathlib's addition and `n • ·` on `WeierstrassCurve.Affine.Point`; points passing `onCurve` are points; `disc ≠ 0` gives `Δ ≠ 0` | proved |
+| 3. counting | `Curve.order` is `#E(𝔽_q)`; with `499 ∥ #E`, every fibre of multiplication by `c` over the 499-part has exactly `c` points | to do |
+| 4. the sieve | `run inputs certs = some L` implies: for each removed candidate, no point of `X(𝔽_q)` maps to its target, stated with Mathlib points | to do |
+
+Layers 1 and 2 use only Lean's standard axioms and are built by CI.
 
 ## Reproducing
 
