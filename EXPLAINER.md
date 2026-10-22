@@ -1,267 +1,283 @@
-# How we solved x⁴ + 2y³ + z³ = 0, for a general reader
+# How we solved x⁴ + 2y³ + z³ = 0
 
-*This is the story of the proof in PROOF.md, told without the heavy machinery. Where I use a technical word I try to
-say what it means and, more importantly, what it is for.*
+*An explanation of the proof in PROOF.md for someone who knows school algebra and is curious about the rest. You
+don't need calculus. When a technical word appears, it comes with what it means and why it matters.*
 
-## 0. The problem and the answer
+## 1. The puzzle
 
-We want all whole numbers x, y, z with
+Find all whole numbers x, y, z (positive, negative or zero) with
 
-  x⁴ + 2y³ + z³ = 0
+  x⁴ + 2y³ + z³ = 0.
 
-that have no common factor (if x, y, z share a factor you can divide it out, so "primitive" solutions are the only
-interesting ones). A few solutions are easy to find by hand or by a small computer search:
+If x, y and z share a common factor, you can divide it out and get a smaller solution, so we only look for solutions
+with no common factor. Mathematicians call these *primitive*.
+
+A few solutions turn up quickly:
 
 | x | y | z | check |
 |---|---|---|---|
 | ±1 | 0 | −1 | 1 + 0 − 1 = 0 |
 | ±1 | −1 | 1 | 1 − 2 + 1 = 0 |
-| ±43 | −203 | 237 | 3418801 − 16730854 + 13312053 = 0 |
+| ±43 | −203 | 237 | 3,418,801 − 16,730,854 + 13,312,053 = 0 |
 
-The theorem is that these are the only ones. The last one is a warning: solutions can be much bigger than you would
-guess, so "we searched up to a billion and found nothing else" is not a proof.
+**The theorem: there are no others.**
 
-Equations of the form x^a + y^b + z^c = 0 (with coefficients allowed) are called generalized Fermat equations. A 2024
-survey by Ratcliffe and Grechuk listed the smallest ones that were still open, ordered by a size measure H, and this
-one, with H = 40, was the smallest open case. Greg Villines had attacked it in June 2026 and got most of the way; we
-finished it, and along the way found a trick that may be useful for other equations.
+That third row is a warning. Nobody would guess 43, −203, 237. So a computer search ("we tried everything up to a
+billion and found nothing new") proves nothing: the next solution could be bigger than a billion. We need a proof
+that covers every number at once.
 
-## 1. Why a small equation can be hard
+## 2. Why such a short equation is hard
 
-For x² + y² = z² you can write down all solutions with a formula. For xⁿ + yⁿ = zⁿ with n ≥ 3 there are none, but
-proving that took 350 years. Mixed exponents like (4, 3, 3) are in a strange middle zone: a deep theorem (Faltings,
-Darmon–Granville) says there are only finitely many primitive solutions, but it gives no way to find them. Every
-equation needs its own attack, and the standard attacks come in two flavours:
+You know x² + y² = z². It has infinitely many solutions (3, 4, 5; 5, 12, 13; …) and there is a formula for all of
+them. You may also have heard of Fermat's Last Theorem: xⁿ + yⁿ = zⁿ has no solutions in positive whole numbers once
+n is 3 or more. It took 350 years to prove.
 
-- **Factor cleverly**, in a bigger number system where the equation splits into pieces, and use the arithmetic of that
-  number system to force the pieces to have a special shape. This reduces the equation to finding rational points on
-  a handful of curves.
-- **Find all rational points on those curves.** For curves of "genus 2" (explained below) there are powerful but
-  finicky methods, and they only work when a certain number, the rank, is smaller than the genus. When it is not,
-  you are stuck. That is exactly where this equation got stuck.
+Equations like ours, with different powers (4, 3, 3), sit in between. A deep theorem says there are only finitely many
+primitive solutions, but it doesn't say how to find them. Each equation needs its own proof.
 
-## 2. Step A: factoring with the cube root of 2
+A 2024 survey by Ratcliffe and Grechuk listed the simplest equations of this kind that nobody had solved, ordered by a
+"size" score. Ours, with score 40, was the smallest unsolved one. Greg Villines got most of the way in June 2026. We
+finished it, and found a trick along the way that might help with other equations.
 
-Write θ for the real cube root of 2. In the number system Z[θ] = {a + bθ + cθ² : a, b, c whole numbers} the cubic part
-of our equation factors:
+The proof has the shape of a funnel. Step by step, the infinitely many possible (x, y, z) get squeezed through
+narrower and narrower checks, until only the known solutions fit through.
 
-  z³ + 2y³ = (z + yθ)(z + yθω)(z + yθω²)
+## 3. Step A: a bigger number system
 
-where ω is a complex cube root of 1. So the equation says: the "norm" of the number α = z + yθ (the product of its
-three conjugates) equals −x⁴, a fourth power up to sign.
+### Factoring with ∛2
 
-Z[θ] behaves a lot like the ordinary integers: it has unique factorisation (in the language of the trade, "class
-number 1"), and its only "units" (numbers that divide 1) are ±1 and powers of ε = θ − 1. Because the three factors
-above share no common prime (that is where "primitive" is used), the fourth power on the right forces each factor to
-be a unit times a fourth power:
+Let θ be the cube root of 2, so θ³ = 2. Allow yourself numbers of the form a + bθ + cθ², with a, b, c whole numbers.
+You can add and multiply these, and whenever θ³ appears you replace it with 2. In this number system z³ + 2y³ splits
+into factors, just as a² − b² = (a − b)(a + b) does with ordinary numbers.
 
-  z + yθ = −εᵏ·γ⁴,  with γ ∈ Z[θ] and k ∈ {0, 1, 2, 3}.
+This number system behaves like the ordinary integers in one crucial way: every number factors into "primes" in only
+one way. (That fails in many similar systems, which is part of what made Fermat's Last Theorem so hard.) Using it, the
+equation forces z + yθ to have a very particular shape:
 
-Now write γ = a + bθ + cθ² and expand −εᵏγ⁴. The left side has no θ² term, so the θ²-coefficient of the right side
-must be zero. That is one polynomial equation in a, b, c of degree 4: a plane curve C_k. There are four of them (one
-per k); two are ruled out by looking at the equation modulo powers of 2. So every primitive solution comes from a
-rational point on C₀ or C₁, with two extra "unit conditions" (a odd, and a − b + c not divisible by 3) that record
-the fact that γ shares no factor with 2 or 3.
+  z + yθ = −(a unit)·γ⁴, for some γ = a + bθ + cθ².
 
-## 3. Step A, continued: from quartics to six genus-2 curves, and the twist set
+A *unit* is a number that divides 1, like ±1 in ordinary integers. Here there are more units, but only four cases
+matter. And γ⁴ is a fourth power, which echoes the x⁴ in the original equation.
 
-C₀ and C₁ have genus 3, which is too high for our tools. But they have a hidden structure: set δ = γ². The condition
-on γ becomes a condition on δ that is only quadratic, a conic. Conics are the friendliest curves there are: once you
-know one rational point, you can write down all of them with a formula in two parameters (s, t), exactly like the
-formula for Pythagorean triples. So
+### From one equation to six curves
 
-  δ = μ·δ_k(s, t)  for some rational number μ and coprime integers s, t,
+Now expand the right-hand side. The left side, z + yθ, has no θ² term, so the θ² part of the right side must be zero.
+That gives a new equation in a, b, c. After some algebra, two of the four cases die immediately: look at everything
+modulo 2, and the equation simply can't balance. That's the same kind of argument as "an odd number can't equal an
+even number", just dressed up.
 
-where δ_k(s, t) is an explicit quadratic expression. Taking norms of both sides (remember δ = γ², so its norm is a
-square) gives
+More algebra (a trick with δ = γ², and the same formula idea that produces all Pythagorean triples) turns what's left
+into equations of the form
 
-  w² = μ·f_k(s, t),  with f_k a polynomial of degree 6.
+  y² = (a polynomial of degree 6 in x),
 
-An equation w² = (degree 6 polynomial) defines a curve of genus 2. So each rational point of C_k lands on one of the
-genus-2 curves H_μ: w² = μ f_k(x) (x = s/t), and which curve depends on μ.
-
-Here is the first small trick, and it is elementary. The number μ is forced by a "content" argument: δ_k(s, t) is a
-triple of integers whose greatest common divisor can only be 1 or 2 (an odd prime dividing all three would divide
-both s and t). Since δ = γ² has coprime coordinates (this uses the unit conditions), μ must be ±1 or ±1/2. For k = 0
-even ±1/2 is impossible, by looking at one coordinate modulo 2. So we end up with exactly six curves:
+where x and y are now *fractions*, not just whole numbers. We get exactly six of them:
 
 | name | equation | points we know |
 |---|---|---|
-| A⁺ | y² = x⁶ − 40x³ − 32 | two points at infinity, (−1, ±3) |
+| A⁺ | y² = x⁶ − 40x³ − 32 | (−1, ±3), and two "at infinity" |
 | A⁻ | y² = −(x⁶ − 40x³ − 32) | none |
 | B⁺ | y² = C₃(x) | none |
 | B⁻ | y² = −C₃(x) | (1, ±1), (−1, ±15) |
 | C⁺ | y² = 2C₃(x) | (2, ±12), (6/5, ±172/125) |
 | C⁻ | y² = −2C₃(x) | none |
 
-with C₃(x) = 17x⁶ − 72x⁵ + 90x⁴ + 40x³ − 180x² + 144x − 40. The point (6/5, ±172/125) on C⁺ is the 43-solution in
-disguise. Villines had found these same six curves with Magma; we re-derived the list from scratch so that nothing in
-the proof depends on software we could not run.
+Here C₃(x) = 17x⁶ − 72x⁵ + 90x⁴ + 40x³ − 180x² + 144x − 40.
 
-## 4. Interlude: the toolkit for genus-2 curves
+Every solution of the original puzzle produces a point with fraction coordinates on one of these six *curves*. So if we
+can find **every** fraction point on all six curves, we're done. The point (6/5, 172/125) on C⁺ is the 43-solution in
+disguise.
 
-- **Genus.** If you draw a curve over the complex numbers you get a surface; the genus is its number of holes. A line
-  or a conic has genus 0 (a sphere), an elliptic curve y² = cubic has genus 1 (a doughnut), and y² = sextic has genus 2
-  (a pretzel with two holes). Faltings' theorem: genus ≥ 2 means only finitely many rational points.
-- **Elliptic curves and the Jacobian.** Points on an elliptic curve can be "added": the line through two points meets
-  the curve in a third, and that defines a group law. A genus-2 curve does not have a group law itself, but it comes
-  with a two-dimensional object, its Jacobian J, that does. Rational points of J form a group of the form
-  Zʳ × (finite). The number r is the **rank**: how many independent "generators" you need.
-- **Chabauty's method.** Instead of ordinary numbers use p-adic numbers, where p is a prime: numbers written in base
-  p with possibly infinitely many digits to the left of the point, and where two numbers are "close" when they agree
-  in many low digits. In the p-adic world the Jacobian becomes a smooth 2-dimensional space, and the rational points
-  of J form an r-dimensional "sheet" inside it. The curve itself is a 1-dimensional sheet. If r < 2, a 1-dimensional
-  thing and a (less than 2)-dimensional thing inside a 2-dimensional space meet in only finitely many points, and you
-  can write down a p-adic analytic function (a power series) that vanishes exactly at those meeting points. Then you
-  find its zeros disk by disk and check which ones are actual rational points. This is Chabauty–Coleman. When r = 2 =
-  genus the two sheets can meet in a curve and the method gives nothing. That is "the wall".
-- **Quadratic Chabauty.** When r = genus, one can sometimes still write down a function that vanishes at all rational
-  points, using **p-adic heights**: a p-adic measurement of the arithmetic size of a point that behaves like a
-  quadratic form (like |v|² for vectors). The catch is that this only works if the Jacobian has an extra symmetry of a
-  specific kind, a "Néron–Severi class" beyond the obvious one. Over Q, our hard curves have no such class. That is
-  where Villines stopped, and where the new idea comes in.
+## 4. The toolkit: what makes a curve easy or hard
 
-## 5. Step B: the four easy curves
+**The genus.** If you draw a curve allowing complex numbers, you get a surface, and the genus counts its holes:
 
-**A⁻, B⁺, C⁻ have no rational points at all.** The argument is a souped-up version of "there is no solution because
-the two sides have different remainders modulo 4". A rational point (x, y) on y² = f(x) gives the algebraic number
-x − θ (θ now a root of f) whose norm is y² divided by the leading coefficient of f. One shows that x − θ must be a
-unit-like element (an "S-unit") of the number field defined by f, up to squares, and then computes all the norms such
-elements can have modulo squares. For these three curves the required norm class (−1, 17 and −34 respectively) is not
-on the list. So there is no point. (For B⁻ and C⁺ the required classes −17 and 34 are on the list, as they must be,
-since those curves do have points.)
+- a straight line or circle has genus 0 (a sphere);
+- y² = (cubic) has genus 1 (a doughnut);
+- y² = (degree 6), like our six curves, has genus 2 (a pretzel with two holes).
 
-**A⁺ has rank 1**, so Chabauty works, but it taught us a lesson. A⁺ has a hidden symmetry x ↦ −2∛4/x defined over the
-field Q(⁶√−2) that makes it a double cover of two elliptic curves with "complex multiplication" by Z[√−2]. We first
-ran Chabauty at the prime p = 43 and found 66 zeros of the function on 64 residue disks, of which only 4 were rational
-points. A sieve removed most of the rest but a stubborn few survived, including points with coordinates in Q(√−2).
-The reason is pretty: 43 splits in Q(√−2), and at such a prime the complex multiplication makes the p-adic logarithms
-of all Q(√−2)-points line up with those of the Q-points, so Chabauty "sees" Q(√−2)-points as if they were rational.
-At p = 5, which does not split in Q(√−2), the same computation has only 8 zeros: the 4 rational points, one algebraic
-point whose class is torsion (verified exactly), and one pair that a sieve kills. So A⁺(Q) has exactly the four known
-points. Villines had used p = 5 too, which in hindsight was the right call.
+Genus 0 curves can have infinitely many fraction points, given by a formula. Genus 2 curves are guaranteed to have only
+finitely many (a famous theorem of Faltings), but again the theorem doesn't tell you what they are.
 
-## 6. Step C: the hard pair and the wall
+**Adding points.** On a genus-1 curve you can "add" two points: draw the line through them, see where it hits the
+curve a third time, and reflect. This makes the points into a *group*: they combine like numbers do. Genus-2 curves
+can't do this directly, but each comes with a bigger companion object, its *Jacobian*, where adding works.
 
-B⁻ and C⁺ (they are twists of each other, so everything said about one applies to the other) have Jacobians of rank 2,
-equal to the genus. Chabauty–Coleman is useless. Quadratic Chabauty needs an extra Néron–Severi class over Q, and there
-is none: we computed the Galois action on the Néron–Severi group from Frobenius traces at many primes, and over Q, and
-even over Q(√−2), there is only the trivial class. Villines had suggested trying quadratic Chabauty over Q(√−2); this
-computation shows that route cannot work.
+**The rank.** The fraction points of the Jacobian can all be built from a few "generator" points by adding and
+subtracting, plus a few special points of finite order. The number of generators needed is the *rank*.
 
-## 7. The new trick, and how we found it
+**The rule of thumb.** There is a powerful method, Chabauty's method, that finds all fraction points on a genus-2
+curve when the rank is smaller than the genus. Rank 0 or 1: usually fine. **Rank 2 = genus 2: the method breaks.**
+We'll call that "the wall".
 
-The curves B⁻ and C⁺ are secretly very symmetric. Over the complex numbers each has 48 automorphisms (they are twists
-of the famous Bolza curve y² = x⁵ − x). Over Q only the boring symmetry y ↦ −y survives. But we asked: over which
-fields do the other symmetries appear? We computed the six extra involutions explicitly. Each is a Möbius map
-x ↦ (−x + b)/(cx + 1) permuting the six roots of C₃, and each is defined over a specific number field L of degree 12,
-L = Q(∛2, √(∛2 − 1), √(1 + bc)). Over L the curve becomes "bielliptic": the involution has two fixed points, and
-dividing by it (and by its composite with y ↦ −y) gives two elliptic curves E₁, E₂. Quadratic Chabauty for bielliptic
-curves over number fields is well understood (Balakrishnan, Besser, Bianchi and Müller wrote down the explicit
-function). But their function lives on the L-points of the curve, and there are infinitely many things that can go
-wrong when you only care about Q-points: the extra symmetry is not defined over Q, so how can it constrain Q-points?
+## 5. Steps B and D: the four easy curves, and measuring the rank
 
-The discovery came from a computation, not from a theorem. When we worked out how the Galois group of the big field
-acts on the Néron–Severi group (a 4-dimensional space), we found the pattern 1 ⊕ (a specific 3-dimensional irreducible
-piece), and that complex conjugation acts on it with eigenvalues (1, 1, 1, −1). Exactly one class is flipped by
-complex conjugation, and it is the class Z of our involution. That single −1 turned out to be the key.
+**Three curves with no points at all.** For A⁻, B⁺ and C⁻ we prove there are no fraction points whatsoever. The idea
+is a much more powerful cousin of "a square can't end in 7". A point on the curve would produce a number in yet another
+number system whose "size" has to be of a particular kind. We list every kind that can actually occur, and the one
+needed isn't on the list.
 
-Here is the idea in plain words. The quadratic Chabauty function over L is a sum over the twelve embeddings of L into
-the p-adic numbers (we chose p = 499, a prime that splits completely in L). Each term is weighted by the local value
-of a "p-adic character" χ of L, a kind of p-adic logarithm on the ideals of L, and there are many such characters to
-choose from. For a Q-point of the curve, the twelve embeddings are permuted among themselves by Galois symmetry, so
-most of the character is "averaged away". What survives is exactly the part of the character that transforms under
-Galois in the same way as the class Z. We called this the **sign rule**: the class and the character must live in the
-same Galois-symmetry type, or the identity collapses to 0 = 0. We then checked how many characters live in that
-symmetry type: the p-adic logarithms of the six fundamental units of L cut the 3-dimensional space down to exactly one
-character, up to scaling. So there is precisely one candidate function, and it is completely determined.
+**A⁺ has rank 1.** Rank 1 is below the wall, so Chabauty's method works. It's worth knowing how it works, because the
+hard part reuses the idea.
 
-Then a small miracle: that character vanishes at all the primes above 2 and 3, which are the only primes where the
-elliptic curves E₁, E₂ have bad reduction. Normally the hardest part of a quadratic Chabauty computation is working out
-what happens at bad primes. Here those terms are simply zero, and the only correction comes from two primes above 397
-where our chosen equations for E₁, E₂ are not in their simplest form. That correction is a constant Ω₃₉₇ that we
-computed by a short case analysis.
+### p-adic numbers
 
-Only after we had the identity working did we check the literature properly, and found that our sign rule is a special
-case of a finiteness theorem of Balakrishnan and Dogra: quadratic Chabauty gives a finite set of p-adic points when
-rank < (genus − 1) + (number of independent classes over Q) + (number of classes flipped by complex conjugation).
-For us that is 2 < 1 + 1 + 1. So the finiteness was predicted by their theorem; the new part is making the function
-explicit and computable, by combining the bielliptic structure over L with the unique matching character. As far as we
-know this is the first time a quadratic Chabauty identity for Q-points has been built from a class that is only defined
-over a bigger field.
+Pick a prime p. Two numbers are "p-adically close" if their difference is divisible by a high power of p. For example,
+with p = 5, the numbers 1 and 626 are very close, because 626 − 1 = 625 = 5⁴. In this world you can write numbers in
+base p with digits going on forever to the *left*.
 
-## 8. Making it compute
+It sounds strange, but it's a real number system: you can add, multiply and divide, and you can even do something like
+calculus.
 
-The function ρ(z) has three pieces: p-adic heights of the images of z on E₁ and E₂ (computed with Mazur–Tate's
-"sigma function", one for each of the twelve embeddings), a logarithm term, and a quadratic term aᵀGa that records
-where [z − ιz] sits among the two generators of the Jacobian's rational points. We tested every piece separately: the
-heights satisfy the parallelogram law h(P + Q) + h(P − Q) = 2h(P) + 2h(Q) to 19 digits, h(2P) = 4h(P), and the whole
-identity ρ(z) = −Ω₃₉₇ holds at the known points to 19 digits, while the version with the opposite sign of the log term
-fails. (That sign test caught a real error in our first derivation.)
+Chabauty's method builds a function in this p-adic world that is zero at every fraction point of the curve. Then it
+finds all the zeros. There are only finitely many, and each zero is either one of the known points or an "impostor" to
+be ruled out some other way.
 
-Then the main computation: the curve has 528 "residue disks" over the 499-adic numbers (one for each point modulo
-499, with the two square roots of y counted separately, plus two disks at infinity). On each disk we expanded ρ as a
-power series in the disk coordinate and used Strassman's theorem, which bounds the number of zeros of a p-adic power
-series by looking at the sizes of its coefficients. Every disk allowed at most 2 zeros, and we found 524 zeros in total
-for B⁻ and 504 for C⁺. Only 4 of them on each curve are rational points; the rest are 499-adic points that happen to
-satisfy the identity.
+Choosing p mattered here. At p = 43 the method was flooded with impostors: the curve has a hidden symmetry involving
+√−2, and at p = 43 that symmetry makes points involving √−2 look rational. At p = 5 the trouble vanishes. The answer is
+exactly the four known points.
 
-To get rid of the other 520 we used a Mordell–Weil sieve: a rational point must also make sense modulo other primes q,
-and its "coordinates" a(z) in terms of the generators must be consistent between what we see 499-adically and what we
-see modulo q. This works well when 499 divides the number of points on E₁ and E₂ modulo q, which happens for q = 997,
-12973, 47903, 59879, 88339. The prime 997 alone kills 518 of the 524 candidates; 12973 kills the last two impostors.
-The four survivors are the four known points, on each curve. A normally delicate issue, the "index" of the subgroup
-generated by our two known points inside the full group of rational points, disappears here because all the p-adic
-logarithms are divisible by 499 in just the right way.
+**The rank of the hard pair.** For B⁻ and C⁺ we show the rank is exactly 2. Finding two independent points shows it's
+at least 2. Showing it's at most 2 takes a computation called 2-descent, which we programmed ourselves and tested on
+24 curves whose answers are known. The testing caught three real bugs before we trusted it.
 
-## 9. Step D: proving the rank really is 2
+## 6. The wall
 
-Everything above assumes rank J(Q) = 2 for the hard pair. Finding two independent points shows rank ≥ 2. For the upper
-bound we implemented Stoll's 2-descent ("fake 2-Selmer group") ourselves on PARI/GP: it computes a finite group that
-contains J(Q)/2J(Q), by combining global information (units of the degree-6 field defined by C₃) with local
-information at the primes 2, 3, 17 (which classes are hit by actual 2-adic, 3-adic, 17-adic points). The result is
-dim Sel²(J) = 2, hence rank ≤ 2.
+B⁻ and C⁺ have rank 2 = genus 2. Chabauty's method gives nothing.
 
-This is where honesty about mistakes matters. Our first implementation gave answers that were off by one on about
-half of a set of 24 test curves from the LMFDB database. We had misread what we were comparing against (the file
-column we took for a 2-Selmer rank was the analytic rank), but that made the test sharper, not weaker: for these
-curves the dimension of the 2-Selmer group must have the same parity as the rank, so "rank + 1" was impossible.
-Chasing that parity violation exposed three genuine bugs: PARI orders the exponents of S-units differently from what
-we assumed, PARI's local Hilbert symbols at primes above 2 misbehave unless the number field is given by a reduced
-polynomial, and an empty local image at one prime crashed a step silently. After the fixes, all 24 test curves agree
-with the database, including curves with four real roots, nontrivial class groups and ranks 1, 2 and 3. Two test curves
-also revealed that our point search missed 2-adic points near infinity; the fix did not change anything for the hard
-pair, whose leading coefficients make such points impossible, but the pipeline is now complete.
+There is a newer method, *quadratic Chabauty* (developed since about 2015), that sometimes gets past the wall. It measures points by
+a p-adic "height" that behaves like a squared length, which is where "quadratic" comes from. But it needs the curve to
+have an extra kind of symmetry, which for this purpose mathematicians call an extra *Néron–Severi class*.
 
-## 10. Checking ourselves
+We checked: over the ordinary fractions our two curves have no such extra symmetry. They don't even have one if you
+allow √−2, which was the route Villines had suggested trying. Stuck.
 
-- The whole quadratic Chabauty computation was repeated at a second prime, p = 1459, the next prime with the right
-  splitting behaviour. Everything reproduced: the character is again unique and vanishes above 2 and 3, the heights
-  again satisfy the parallelogram law, the identity again holds at the known points to 19 digits, and after the sieve
-  (this time with primes above 2917, 26261 and 96293) exactly the four known points survive on each curve. The numbers
-  are bigger, 1464 disks per curve and 1546 resp. 1426 zeros of ρ, because the number of disks grows with p.
-- That rerun also taught us something. On C⁺ one disk came out of the standard 14-digit computation with two zeros
-  whose "coefficient vectors" a(z), the numbers the sieve needs, had no correct digits at all, so the sieve could not
-  touch them and for an hour they looked like mysterious extra points. Redoing that single disk with 22 digits gave the
-  same two zeros to five digits and perfectly ordinary coefficient vectors, which the first sieve prime removed. The
-  lesson, now written into the proof: check the precision of a(z) on every disk, not only the precision of ρ.
-- We wrote a referee's checklist (REFEREE_NOTES.md) that states exactly which published results the new step relies
-  on, with the hypotheses used, what is proved versus verified numerically, and five questions for an expert.
-- Villines' independent Magma computations agree with ours wherever they overlap: the six curves, the ranks, the
-  emptiness of A⁻, B⁺, C⁻, and the four points of A⁺.
-- Each numerical convention (signs, factors of 2, PARI's division-polynomial quirks) is pinned by an explicit test
-  rather than assumed.
+## 7. The new trick
 
-## 11. What is proved, what is assumed, what is next
+### Symmetry hiding in a bigger field
 
-Proved in the record, by exact computation or by argument: the reduction to six curves including the twist set, the
-emptiness of three curves, the points of A⁺, the rank bounds, the identity, the zeros, the sieve. Assumed from the
-literature: the theory of p-adic heights on elliptic curves over number fields (Mazur–Tate; Balakrishnan–Besser–
-Bianchi–Müller), Coleman integration on residue disks, and the correctness of PARI/GP. What remains before this can be
-called a publication: an expert look at Part C (REFEREE_NOTES.md lists exactly what to check; the second-prime check
-is done), a second independent implementation of the delicate pieces, coordination with Villines, and a proper paper.
+Allowing complex numbers, B⁻ and C⁺ are among the most symmetric curves of their kind. Each is a disguised copy of the
+famous *Bolza curve*, with 48 symmetries. Over the ordinary fractions, though, only one boring symmetry survives:
+flipping the sign of y.
 
-If there is one thing to take away: the wall was "no extra symmetry over Q". The way through was to notice that the
-symmetry existed over a bigger field, to compute exactly how Galois shuffles the symmetries, and to see that the one
-class flipped by complex conjugation can be paired with the one p-adic character of the same type to produce an
-equation that rational points must obey.
+So we asked: what number system do you need before the other symmetries appear? The answer is a specific number system
+L built from ∛2 and two square roots, with 12 "dimensions" (every number in it has 12 coordinates). In L, the curve has
+a symmetry that splits it into two genus-1 curves, E₁ and E₂. Quadratic Chabauty for curves that split like this is
+well understood. The catch: it works for points with coordinates in L, and we only care about ordinary fractions. How
+can a symmetry that doesn't exist over the fractions tell us anything about fraction points?
+
+### The −1
+
+We computed how the 48 symmetries get shuffled when you move between the different versions of L (this shuffling is
+called *Galois symmetry*). One fact jumped out: complex conjugation, the operation that turns i into −i, flips the
+sign of exactly one of the curve's hidden symmetry classes and leaves the others alone.
+
+That single −1 is the key. The quadratic Chabauty function over L is built from twelve pieces, one for each way of
+fitting L inside the p-adic numbers, mixed together with a set of weights. For an ordinary fraction point, Galois
+symmetry shuffles those twelve pieces, and almost every choice of weights cancels out to the useless equation 0 = 0.
+Only weights that shuffle *the same way as the flipped class* survive.
+
+When we searched for such weights, there was exactly one choice, up to scaling. So there is exactly one equation that
+every fraction point must satisfy, and we could write it down.
+
+Two lucky breaks made it computable:
+
+- **The usual hard part vanished.** Normally the trickiest part of quadratic Chabauty is handling a few "bad" primes.
+  Here our weights happen to be zero at exactly those primes, so most of that work disappears.
+- **What was left was small.** One small correction, from the prime 397, remained, and we computed it by hand.
+
+Only afterwards did we find that a 2017 theorem of Balakrishnan and Dogra predicts that something like this *should*
+work. Roughly, it does whenever
+
+  rank < (genus − 1) + (ordinary symmetry classes) + (classes flipped by complex conjugation),
+
+which here is 2 < 1 + 1 + 1. Their theorem says a solution exists; our contribution is building it explicitly from a
+symmetry that only exists over a bigger field. As far as we know, that hadn't been done before.
+
+## 8. Running the machine
+
+With p = 499, the curve breaks into 528 small p-adic regions ("residue disks"), one for each possible remainder of x
+modulo 499, with a little bookkeeping. On each region, our function becomes a power series: an infinite polynomial. A
+classical theorem (Strassmann's) lets you count its zeros just by looking at the sizes of its coefficients.
+
+Result: 524 zeros on B⁻ and 504 on C⁺. Only four of each are real fraction points. The rest are impostors: p-adic
+points that satisfy our equation but aren't fractions.
+
+**The sieve.** To kill the impostors we use a *Mordell–Weil sieve*. A genuine fraction point must also make sense
+modulo other primes q: it has a remainder, and that remainder has to be consistent with where the point sits relative
+to the two generators. Each impostor makes a prediction about what it should look like modulo q. We check whether any
+actual point modulo q matches. If none does, the impostor is dead.
+
+The primes q = 997 and q = 12973 do the job. On B⁻, 997 alone kills 518 of the 524 candidates, and 12973 kills the
+last two impostors. What survives is exactly the four known points, on each curve.
+
+Put everything together and the funnel closes: the only primitive solutions are the ones in the table at the top.
+
+## 9. Checking our own work
+
+A proof that depends on large computer calculations is only as good as the calculations. So we checked them in several
+independent ways.
+
+- **A second prime.** We redid the whole quadratic Chabauty calculation with p = 1459 instead of 499. The numbers are
+  bigger (1546 and 1426 candidates, sieved at q = 2917 and 26261), but the outcome was the same: only the known points
+  survive.
+- **A near miss, written down.** In that rerun, one region on C⁺ first produced two "candidates" whose key numbers had
+  no correct digits at all. Recomputing that region more carefully gave ordinary numbers, and the sieve removed them.
+  The lesson (check precision everywhere, not just where you expect trouble) is now part of the written proof.
+- **An outside comparison.** Villines' independent computations, done with different software (Magma), agree with ours
+  wherever they overlap.
+- **A proof checker.** Parts of the proof are now checked by Lean, a program that verifies mathematical proofs line by
+  line and refuses to accept any step that doesn't follow. More on this below.
+
+## 10. A computer that checks the proof
+
+Ordinary software can have bugs; our 2-descent code had three. A *proof assistant* like Lean is different. You write the
+proof in a precise language, and a small, carefully built core (the "kernel") checks that every single step follows
+from the ones before. If it accepts the proof, you don't have to trust the person who wrote it, only that small core.
+
+Here is what Lean has now checked:
+
+- **The funnel's first half.** Everything from "z + yθ is a unit times a fourth power" down to the six curves, and the
+  last step from the curves' points back to the solutions.
+- **The sieve.** This works like a puzzle with a printed answer key. The original program found the answers (which
+  impostors die at which prime) the slow way. We had it print out evidence, a *certificate*, that is quick to check.
+  Lean's kernel then checks every piece of that evidence itself: about half a minute for p = 499, and about a minute for
+  p = 1459.
+- **The checker itself.** We also proved, in Lean, that the certificate checker is correct: that its arithmetic really
+  is the arithmetic of these curves, as defined in Lean's library of mathematics (Mathlib). So "the program says the
+  impostors are dead" becomes "it is a theorem that the impostors are dead".
+- **Spotting a loophole.** Writing that proof caught a real loophole in the first version of the checker: a cleverly
+  faked certificate could have listed the same point twice in disguise. The checker now rejects that, and there's a
+  test proving it does.
+
+The main Lean theorem, `fermat433_qc`, says: *if* the quadratic Chabauty step produced the right list of candidates,
+and the steps not yet formalized hold (the factoring step and the four easy curves), *then* the solutions are exactly
+the ones in the table. The
+quadratic Chabauty step itself, the new idea, is not checked by Lean yet. Building the mathematics needed for that is a
+much bigger project.
+
+## 11. What's proved, and what's next
+
+**Proved, by exact computation or by argument:**
+
+- the reduction to six curves;
+- that three of the curves have no points;
+- the points on A⁺;
+- the ranks of the hard pair;
+- the new equation, its zeros, and the sieve.
+
+**Assumed from the published literature:** the general theory behind p-adic heights and quadratic Chabauty, written
+by experts. Our calculations rely on it; they don't re-prove it.
+
+**What's next:** the proof hasn't been checked by an independent expert yet. That's what referees are for, and it's the
+next step before anyone should call this settled. The file REFEREE_NOTES.md lists exactly what an expert should look at
+first.
+
+**The one idea to remember.** The wall was "no extra symmetry". The way through was to look for symmetry in a bigger
+number system. There, by working out exactly how that symmetry gets shuffled, we found the one combination that still
+says something about ordinary fractions.
+
+---
+
+*This work was done by Marcello Federico in collaboration with Claude, an AI system made by Anthropic. Every claim is
+backed by a script and a log in this repository, so anyone can check it.*
