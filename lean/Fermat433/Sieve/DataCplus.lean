@@ -12,6 +12,7 @@ namespace Fermat433.Sieve.Cplus
 
 /-- The exact inputs of the sieve for `C⁺ : y² = 2C₃(x)`, exported by `sieve_cert/emit.gp`. -/
 def inputs : Inputs where
+  ell := 499
   f := [-80, 288, -360, 80, 180, -144, 34]
   p1 := ((6, 5), (172, 125))
   p2 := ((2, 1), (12, 1))

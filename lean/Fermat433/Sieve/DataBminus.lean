@@ -12,6 +12,7 @@ namespace Fermat433.Sieve.Bminus
 
 /-- The exact inputs of the sieve for `B⁻ : y² = −C₃(x)`, exported by `sieve_cert/emit.gp`. -/
 def inputs : Inputs where
+  ell := 499
   f := [40, -144, 180, -40, -90, 72, -17]
   p1 := ((1, 1), (1, 1))
   p2 := ((-1, 1), (15, 1))

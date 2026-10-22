@@ -20,21 +20,23 @@ of generator), counts E_i(F_q) and X(F_q) by brute force, picks its own generato
 takes discrete logarithms from a table. A candidate is removed at a prime when the image of its vector
 is not the image of any point of X(F_q).
 
-Usage: python3 sieve_cert/check.py [sieve_cert/inputs_Bminus.txt ...]   (default: both curves)
+Usage: python3 sieve_cert/check.py [sieve_cert/inputs_Bminus.txt ...]   (default: every run)
 """
+import glob
 import sys
 from fractions import Fraction
 
-ELL = 499
 
 
 def read_inputs(path):
-    data = {"primes": [], "cands": []}
+    data = {"primes": [], "cands": [], "ell": 499}
     for line in open(path):
         w = line.split()
         if not w or w[0].startswith("#"):
             continue
-        if w[0] == "PL":
+        if w[0] == "ELL":
+            data["ell"] = int(w[1])
+        elif w[0] == "PL":
             data["PL"] = [int(c) for c in w[1:]]
         elif w[0] == "F":
             data["F"] = [int(c) for c in w[1:]]
@@ -137,6 +139,7 @@ class Curve:
 
 
 def check_prime(data, q, r, alive):
+    ELL = data["ell"]
     assert is_prime(q) and q != ELL, q
     F1 = data["F"]
     assert peval(data["PL"], r, q) == 0, "r is not a root of PL mod q"
@@ -174,7 +177,7 @@ def check_prime(data, q, r, alive):
     logs = []
     for E in (E1, E2):
         N = E.order()
-        assert N % ELL == 0 and N % (ELL * ELL), f"499-part of #E(F_q) = {N} is not cyclic of order 499"
+        assert N % ELL == 0 and N % (ELL * ELL), f"{ELL}-part of #E(F_q) = {N} is not cyclic of order {ELL}"
         c = N // ELL
         g = None
         for x in range(q):
@@ -227,7 +230,7 @@ def check_prime(data, q, r, alive):
 
 
 def main():
-    paths = sys.argv[1:] or ["sieve_cert/inputs_Bminus.txt", "sieve_cert/inputs_Cplus.txt"]
+    paths = sys.argv[1:] or sorted(glob.glob("sieve_cert/inputs_*.txt"))
     for path in paths:
         data = read_inputs(path)
         alive = data["cands"]

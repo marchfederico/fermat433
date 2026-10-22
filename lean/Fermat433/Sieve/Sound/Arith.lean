@@ -84,15 +84,18 @@ lemma ofInt_lt (z : ℤ) {q : ℕ} (hq : 0 < q) : ofInt z q < q := by
   have h2 : z % (q : ℤ) < q := Int.emod_lt_of_pos _ (by omega)
   rw [ofInt]; omega
 
+lemma euler_cast (a q : ℕ) : (euler a q : ZMod q) = (a : ZMod q) ^ ((q - 1) / 2) := by
+  rw [euler, ZMod.natCast_mod, Nat.cast_pow, ZMod.natCast_mod]
+
+lemma euler_lt {q : ℕ} (hq : 0 < q) (a : ℕ) : euler a q < q := Nat.mod_lt _ hq
+
 /-- If Euler's criterion gives `q − 1`, then `a` is not a square modulo `q` (for odd prime `q`). -/
 lemma not_isSquare_of_euler {q : ℕ} [hq : Fact q.Prime] (hq2 : q ≠ 2) (hq64 : q < 2 ^ 64)
     (a : ℕ) (h : euler a q = q - 1) : ¬ IsSquare (a : ZMod q) := by
   have h2 : 2 ≤ q := hq.out.two_le
   have hodd : q % 2 = 1 := Nat.odd_iff.mp (hq.out.odd_of_ne_two hq2)
-  have hcast := congrArg (fun n : ℕ => (n : ZMod q)) h
-  simp only [euler] at hcast
-  rw [powMod_cast _ _ _ (by omega), Nat.cast_sub (by omega), ZMod.natCast_self, Nat.cast_one,
-    zero_sub] at hcast
+  have hcast : (euler a q : ZMod q) = ((q - 1 : ℕ) : ZMod q) := by rw [h]
+  rw [euler_cast, Nat.cast_sub (by omega), ZMod.natCast_self, Nat.cast_one, zero_sub] at hcast
   intro hsq
   by_cases ha : (a : ZMod q) = 0
   · rw [ha, zero_pow (by omega)] at hcast

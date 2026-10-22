@@ -42,10 +42,10 @@ lemma euler_eq_char (hq2 : q ≠ 2) (hq64 : q < 2 ^ 64) (a : ℕ) :
       quadraticChar (ZMod q) a := by
   have h2 : 2 ≤ q := hq.out.two_le
   have hodd : q % 2 = 1 := Nat.odd_iff.mp (hq.out.odd_of_ne_two hq2)
-  have hlt : euler a q < q := powMod_lt (by omega) _ _
+  have hlt : euler a q < q := euler_lt (by omega) _
   have hcast : (euler a q : ZMod q) = ((quadraticChar (ZMod q) a : ℤ) : ZMod q) := by
     rw [quadraticChar_eq_pow_of_char_ne_two' (by rw [ZMod.ringChar_zmod_n]; exact hq2), ZMod.card,
-      euler, powMod_cast _ _ _ (by omega), show (q - 1) / 2 = q / 2 by omega]
+      euler_cast, show (q - 1) / 2 = q / 2 by omega]
   have h1ne : (1 : ZMod q) ≠ -1 := by
     intro h
     have h0 : ((2 : ℕ) : ZMod q) = 0 := by push_cast; linear_combination h

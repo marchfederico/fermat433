@@ -4,33 +4,19 @@ SPDX-License-Identifier: GPL-3.0-or-later
 -/
 import Fermat433.Sieve.Sound.Sieve
 import Fermat433.Sieve.Theorem
+import Fermat433.Sieve.TheoremP1459
 
 /-!
-# The sieves for `B⁻` and `C⁺`, as statements about elliptic curves
+# The sieves for `B⁻` and `C⁺`, at `p = 499` and `p = 1459`, as statements about elliptic curves
 
 `sieve_B_minus_sound` and `sieve_C_plus_sound` combine the kernel computations `sieve_B_minus`,
 `sieve_C_plus` with the soundness of the checker (`run_sound`). For each candidate the sieve
 removes (520 on `B⁻`, 500 on `C⁺`), there is a prime `q` (997 or 12973) of `L` at which no point of
-`X(𝔽_q)` has the images in the 499-parts of `E₁(𝔽_q)` and `E₂(𝔽_q)` that the candidate's vector
+`X(𝔽_q)` has the images in the ℓ-parts of `E₁(𝔽_q)` and `E₂(𝔽_q)` that the candidate's vector
 `a = (a₁, a₂)` predicts (`SieveRemoves`).
 -/
 
 namespace Fermat433.Sieve
-
-/-- The checker's trial division is correct. -/
-lemma isPrime_sound {q : ℕ} (h : isPrime q = true) : q.Prime := by
-  simp only [isPrime, Bool.and_eq_true, decide_eq_true_eq, List.all_eq_true, List.mem_range,
-    Bool.or_eq_true, bne_iff_ne, ne_eq] at h
-  obtain ⟨h2, hall⟩ := h
-  by_contra hnp
-  have hq0 : 0 < q := by omega
-  have hm2 : 2 ≤ q.minFac := (Nat.minFac_prime (by omega)).two_le
-  have hsq := Nat.minFac_sq_le_self hq0 hnp
-  have hlt : q.minFac < q := by nlinarith
-  rcases hall q.minFac hlt with (h1 | h1) | h1
-  · omega
-  · nlinarith
-  · exact h1 (Nat.mod_eq_zero_of_dvd (Nat.minFac_dvd q))
 
 /-- A candidate missing from the output of `run` was removed at one of the primes. -/
 lemma run_removed (I : Inputs) : ∀ (certs : List PrimeCert) (alive L : List (ℕ × ℕ)),
@@ -53,7 +39,7 @@ lemma run_removed (I : Inputs) : ∀ (certs : List PrimeCert) (alive L : List (�
 /-- The conclusion of the sieve for a candidate `a` at a prime `C` (stated for any curve given by
 `I`): no point `P` of `X(𝔽_q)` satisfies both
 `c₁·φ₁(P) = a₁·c₁·φ₁(P₁) + a₂·c₁·φ₁(P₂)` on `E₁` and `c₂·φ₂(P) = a₁·c₂·φ₂(P₁) + a₂·c₂·φ₂(P₂)`
-on `E₂`, where `P₁, P₂` are the generators and `cᵢ = #Eᵢ(𝔽_q)/499`. -/
+on `E₂`, where `P₁, P₂` are the generators and `cᵢ = #Eᵢ(𝔽_q)/ℓ`. -/
 def SieveRemoves (I : Inputs) (C : PrimeCert) (a : ℕ × ℕ) : Prop :=
   ∃ hq : C.q.Prime,
     haveI : Fact C.q.Prime := ⟨hq⟩
@@ -66,12 +52,12 @@ def SieveRemoves (I : Inputs) (C : PrimeCert) (a : ℕ × ℕ) : Prop :=
       ∀ (Q1 : (W1 I C.q C.r).Point) (Q2 : (W2 I C.q C.r).Point),
         Im1 (I := I) (r := C.r) (toEv (vals I C.q C.r) P) Q1 →
         Im2 (I := I) (r := C.r) (toEv (vals I C.q C.r) P) Q2 →
-        ¬ ((Nat.card (W1 I C.q C.r).Point / 499) • Q1 =
-              a.1 • (Nat.card (W1 I C.q C.r).Point / 499) • G11 +
-                a.2 • (Nat.card (W1 I C.q C.r).Point / 499) • G12 ∧
-            (Nat.card (W2 I C.q C.r).Point / 499) • Q2 =
-              a.1 • (Nat.card (W2 I C.q C.r).Point / 499) • G21 +
-                a.2 • (Nat.card (W2 I C.q C.r).Point / 499) • G22)
+        ¬ ((Nat.card (W1 I C.q C.r).Point / I.ell) • Q1 =
+              a.1 • (Nat.card (W1 I C.q C.r).Point / I.ell) • G11 +
+                a.2 • (Nat.card (W1 I C.q C.r).Point / I.ell) • G12 ∧
+            (Nat.card (W2 I C.q C.r).Point / I.ell) • Q2 =
+              a.1 • (Nat.card (W2 I C.q C.r).Point / I.ell) • G21 +
+                a.2 • (Nat.card (W2 I C.q C.r).Point / I.ell) • G22)
 
 /-- **Soundness of the checker.** If `run` returns `L`, every candidate not in `L` is removed, in
 the sense of `SieveRemoves`, at one of the primes. -/
@@ -105,5 +91,19 @@ theorem sieve_C_plus_sound (a : ℕ × ℕ) (ha : a ∈ Cplus.inputs.cands)
     (hs : a ∉ [(0, 1), (0, 498), (1, 0), (498, 0)]) :
     ∃ C ∈ Cplus.certs, SieveRemoves Cplus.inputs C a :=
   run_sound sieve_C_plus a ha hs
+
+/-- **The sieve for `B⁻` in the rerun at `p = 1459`.** Of the 1546 candidates, every one except the
+four known points is removed at `q = 2917` or `q = 26261`, in the 1459-parts. -/
+theorem sieve_B_minus_p1459_sound (a : ℕ × ℕ) (ha : a ∈ Bminus_p1459.inputs.cands)
+    (hs : a ∉ [(1, 0), (1458, 0), (0, 1), (0, 1458)]) :
+    ∃ C ∈ Bminus_p1459.certs, SieveRemoves Bminus_p1459.inputs C a :=
+  run_sound sieve_B_minus_p1459 a ha hs
+
+/-- **The sieve for `C⁺` in the rerun at `p = 1459`.** Of the 1426 candidates (with the disks
+`x ≡ 103` recomputed), every one except the four known points is removed at `q = 2917`. -/
+theorem sieve_C_plus_p1459_sound (a : ℕ × ℕ) (ha : a ∈ Cplus_p1459.inputs.cands)
+    (hs : a ∉ [(0, 1), (0, 1458), (1458, 0), (1, 0)]) :
+    ∃ C ∈ Cplus_p1459.certs, SieveRemoves Cplus_p1459.inputs C a :=
+  run_sound sieve_C_plus_p1459 a ha hs
 
 end Fermat433.Sieve

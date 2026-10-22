@@ -1,4 +1,5 @@
-# fermat433 sieve certificate inputs, curve Cplus: y^2 = 34*x^6 - 144*x^5 + 180*x^4 + 80*x^3 - 360*x^2 + 288*x - 80
+# fermat433 sieve certificate inputs, curve Cplus: y^2 = 34*x^6 - 144*x^5 + 180*x^4 + 80*x^3 - 360*x^2 + 288*x - 80, ell = 499
+ELL 499
 PL -3 0 6 0 -33 0 -28 0 3 0 6 0 1
 F -80 288 -360 80 180 -144 34
 GEN 6/5 172/125

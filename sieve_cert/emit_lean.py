@@ -9,7 +9,8 @@
 # version.  It is distributed WITHOUT ANY WARRANTY.  See the LICENSE file at
 # the repository root, or <https://www.gnu.org/licenses/>.
 
-"""Write lean/Fermat433/Sieve/Data<Curve>.lean from sieve_cert/inputs_<Curve>.txt, for B- and C+.
+"""Write lean/Fermat433/Sieve/Data<Run>.lean from sieve_cert/inputs_<Run>.txt, for B- and C+ at
+p = 499 and at p = 1459.
 
 Besides the inputs, the Lean file carries, for every candidate removed at a prime, a *removal
 witness*: the fibre {Q in E1(F_q) : c1*Q = T1} over the candidate's target T1, and for each Q a
@@ -22,7 +23,7 @@ import os
 import sys
 
 sys.path.insert(0, os.path.dirname(__file__))
-from check import ELL, Field, Curve, peval, pmul, read_inputs  # noqa: E402
+from check import Field, Curve, peval, pmul, read_inputs  # noqa: E402
 
 
 def removals(data, q, r, alive):
@@ -41,6 +42,7 @@ def removals(data, q, r, alive):
         F = [(u + v) % q for u, v in zip(F, term)]
     D, C, B, A = F[0], F[2], F[4], F[6]
     E1, E2 = Curve(K, B, A * C, A * A * D), Curve(K, C, B * D, A * D * D)
+    ELL = data["ell"]
     c1, c2 = E1.order() // ELL, E2.order() // ELL
     sq = {}
     for y in range(q):
@@ -111,7 +113,9 @@ def rat(f):
     return f"({f.numerator}, {f.denominator})"
 
 
-CURVES = {"Bminus": "B⁻ : y² = −C₃(x)", "Cplus": "C⁺ : y² = 2C₃(x)"}
+CURVES = {"Bminus": "B⁻ : y² = −C₃(x)", "Cplus": "C⁺ : y² = 2C₃(x)",
+          "Bminus_p1459": "B⁻ : y² = −C₃(x), rerun at p = 1459",
+          "Cplus_p1459": "C⁺ : y² = 2C₃(x), rerun at p = 1459"}
 
 
 def main():
@@ -134,6 +138,7 @@ def main():
             "",
             f"/-- The exact inputs of the sieve for `{title}`, exported by `sieve_cert/emit.gp`. -/",
             "def inputs : Inputs where",
+            f"  ell := {data['ell']}",
             f"  f := {data['F']}",
             f"  p1 := ({rat(g1[0])}, {rat(g1[1])})",
             f"  p2 := ({rat(g2[0])}, {rat(g2[1])})",

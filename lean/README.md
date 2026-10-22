@@ -47,14 +47,14 @@ solutions:
 
 ## The sieve certificate
 
-`Fermat433/Sieve/` checks the Mordell–Weil sieves for B⁻ and C⁺ (Proposition 6.2 of the paper)
-without PARI, in two steps:
+`Fermat433/Sieve/` checks the Mordell–Weil sieves for B⁻ and C⁺ (Proposition 6.2 of the paper),
+at p = 499 and in the rerun at p = 1459, without PARI, in two steps:
 
-- `sieve_B_minus`, `sieve_C_plus`: the checker, evaluated in Lean's kernel (`decide +kernel`,
-  about 35 seconds each, axioms: `propext` only), returns exactly the four known points on each
-  curve.
-- `sieve_B_minus_sound`, `sieve_C_plus_sound` (in `Sieve/Sound/`, both from `run_sound`): the
-  checker is sound, so every other candidate is ruled out at q = 997 or 12973 by a statement about
+- `sieve_B_minus`, `sieve_C_plus`, `sieve_B_minus_p1459`, `sieve_C_plus_p1459`: the checker,
+  evaluated in Lean's kernel (`decide +kernel`, axioms: `propext` only), returns exactly the four
+  known points in each case.
+- The corresponding `…_sound` theorems (in `Sieve/Sound/`, all from `run_sound`): the checker is
+  sound, so every other candidate is ruled out at one of the sieving primes by a statement about
   Mathlib elliptic curves over `ZMod q` (`SieveRemoves`).
 
 It is not connected to `fermat433`: the candidate lists and the sieve condition itself
@@ -65,7 +65,7 @@ It is not connected to `fermat433`: the candidate lists and the sieve condition 
 Install [elan](https://github.com/leanprover/elan), then from this directory:
 
     lake exe cache get     # download the prebuilt Mathlib (~6.6 GB unpacked)
-    lake build             # about a minute after the cache is in place
+    lake build             # about two minutes after the cache is in place (~8 GB of memory)
     lake env lean scripts/axioms.lean
 
 The toolchain and the Mathlib version are pinned in `lean-toolchain` and `lake-manifest.json`.

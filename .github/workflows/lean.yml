@@ -28,3 +28,5 @@ jobs:
           # the sieve certificate is checked by the kernel, not the compiler (no Lean.ofReduceBool)
           grep -q "'Fermat433.Sieve.sieve_B_minus' depends on axioms: \[propext\]" axioms.out
           grep -q "'Fermat433.Sieve.sieve_C_plus' depends on axioms: \[propext\]" axioms.out
+          grep -q "'Fermat433.Sieve.sieve_B_minus_p1459' depends on axioms: \[propext\]" axioms.out
+          grep -q "'Fermat433.Sieve.sieve_C_plus_p1459' depends on axioms: \[propext\]" axioms.out

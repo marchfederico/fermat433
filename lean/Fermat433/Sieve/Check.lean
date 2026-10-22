@@ -8,15 +8,15 @@ SPDX-License-Identifier: GPL-3.0-or-later
 
 The sieve of §6 removes every zero of the quadratic Chabauty function on `X = B⁻ : y² = −C₃(x)`
 (and on `X = C⁺ : y² = 2C₃(x)`) except the four known points. Each zero `z` comes with a vector
-`a(z) = (a₁, a₂) ∈ ℤ₄₉₉²` such that, at a prime `𝔮` of `L` of degree one where `499 ∥ #E_i(𝔽_q)`,
-the 499-parts satisfy `c_i·φ_i(z̄) = a₁·c_i·φ_i(P̄₁) + a₂·c_i·φ_i(P̄₂)` on both quotients `E₁, E₂`,
-where `c_i = #E_i(𝔽_q)/499` and `P₁, P₂` are the generators (`(1, 1)`, `(−1, 15)` on `B⁻`;
+`a(z) = (a₁, a₂) ∈ ℤ_ℓ²` (ℓ = p = 499, or 1459 in the rerun) such that, at a prime `𝔮` of `L` of
+degree one where `ℓ ∥ #E_i(𝔽_q)`, the ℓ-parts satisfy `c_i·φ_i(z̄) = a₁·c_i·φ_i(P̄₁) + a₂·c_i·φ_i(P̄₂)`
+on both quotients `E₁, E₂`, where `c_i = #E_i(𝔽_q)/ℓ` and `P₁, P₂` are the generators (`(1, 1)`, `(−1, 15)` on `B⁻`;
 `(6/5, 172/125)`, `(2, 12)` on `C⁺`). A zero is removed when no point of `X(𝔽_q)` has that image.
 
 `run` recomputes this from the exact inputs: it reduces `L` at `𝔮`, builds `E₁, E₂`, counts their
-points and checks that their 499-parts are cyclic of order 499. To remove a candidate it does not
+points and checks that their ℓ-parts are cyclic of order ℓ. To remove a candidate it does not
 enumerate `X(𝔽_q)`; it works backwards from the target `(T₁, T₂)`. Multiplication by `c₁` maps
-`E₁(𝔽_q)` onto its 499-part with every fibre of size exactly `c₁`, so a list of `c₁` distinct points
+`E₁(𝔽_q)` onto its ℓ-part with every fibre of size exactly `c₁`, so a list of `c₁` distinct points
 `Q` with `c₁·Q = T₁` is the whole fibre. Each `Q` comes from at most two points of `X`, the two
 square roots `±X` of `u/A` in the even model `Y² = AX⁶ + BX⁴ + CX² + D`. The candidate is removed
 when none of them is sent to `T₂` by `c₂·φ₂`. The certificate supplies the fibre and the square
@@ -30,14 +30,12 @@ in `Fermat433.Sieve.Theorem` evaluates it in the kernel.
 
 namespace Fermat433.Sieve
 
-/-- The prime of the sieve. -/
-def ell : Nat := 499
-
 /-- The exact inputs: the sextic `f` of `X : y² = f(x)` (lowest degree first), the generators
 `P₁, P₂` with rational coordinates `(num, den)`, the defining polynomial of `L`, the fixed points
 `x±` of the involution as polynomials in the generator of `L` with rational coefficients, and the
-candidate vectors `a(z) mod 499`. -/
+candidate vectors `a(z) mod ℓ`, where `ℓ` is the prime of the quadratic Chabauty computation. -/
 structure Inputs where
+  ell : Nat
   f : List Int
   p1 : (Int × Nat) × (Int × Nat)
   p2 : (Int × Nat) × (Int × Nat)
@@ -64,7 +62,7 @@ def ofInt (z : Int) (q : Nat) : Nat := (z % (q : Int)).toNat
 def sub (a b q : Nat) : Nat := (a + q - b % q) % q
 
 /-- Euler's criterion: `1` for a nonzero square, `q − 1` for a non-square, `0` for `0`. -/
-def euler (a q : Nat) : Nat := powMod a ((q - 1) / 2) q
+def euler (a q : Nat) : Nat := (a % q) ^ ((q - 1) / 2) % q
 
 def isPrime (q : Nat) : Bool :=
   2 ≤ q && (List.range q).all fun d => d < 2 || q < d * d || q % d != 0
@@ -201,6 +199,7 @@ def evenModel (f : List Int) (xp xm q : Nat) : List Nat :=
 `E₁ : y² = x³ + Bx² + ACx + A²D`, `E₂ : y² = x³ + Cx² + BDx + AD²`, as in `step3_setup.gp`. -/
 structure Setting where
   q : Nat
+  ell : Nat
   f : List Nat
   p1 : Nat × Nat
   p2 : Nat × Nat
@@ -222,6 +221,7 @@ def setting (I : Inputs) (q r : Nat) : Setting :=
   let co := fun i => F.getD i 0
   let (A, B, C, D) := (co 6, co 4, co 2, co 0)
   { q, xp, xm, F, A, D,
+    ell := I.ell,
     f := I.f.map (ofInt · q),
     p1 := (ratMod I.p1.1 q, ratMod I.p1.2 q),
     p2 := (ratMod I.p2.1 q, ratMod I.p2.2 q),
@@ -281,15 +281,15 @@ of degree one, `X`, `E₁`, `E₂` have good reduction there, and the setting is
 def primeOk (I : Inputs) (C : PrimeCert) : Bool :=
   let q := C.q
   let S := setting I q C.r
-  I.f.length = 7 && isPrime q && q ≠ ell && 15 < q && q < 2 ^ 32 &&
+  I.f.length = 7 && isPrime I.ell && isPrime q && I.ell < q && 15 < q && q < 2 ^ 32 &&
     evalPoly (I.pl.map (ofInt · q)) C.r q = 0 && denomsOk I.xp q && denomsOk I.xm q &&
     squarefree S.f q && settingOk S S.f &&
     S.xp ≠ S.xm && S.A ≠ 0 && S.D ≠ 0 && S.E1.disc q ≠ 0 && S.E2.disc q ≠ 0
 
-/-- The 499-parts are cyclic of order 499, and the cofactors are small. -/
-def ordersOk (q : Nat) (N1 N2 : Int) : Bool :=
-  N1 % 499 = 0 && N1 % (499 * 499) ≠ 0 && N2 % 499 = 0 && N2 % (499 * 499) ≠ 0 &&
-    (N1 / 499).toNat < q && (N2 / 499).toNat < q
+/-- The ℓ-parts are cyclic of order `ℓ`, and the cofactors are small. -/
+def ordersOk (ell q : Nat) (N1 N2 : Int) : Bool :=
+  N1 % ell = 0 && N1 % (ell * ell) ≠ 0 && N2 % ell = 0 && N2 % (ell * ell) ≠ 0 &&
+    (N1 / ell).toNat < q && (N2 / ell).toNat < q
 
 /-- The images `cᵢ·φᵢ(P)` of a point of `X`, and the target of a candidate. -/
 def imgAt (S : Setting) (c1 c2 : Nat) (P : Pt × Pt) : Pt × Pt :=
@@ -307,9 +307,20 @@ def target (S : Setting) (c1 c2 : Nat) (a : Nat × Nat) : Pt × Pt :=
 def removedBy (S : Setting) (c1 c2 : Nat) (R : Removal) : Bool :=
   let q := S.q
   let T := target S c1 c2 R.a
-  R.a.1 < 499 && R.a.2 < 499 && R.fibre.length == c1 && distinct (R.fibre.map Prod.fst) &&
+  R.a.1 < S.ell && R.a.2 < S.ell && R.fibre.length == c1 && distinct (R.fibre.map Prod.fst) &&
     R.fibre.all fun (Q, w) => Q.reduced q && w ≤ q && S.E1.onCurve q Q &&
       S.E1.mul q c1 Q == T.1 && fibreOk S S.f c2 T.2 Q w
+
+/-- Walk the candidates and the removal witnesses together (the witnesses come in candidate
+order): a candidate is dropped when the next witness is for it and is valid. A witness that is for
+the candidate but fails is used up, so it only keeps its own candidate. -/
+def sieveList (S : Setting) (c1 c2 : Nat) : List (Nat × Nat) → List Removal → List (Nat × Nat)
+  | [], _ => []
+  | a :: as, [] => a :: as
+  | a :: as, R :: Rs =>
+    if R.a == a then
+      if removedBy S c1 c2 R then sieveList S c1 c2 as Rs else a :: sieveList S c1 c2 as Rs
+    else a :: sieveList S c1 c2 as (R :: Rs)
 
 /-- Sieve the candidates still alive at one prime; `none` if any check fails. -/
 def sievePrime (I : Inputs) (C : PrimeCert) (alive : List (Nat × Nat)) :
@@ -318,9 +329,8 @@ def sievePrime (I : Inputs) (C : PrimeCert) (alive : List (Nat × Nat)) :
     let S := setting I C.q C.r
     let N1 := S.E1.order C.q
     let N2 := S.E2.order C.q
-    if ordersOk C.q N1 N2 then
-      some (alive.filter fun a => !(C.removals.any fun R =>
-        R.a == a && removedBy S (N1 / 499).toNat (N2 / 499).toNat R))
+    if ordersOk I.ell C.q N1 N2 then
+      some (sieveList S (N1 / I.ell).toNat (N2 / I.ell).toNat alive C.removals)
     else none
   else none
 
