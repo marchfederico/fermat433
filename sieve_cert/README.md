@@ -94,10 +94,10 @@ That soundness proof is what turns the checker into a proof. It is in progress, 
 |---|---|---|
 | 1. arithmetic (`Arith.lean`) | `powMod`, `inv`, `sub`, `ofInt` compute exponentiation, inverses, subtraction and casts in `ZMod q`; `euler` returning `q − 1` means "not a square" | proved |
 | 2. group law (`Curve.lean`) | `Curve.add` and `Curve.mul` are Mathlib's addition and `n • ·` on `WeierstrassCurve.Affine.Point`; points passing `onCurve` are points; `disc ≠ 0` gives `Δ ≠ 0` | proved |
-| 3. counting | `Curve.order` is `#E(𝔽_q)`; with `499 ∥ #E`, every fibre of multiplication by `c` over the 499-part has exactly `c` points | to do |
+| 3. counting (`Count.lean`, `Fibre.lean`) | `Curve.order` is the number of points of the Mathlib curve (`card_eq_order`); in a group of order `499c` with `499 ∤ c`, `c` distinct points of a fibre of `c • ·` are the whole fibre (`mem_of_fibre`) | proved |
 | 4. the sieve | `run inputs certs = some L` implies: for each removed candidate, no point of `X(𝔽_q)` maps to its target, stated with Mathlib points | to do |
 
-Layers 1 and 2 use only Lean's standard axioms and are built by CI.
+Layers 1–3 use only Lean's standard axioms and are built by CI.
 
 ## Reproducing
 
