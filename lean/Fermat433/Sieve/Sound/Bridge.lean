@@ -107,7 +107,7 @@ lemma not_hit {E : Curve} (ha2 : E.a2 < q) (hq2 : q ≠ 2) (hq64 : q < 2 ^ 64) {
 theorem fibreOk_sound (hS : SettingFacts (I := I) (q := q) (r := r)) (hq2 : q ≠ 2)
     (hq64 : q < 2 ^ 64) (hA0 : (S).A ≠ 0) {c2 : ℕ} (hc2 : c2 < 2 ^ 64) {T2 : Pt}
     {T2' : ((S).E2.W q).Point} (hT : (S).E2.Rep q T2 T2') {Q : Pt} {w : ℕ} (hw : w ≤ q)
-    (hok : fibreOk S (fq q) c2 T2 Q w = true) {Q1 : ((S).E1.W q).Point} (hQ : (S).E1.Rep q Q Q1)
+    (hok : fibreOk S (S).f c2 T2 Q w = true) {Q1 : ((S).E1.W q).Point} (hQ : (S).E1.Rep q Q Q1)
     {P : EvPt q} (hP : P.Valid V) (h1 : Im1 (I := I) (r := r) P Q1)
     {Q2 : ((S).E2.W q).Point} (h2 : Im2 (I := I) (r := r) P Q2) : c2 • Q2 ≠ T2' := by
   have h0 : 0 < q := hqp.out.pos
@@ -125,8 +125,8 @@ theorem fibreOk_sound (hS : SettingFacts (I := I) (q := q) (r := r)) (hq2 : q �
     cases Q with
     | pt u v => obtain ⟨-, -, h, rfl⟩ := hQ; exact absurd hQ1 (Point.some_ne_zero h)
     | inf =>
-      have hfx : (evalPoly (fq q) (S).xm q : ZMod q) = (V).A := by
-        rw [fq, f_cast h0, A_eq_f hS h0, vals_xm]
+      have hfx : (evalPoly (S).f (S).xm q : ZMod q) = (V).A := by
+        rw [setting_f, f_cast h0 hS.flen, A_eq_f hS h0, vals_xm]
       simp only [fibreOk, hq'] at hok
       split_ifs at hok with hwq
       · simp only [beq_iff_eq] at hok

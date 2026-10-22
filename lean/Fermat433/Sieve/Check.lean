@@ -6,11 +6,12 @@ SPDX-License-Identifier: GPL-3.0-or-later
 /-!
 # A checker for the Mordell–Weil sieve certificate (Proposition 6.2)
 
-The sieve of §6 removes every zero of the quadratic Chabauty function on `B⁻ : y² = −C₃(x)` except
-the four known points. Each zero `z` comes with a vector `a(z) = (a₁, a₂) ∈ ℤ₄₉₉²` such that, at a
-prime `𝔮` of `L` of degree one where `499 ∥ #E_i(𝔽_q)`, the 499-parts satisfy
-`c_i·φ_i(z̄) = a₁·c_i·φ_i(P̄₁) + a₂·c_i·φ_i(P̄₂)` on both quotients `E₁, E₂`, where `c_i = #E_i(𝔽_q)/499`
-and `P₁ = (1, 1)`, `P₂ = (−1, 15)`. A zero is removed when no point of `X(𝔽_q)` has that image.
+The sieve of §6 removes every zero of the quadratic Chabauty function on `X = B⁻ : y² = −C₃(x)`
+(and on `X = C⁺ : y² = 2C₃(x)`) except the four known points. Each zero `z` comes with a vector
+`a(z) = (a₁, a₂) ∈ ℤ₄₉₉²` such that, at a prime `𝔮` of `L` of degree one where `499 ∥ #E_i(𝔽_q)`,
+the 499-parts satisfy `c_i·φ_i(z̄) = a₁·c_i·φ_i(P̄₁) + a₂·c_i·φ_i(P̄₂)` on both quotients `E₁, E₂`,
+where `c_i = #E_i(𝔽_q)/499` and `P₁, P₂` are the generators (`(1, 1)`, `(−1, 15)` on `B⁻`;
+`(6/5, 172/125)`, `(2, 12)` on `C⁺`). A zero is removed when no point of `X(𝔽_q)` has that image.
 
 `run` recomputes this from the exact inputs: it reduces `L` at `𝔮`, builds `E₁, E₂`, counts their
 points and checks that their 499-parts are cyclic of order 499. To remove a candidate it does not
@@ -24,7 +25,7 @@ roots; the checker verifies every one, and a false witness makes it fail.
 What is *not* proved here: that the sieve condition above is the right one (that is Proposition 6.2
 of the paper), and that the candidate vectors are the zeros of the quadratic Chabauty function (§6,
 Proposition 6.1). This file only checks the finite arithmetic. `run` is ordinary code; the theorem
-in `Fermat433.Sieve.Data` evaluates it in the kernel.
+in `Fermat433.Sieve.Theorem` evaluates it in the kernel.
 -/
 
 namespace Fermat433.Sieve
@@ -32,13 +33,14 @@ namespace Fermat433.Sieve
 /-- The prime of the sieve. -/
 def ell : Nat := 499
 
-/-- `−C₃(x)`, lowest degree first. -/
-def f1 : List Int := [40, -144, 180, -40, -90, 72, -17]
-
-/-- The exact inputs: the defining polynomial of `L` (lowest degree first), the fixed points `x±`
-of the involution as polynomials in the generator of `L` with rational coefficients `(num, den)`,
-and the candidate vectors `a(z) mod 499`. -/
+/-- The exact inputs: the sextic `f` of `X : y² = f(x)` (lowest degree first), the generators
+`P₁, P₂` with rational coordinates `(num, den)`, the defining polynomial of `L`, the fixed points
+`x±` of the involution as polynomials in the generator of `L` with rational coefficients, and the
+candidate vectors `a(z) mod 499`. -/
 structure Inputs where
+  f : List Int
+  p1 : (Int × Nat) × (Int × Nat)
+  p2 : (Int × Nat) × (Int × Nat)
   pl : List Int
   xp : List (Int × Nat)
   xm : List (Int × Nat)
@@ -190,8 +192,8 @@ structure PrimeCert where
 /-! ### One prime -/
 
 /-- `F(X) = (X − 1)⁶ f((x₋X − x₊)/(X − 1)) = Σₖ fₖ (x₋X − x₊)ᵏ (X − 1)⁶⁻ᵏ`, lowest degree first. -/
-def evenModel (xp xm q : Nat) : List Nat :=
-  (f1.zipIdx).foldl (fun acc (c, k) =>
+def evenModel (f : List Int) (xp xm q : Nat) : List Nat :=
+  (f.zipIdx).foldl (fun acc (c, k) =>
     padd acc (pmul (pscale (ofInt c q) (ppow [(q - xp) % q, xm] k q) q)
       (ppow [q - 1, 1] (6 - k) q) q) q) []
 
@@ -199,6 +201,9 @@ def evenModel (xp xm q : Nat) : List Nat :=
 `E₁ : y² = x³ + Bx² + ACx + A²D`, `E₂ : y² = x³ + Cx² + BDx + AD²`, as in `step3_setup.gp`. -/
 structure Setting where
   q : Nat
+  f : List Nat
+  p1 : Nat × Nat
+  p2 : Nat × Nat
   xp : Nat
   xm : Nat
   F : List Nat
@@ -207,13 +212,19 @@ structure Setting where
   E1 : Curve
   E2 : Curve
 
+/-- A rational number `num/den` modulo `q`. -/
+def ratMod (z : Int × Nat) (q : Nat) : Nat := ofInt z.1 q * inv (z.2 % q) q % q
+
 def setting (I : Inputs) (q r : Nat) : Setting :=
   let xp := evalL I.xp r q
   let xm := evalL I.xm r q
-  let F := evenModel xp xm q
+  let F := evenModel I.f xp xm q
   let co := fun i => F.getD i 0
   let (A, B, C, D) := (co 6, co 4, co 2, co 0)
   { q, xp, xm, F, A, D,
+    f := I.f.map (ofInt · q),
+    p1 := (ratMod I.p1.1 q, ratMod I.p1.2 q),
+    p2 := (ratMod I.p2.1 q, ratMod I.p2.2 q),
     E1 := ⟨B, A * C % q, A * A % q * D % q⟩,
     E2 := ⟨C, B * D % q, A * D % q * D % q⟩ }
 
@@ -265,17 +276,14 @@ def distinct : List Pt → Bool
   | [] => true
   | P :: Ps => !Ps.contains P && distinct Ps
 
-/-- The checker's form of `f`. -/
-def fq (q : Nat) : List Nat := f1.map (ofInt · q)
-
 /-- The checks at a prime that do not depend on the candidates: `𝔮 = (q, t − r)` is a prime of `L`
 of degree one, `X`, `E₁`, `E₂` have good reduction there, and the setting is well formed. -/
 def primeOk (I : Inputs) (C : PrimeCert) : Bool :=
   let q := C.q
   let S := setting I q C.r
-  isPrime q && q ≠ ell && 15 < q && q < 2 ^ 32 &&
+  I.f.length = 7 && isPrime q && q ≠ ell && 15 < q && q < 2 ^ 32 &&
     evalPoly (I.pl.map (ofInt · q)) C.r q = 0 && denomsOk I.xp q && denomsOk I.xm q &&
-    squarefree (fq q) q && settingOk S (fq q) &&
+    squarefree S.f q && settingOk S S.f &&
     S.xp ≠ S.xm && S.A ≠ 0 && S.D ≠ 0 && S.E1.disc q ≠ 0 && S.E2.disc q ≠ 0
 
 /-- The 499-parts are cyclic of order 499, and the cofactors are small. -/
@@ -289,8 +297,8 @@ def imgAt (S : Setting) (c1 c2 : Nat) (P : Pt × Pt) : Pt × Pt :=
 
 def target (S : Setting) (c1 c2 : Nat) (a : Nat × Nat) : Pt × Pt :=
   let q := S.q
-  let G1 := imgAt S c1 c2 (phi S 1 1)
-  let G2 := imgAt S c1 c2 (phi S (q - 1) 15)
+  let G1 := imgAt S c1 c2 (phi S S.p1.1 S.p1.2)
+  let G2 := imgAt S c1 c2 (phi S S.p2.1 S.p2.2)
   (S.E1.add q (S.E1.mul q a.1 G1.1) (S.E1.mul q a.2 G2.1),
     S.E2.add q (S.E2.mul q a.1 G1.2) (S.E2.mul q a.2 G2.2))
 
@@ -301,7 +309,7 @@ def removedBy (S : Setting) (c1 c2 : Nat) (R : Removal) : Bool :=
   let T := target S c1 c2 R.a
   R.a.1 < 499 && R.a.2 < 499 && R.fibre.length == c1 && distinct (R.fibre.map Prod.fst) &&
     R.fibre.all fun (Q, w) => Q.reduced q && w ≤ q && S.E1.onCurve q Q &&
-      S.E1.mul q c1 Q == T.1 && fibreOk S (fq q) c2 T.2 Q w
+      S.E1.mul q c1 Q == T.1 && fibreOk S S.f c2 T.2 Q w
 
 /-- Sieve the candidates still alive at one prime; `none` if any check fails. -/
 def sievePrime (I : Inputs) (C : PrimeCert) (alive : List (Nat × Nat)) :

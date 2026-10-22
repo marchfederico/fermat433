@@ -6,12 +6,13 @@ import Fermat433.Sieve.Sound.Sieve
 import Fermat433.Sieve.Theorem
 
 /-!
-# The sieve for `B⁻`, as a statement about elliptic curves
+# The sieves for `B⁻` and `C⁺`, as statements about elliptic curves
 
-`sieve_B_minus_sound` combines the kernel computation `sieve_B_minus` with the soundness of the
-checker. For each of the 520 candidates the sieve removes, there is a prime `q` (997 or 12973) of
-`L` at which no point of `X(𝔽_q)` has the images in the 499-parts of `E₁(𝔽_q)` and `E₂(𝔽_q)` that
-the candidate's vector `a = (a₁, a₂)` predicts.
+`sieve_B_minus_sound` and `sieve_C_plus_sound` combine the kernel computations `sieve_B_minus`,
+`sieve_C_plus` with the soundness of the checker (`run_sound`). For each candidate the sieve
+removes (520 on `B⁻`, 500 on `C⁺`), there is a prime `q` (997 or 12973) of `L` at which no point of
+`X(𝔽_q)` has the images in the 499-parts of `E₁(𝔽_q)` and `E₂(𝔽_q)` that the candidate's vector
+`a = (a₁, a₂)` predicts (`SieveRemoves`).
 -/
 
 namespace Fermat433.Sieve
@@ -49,41 +50,60 @@ lemma run_removed (I : Inputs) : ∀ (certs : List PrimeCert) (alive L : List (�
         exact ⟨C', List.mem_cons_of_mem _ hC', rest⟩
       · exact ⟨C, List.mem_cons_self .., alive, al', hC, ha, hal⟩
 
-/-- **The sieve for `B⁻`.** Every candidate other than the four known points is removed at a prime
-`q ∈ {997, 12973}` of `L`: no point `P` of `X(𝔽_q)` satisfies both
-`c₁·φ₁(P) = a₁·c₁·φ₁(P₁) + a₂·c₁·φ₁(P₂)` on `E₁` and `c₂·φ₂(P) = a₁·c₂·φ₂(P₁) + a₂·c₂·φ₂(P₂)` on
-`E₂`, where `P₁ = (1, 1)`, `P₂ = (−1, 15)` and `cᵢ = #Eᵢ(𝔽_q)/499`. -/
-theorem sieve_B_minus_sound (a : ℕ × ℕ) (ha : a ∈ inputs.cands)
-    (hs : a ∉ [(1, 0), (498, 0), (0, 1), (0, 498)]) :
-    ∃ C ∈ certs, ∃ hq : C.q.Prime,
-      haveI : Fact C.q.Prime := ⟨hq⟩
-      ∀ (G11 G12 : (W1 inputs C.q C.r).Point) (G21 G22 : (W2 inputs C.q C.r).Point),
-        Im1 (I := inputs) (r := C.r) (toEv (vals inputs C.q C.r) (.aff 1 1)) G11 →
-        Im1 (I := inputs) (r := C.r) (toEv (vals inputs C.q C.r) (.aff (-1) 15)) G12 →
-        Im2 (I := inputs) (r := C.r) (toEv (vals inputs C.q C.r) (.aff 1 1)) G21 →
-        Im2 (I := inputs) (r := C.r) (toEv (vals inputs C.q C.r) (.aff (-1) 15)) G22 →
-        ∀ P : XPt C.q, P.Valid →
-        ∀ (Q1 : (W1 inputs C.q C.r).Point) (Q2 : (W2 inputs C.q C.r).Point),
-          Im1 (I := inputs) (r := C.r) (toEv (vals inputs C.q C.r) P) Q1 →
-          Im2 (I := inputs) (r := C.r) (toEv (vals inputs C.q C.r) P) Q2 →
-          ¬ ((Nat.card (W1 inputs C.q C.r).Point / 499) • Q1 =
-                a.1 • (Nat.card (W1 inputs C.q C.r).Point / 499) • G11 +
-                  a.2 • (Nat.card (W1 inputs C.q C.r).Point / 499) • G12 ∧
-              (Nat.card (W2 inputs C.q C.r).Point / 499) • Q2 =
-                a.1 • (Nat.card (W2 inputs C.q C.r).Point / 499) • G21 +
-                  a.2 • (Nat.card (W2 inputs C.q C.r).Point / 499) • G22) := by
-  obtain ⟨C, hC, al, al', hrun, hal, hal'⟩ :=
-    run_removed inputs certs inputs.cands _ sieve_B_minus a ha hs
+/-- The conclusion of the sieve for a candidate `a` at a prime `C` (stated for any curve given by
+`I`): no point `P` of `X(𝔽_q)` satisfies both
+`c₁·φ₁(P) = a₁·c₁·φ₁(P₁) + a₂·c₁·φ₁(P₂)` on `E₁` and `c₂·φ₂(P) = a₁·c₂·φ₂(P₁) + a₂·c₂·φ₂(P₂)`
+on `E₂`, where `P₁, P₂` are the generators and `cᵢ = #Eᵢ(𝔽_q)/499`. -/
+def SieveRemoves (I : Inputs) (C : PrimeCert) (a : ℕ × ℕ) : Prop :=
+  ∃ hq : C.q.Prime,
+    haveI : Fact C.q.Prime := ⟨hq⟩
+    ∀ (G11 G12 : (W1 I C.q C.r).Point) (G21 G22 : (W2 I C.q C.r).Point),
+      Im1 (I := I) (r := C.r) (toEv (vals I C.q C.r) (.ofRat I.p1)) G11 →
+      Im1 (I := I) (r := C.r) (toEv (vals I C.q C.r) (.ofRat I.p2)) G12 →
+      Im2 (I := I) (r := C.r) (toEv (vals I C.q C.r) (.ofRat I.p1)) G21 →
+      Im2 (I := I) (r := C.r) (toEv (vals I C.q C.r) (.ofRat I.p2)) G22 →
+      ∀ P : XPt C.q, P.Valid I.f →
+      ∀ (Q1 : (W1 I C.q C.r).Point) (Q2 : (W2 I C.q C.r).Point),
+        Im1 (I := I) (r := C.r) (toEv (vals I C.q C.r) P) Q1 →
+        Im2 (I := I) (r := C.r) (toEv (vals I C.q C.r) P) Q2 →
+        ¬ ((Nat.card (W1 I C.q C.r).Point / 499) • Q1 =
+              a.1 • (Nat.card (W1 I C.q C.r).Point / 499) • G11 +
+                a.2 • (Nat.card (W1 I C.q C.r).Point / 499) • G12 ∧
+            (Nat.card (W2 I C.q C.r).Point / 499) • Q2 =
+              a.1 • (Nat.card (W2 I C.q C.r).Point / 499) • G21 +
+                a.2 • (Nat.card (W2 I C.q C.r).Point / 499) • G22)
+
+/-- **Soundness of the checker.** If `run` returns `L`, every candidate not in `L` is removed, in
+the sense of `SieveRemoves`, at one of the primes. -/
+theorem run_sound {I : Inputs} {certs : List PrimeCert} {L : List (ℕ × ℕ)}
+    (h : run I certs = some L) (a : ℕ × ℕ) (ha : a ∈ I.cands) (hs : a ∉ L) :
+    ∃ C ∈ certs, SieveRemoves I C a := by
+  obtain ⟨C, hC, al, al', hrun, hal, hal'⟩ := run_removed I certs I.cands _ h a ha hs
   refine ⟨C, hC, ?_⟩
   obtain ⟨q, r, R⟩ := C
-  have hp : primeOk inputs ⟨q, r, R⟩ = true := by
+  have hp : primeOk I ⟨q, r, R⟩ = true := by
     unfold sievePrime at hrun; split_ifs at hrun with h; · exact h
   have hq : q.Prime := by
     simp only [primeOk, Bool.and_eq_true] at hp
-    exact isPrime_sound hp.1.1.1.1.1.1.1.1.1.1.1.1.1
+    exact isPrime_sound hp.1.1.1.1.1.1.1.1.1.1.1.1.1.2
   refine ⟨hq, ?_⟩
   have : Fact q.Prime := ⟨hq⟩
   intro G11 G12 G21 G22 hG11 hG12 hG21 hG22 P hP Q1 Q2 h1 h2
   exact sievePrime_sound hrun a hal hal' hG11 hG12 hG21 hG22 P hP h1 h2
+
+/-- **The sieve for `B⁻ : y² = −C₃(x)`.** Of the 524 quadratic Chabauty candidates, every one
+except the four known points `(1, ±1)`, `(−1, ±15)` is removed at `q = 997` or `q = 12973`. -/
+theorem sieve_B_minus_sound (a : ℕ × ℕ) (ha : a ∈ Bminus.inputs.cands)
+    (hs : a ∉ [(1, 0), (498, 0), (0, 1), (0, 498)]) :
+    ∃ C ∈ Bminus.certs, SieveRemoves Bminus.inputs C a :=
+  run_sound sieve_B_minus a ha hs
+
+/-- **The sieve for `C⁺ : y² = 2C₃(x)`.** Of the 504 quadratic Chabauty candidates, every one
+except the four known points `(6/5, ±172/125)`, `(2, ±12)` is removed at `q = 997` or
+`q = 12973`. -/
+theorem sieve_C_plus_sound (a : ℕ × ℕ) (ha : a ∈ Cplus.inputs.cands)
+    (hs : a ∉ [(0, 1), (0, 498), (1, 0), (498, 0)]) :
+    ∃ C ∈ Cplus.certs, SieveRemoves Cplus.inputs C a :=
+  run_sound sieve_C_plus a ha hs
 
 end Fermat433.Sieve

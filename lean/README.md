@@ -47,16 +47,17 @@ solutions:
 
 ## The sieve certificate
 
-`Fermat433/Sieve/` checks the Mordell–Weil sieve for B⁻ (Proposition 6.2 of the paper) without
-PARI, in two steps:
+`Fermat433/Sieve/` checks the Mordell–Weil sieves for B⁻ and C⁺ (Proposition 6.2 of the paper)
+without PARI, in two steps:
 
-- `Fermat433.Sieve.sieve_B_minus`: the checker, evaluated in Lean's kernel (`decide +kernel`, about
-  35 seconds, axioms: `propext` only), returns exactly the four known points.
-- `Fermat433.Sieve.sieve_B_minus_sound` (in `Sieve/Sound/`): the checker is sound, so every other
-  candidate is ruled out at q = 997 or 12973 by a statement about Mathlib elliptic curves over
-  `ZMod q`.
+- `sieve_B_minus`, `sieve_C_plus`: the checker, evaluated in Lean's kernel (`decide +kernel`,
+  about 35 seconds each, axioms: `propext` only), returns exactly the four known points on each
+  curve.
+- `sieve_B_minus_sound`, `sieve_C_plus_sound` (in `Sieve/Sound/`, both from `run_sound`): the
+  checker is sound, so every other candidate is ruled out at q = 997 or 12973 by a statement about
+  Mathlib elliptic curves over `ZMod q` (`SieveRemoves`).
 
-It is not connected to `fermat433`: the candidate list and the sieve condition itself
+It is not connected to `fermat433`: the candidate lists and the sieve condition itself
 (Propositions 6.1–6.2) remain outside Lean. See `../sieve_cert/README.md`.
 
 ## Building

@@ -1,30 +1,37 @@
 # Sieve certificate
 
 An independent re-check of the Mordell–Weil sieve (PROOF.md §C.3, Proposition 6.2 of the paper) for
-the curve B⁻: y² = −C₃(x). The original sieve is `step4_sieve.gp`, run in PARI/GP. Here the same
-conclusion is reached from a small set of exact inputs, by code that shares nothing with PARI.
+both curves of the hard pair, B⁻: y² = −C₃(x) and C⁺: y² = 2C₃(x). The original sieves are
+`step4_sieve.gp` and `twist/step4_sieve.gp`, run in PARI/GP. Here the same conclusions are reached
+from a small set of exact inputs, by code that shares nothing with PARI.
 
 ## What the sieve claims
 
-The quadratic Chabauty step leaves 524 candidates on B⁻(ℚ₄₉₉), each with a coefficient vector
-a(z) ∈ ℤ₄₉₉². The sieve removes every one except the four known points, using two primes of L:
-- the prime above q = 997 given by t ↦ 35 removes 518 candidates;
-- the prime above q = 12973 given by t ↦ 775 removes 2 more.
+The quadratic Chabauty step leaves 524 candidates on B⁻(ℚ₄₉₉) and 504 on C⁺(ℚ₄₉₉), each with a
+coefficient vector a(z) ∈ ℤ₄₉₉² with respect to the generators: P₁ = (1, 1), P₂ = (−1, 15) on B⁻,
+and P₁ = (6/5, 172/125), P₂ = (2, 12) on C⁺. On each curve the sieve removes every candidate except
+the four known points, using the same two primes of L:
 
-The other 22 primes in `logs/step4_sieve.log` remove nothing, so the certificate uses only these two.
+| | B⁻ | C⁺ |
+|---|---|---|
+| prime above q = 997 (t ↦ 35) removes | 518 | 494 |
+| prime above q = 12973 (t ↦ 775) removes | 2 | 6 |
+| survivors | 4 | 4 |
+
+The other 22 primes in the step-4 logs remove nothing, so the certificates use only these two.
 
 ## The files
 
 | file | what it does |
 |---|---|
-| `emit.gp` | Exports the exact inputs from PARI: the field L, the fixed points x± of the involution as elements of L, the two primes, and the 524 candidate vectors mod 499. It runs in under a second. |
-| `inputs.txt` | Those inputs, as text. |
+| `emit.gp` | Exports the exact inputs from PARI, for each curve: the sextic f, the generators P₁, P₂, the field L, the fixed points x± of the involution as elements of L, the two primes, and the candidate vectors mod 499. It runs in a few seconds. |
+| `inputs_Bminus.txt`, `inputs_Cplus.txt` | Those inputs, as text. |
 | `check.py` | An independent checker in plain Python, with no PARI and no libraries. It runs in under a second. |
-| `emit_lean.py` | Writes `lean/Fermat433/Sieve/Data.lean`: the inputs plus a removal witness for each removed candidate (see below). |
+| `emit_lean.py` | Writes `lean/Fermat433/Sieve/DataBminus.lean` and `DataCplus.lean`: the inputs plus a removal witness for each removed candidate (see below). |
 | `../lean/Fermat433/Sieve/Check.lean` | The Lean checker. |
-| `../lean/Fermat433/Sieve/Theorem.lean` | The theorem `sieve_B_minus`, proved by evaluating the checker in Lean's kernel, plus tests that spoiled witnesses are rejected. |
+| `../lean/Fermat433/Sieve/Theorem.lean` | The theorems `sieve_B_minus` and `sieve_C_plus`, proved by evaluating the checker in Lean's kernel, plus tests that spoiled witnesses are rejected. |
 
-Both checkers start from `inputs.txt` and recompute everything else themselves:
+Both checkers start from the input files and recompute everything else themselves:
 - they reduce L at the prime and build the quotients E₁, E₂;
 - they count E₁(𝔽_q) and E₂(𝔽_q) by brute force, and check that the 499-parts are cyclic of order 499;
 - they compute the images of the generators and each candidate's target (T₁, T₂).
@@ -47,24 +54,28 @@ also differ from each other in how they decide that a candidate is removed:
 
 ## Result
 
-All three implementations agree exactly:
+All three implementations agree exactly, on both curves:
 
-| | PARI (`step4_sieve.gp`) | Python (`check.py`) | Lean (`sieve_B_minus`) |
+| | PARI | Python (`check.py`) | Lean kernel |
 |---|---|---|---|
-| q = 997: removed, left | 518, 6 | 518, 6 | 518, 6 |
-| q = 12973: removed, left | 2, 4 | 2, 4 | 2, 4 |
-| survivors, a mod 499 | (1,0), (−1,0), (0,1), (0,−1) | same | same |
+| B⁻, q = 997: removed, left | 518, 6 | 518, 6 | 518, 6 |
+| B⁻, q = 12973: removed, left | 2, 4 | 2, 4 | 2, 4 |
+| C⁺, q = 997: removed, left | 494, 10 | 494, 10 | 494, 10 |
+| C⁺, q = 12973: removed, left | 6, 4 | 6, 4 | 6, 4 |
+| survivors, a mod 499 | (±1, 0), (0, ±1) | same | same |
 
-The Lean result is a theorem, checked by the kernel in about 35 seconds:
+The Lean results are theorems, each checked by the kernel in about 35 seconds:
 
 ```lean
-theorem sieve_B_minus : run inputs certs = some [(1, 0), (498, 0), (0, 1), (0, 498)]
+theorem sieve_B_minus : run Bminus.inputs Bminus.certs = some [(1, 0), (498, 0), (0, 1), (0, 498)]
+theorem sieve_C_plus : run Cplus.inputs Cplus.certs = some [(0, 1), (0, 498), (1, 0), (498, 0)]
 ```
 
-It depends only on the axiom `propext`; in particular it does not use `native_decide`, so Lean's
-compiler is not trusted. CI rebuilds it and checks the axioms on every change. `Theorem.lean` also
-spoils witnesses in five ways (a missing fibre point, a repeated one, a wrong square root, a point
-off the curve, a wrong prime of L) and checks that each is rejected.
+They depend only on the axiom `propext`; in particular they do not use `native_decide`, so Lean's
+compiler is not trusted. CI rebuilds them and checks the axioms on every change. `Theorem.lean`
+also spoils B⁻ witnesses in six ways (a missing fibre point, a repeated one, one repeated in
+unreduced form, a wrong square root, a point off the curve, a wrong prime of L) and checks that
+each is rejected.
 
 The survivors are the four known points P₁, ιP₁, P₂, ιP₂. That they survive is also a consistency
 check on the exported conventions: if x₊ and x₋ were swapped, or the generators mismatched, the
@@ -72,24 +83,24 @@ known points would be removed too.
 
 ## What this does and does not establish
 
-**Established:** given the 524 candidate vectors, the finite arithmetic of the sieve is right. The
+**Established:** given the candidate vectors, the finite arithmetic of the sieve is right. The
 reductions, group orders, cyclicity of the 499-parts, the enumeration of X(𝔽_q) and the sieving
 condition were all recomputed without PARI.
 
 **Not established here:**
 - that the candidate vectors are the zeros of the quadratic Chabauty function (Proposition 6.1);
 - that the sieving condition is the right one (Proposition 6.2);
-- the C⁺ half and the p = 1459 rerun, which have the same structure and are a straightforward
-  extension.
+- the p = 1459 rerun, which has the same structure.
 
-**The soundness proof.** `sieve_B_minus` says that a program returns the four survivors.
-`sieve_B_minus_sound` (in `lean/Fermat433/Sieve/Sound/Main.lean`) turns that into mathematics.
-For each of the 520 removed candidates a = (a₁, a₂), there is a prime q ∈ {997, 12973} at which
-no point P of X(𝔽_q) satisfies both
+**The soundness proof.** `sieve_B_minus` and `sieve_C_plus` say that a program returns the four
+survivors. `sieve_B_minus_sound` and `sieve_C_plus_sound` (in `lean/Fermat433/Sieve/Sound/Main.lean`,
+both instances of `run_sound`) turn that into mathematics. For each removed candidate
+a = (a₁, a₂) (520 on B⁻, 500 on C⁺), there is a prime q ∈ {997, 12973} at which no point P of
+X(𝔽_q) satisfies both
 
   c₁·φ₁(P) = a₁·c₁·φ₁(P₁) + a₂·c₁·φ₁(P₂) on E₁  and  c₂·φ₂(P) = a₁·c₂·φ₂(P₁) + a₂·c₂·φ₂(P₂) on E₂,
 
-where P₁ = (1, 1), P₂ = (−1, 15) and cᵢ = #Eᵢ(𝔽_q)/499. The curves Eᵢ, their points and group law
+where P₁, P₂ are the curve's generators and cᵢ = #Eᵢ(𝔽_q)/499. The curves Eᵢ, their points and group law
 are Mathlib's (`WeierstrassCurve.Affine.Point` over `ZMod q`). The maps φᵢ are given by their
 formulas: the change of variable X = (x − x₊)/(x − x₋), Y = y(X − 1)³ to the even model, then
 (AX², AY) and (D/X², DY/X³). X(𝔽_q) includes the points at infinity and the special points
@@ -111,17 +122,17 @@ needs (F has at most seven coefficients, A = f(x₋), D = f(x₊), values reduce
 also checked at run time rather than derived.
 
 **What is still not proved in Lean:**
-- that the 524 candidate vectors are the zeros of the quadratic Chabauty function (§6,
+- that the candidate vectors are the zeros of the quadratic Chabauty function (§6,
   Proposition 6.1);
 - that the sieve condition above is the right one, i.e. that a rational point's coefficient vector
   must satisfy it (Proposition 6.2): this links φᵢ over 𝔽_q to the maps over L and to J(ℚ);
-- the C⁺ half and the p = 1459 rerun, which have the same structure.
+- the p = 1459 rerun, which has the same structure.
 
 ## Reproducing
 
 From the repository root:
 
-    gp -q sieve_cert/emit.gp          # rewrites inputs.txt (needs PARI/GP 2.17)
-    python3 sieve_cert/check.py
-    python3 sieve_cert/emit_lean.py   # rewrites lean/Fermat433/Sieve/Data.lean (about 5 seconds)
-    cd lean && lake build             # includes the kernel check of sieve_B_minus
+    gp -q sieve_cert/emit.gp          # rewrites inputs_*.txt (needs PARI/GP 2.17)
+    python3 sieve_cert/check.py       # both curves
+    python3 sieve_cert/emit_lean.py   # rewrites lean/Fermat433/Sieve/Data*.lean (about 10 seconds)
+    cd lean && lake build             # includes the kernel checks of both sieves

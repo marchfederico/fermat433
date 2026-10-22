@@ -76,10 +76,17 @@ lemma evZ_eq_sum7 (X : ZMod q) (l : List ℕ) (hl : l.length ≤ 7) :
   intro i hi7 hil
   rw [List.getD_eq_default _ _ (by simpa using hil)]; simp
 
+/-- A list of length 7, written out. -/
+lemma list7 {α : Type*} {l : List α} (h : l.length = 7) :
+    ∃ c0 c1 c2 c3 c4 c5 c6, l = [c0, c1, c2, c3, c4, c5, c6] := by
+  match l, h with
+  | [c0, c1, c2, c3, c4, c5, c6], _ => exact ⟨_, _, _, _, _, _, _, rfl⟩
+
 /-- The checker's `F` evaluates to `Σₖ fₖ (x₋X − x₊)ᵏ (X − 1)⁶⁻ᵏ`. -/
-lemma evZ_evenModel (hq : 0 < q) (xp xm : ℕ) (hxp : xp < q) (X : ZMod q) :
-    evZ (evenModel xp xm q) X = ∑ k ∈ range 7,
-      (f1.getD k 0 : ZMod q) * ((xm : ZMod q) * X - xp) ^ k * (X - 1) ^ (6 - k) := by
+lemma evZ_evenModel (hq : 0 < q) {f : List ℤ} (hf : f.length = 7) (xp xm : ℕ) (hxp : xp < q)
+    (X : ZMod q) : evZ (evenModel f xp xm q) X = ∑ k ∈ range 7,
+      (f.getD k 0 : ZMod q) * ((xm : ZMod q) * X - xp) ^ k * (X - 1) ^ (6 - k) := by
+  obtain ⟨c0, c1, c2, c3, c4, c5, c6, rfl⟩ := list7 hf
   have hneg : (((q - xp) % q : ℕ) : ZMod q) = -xp := by
     rw [ZMod.natCast_mod, Nat.cast_sub hxp.le, ZMod.natCast_self, zero_sub]
   have hm1 : (((q - 1 : ℕ)) : ZMod q) = -1 := by
@@ -87,7 +94,7 @@ lemma evZ_evenModel (hq : 0 < q) (xp xm : ℕ) (hxp : xp < q) (X : ZMod q) :
   have hlin : evZ [(q - xp) % q, xm] X = (xm : ZMod q) * X - xp := by
     simp only [evZ_cons, evZ_nil, hneg]; ring
   have hlin1 : evZ [q - 1, 1] X = X - 1 := by simp only [evZ_cons, evZ_nil, hm1]; push_cast; ring
-  simp only [evenModel, f1, List.zipIdx_cons, List.zipIdx_nil, List.foldl_cons, List.foldl_nil,
+  simp only [evenModel, List.zipIdx_cons, List.zipIdx_nil, List.foldl_cons, List.foldl_nil,
     evZ_padd, evZ_pmul, evZ_pscale, evZ_ppow, hlin, hlin1, evZ_nil, ofInt_cast _ hq]
   simp [sum_range_succ]
 

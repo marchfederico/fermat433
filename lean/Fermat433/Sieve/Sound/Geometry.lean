@@ -8,7 +8,7 @@ import Fermat433.Sieve.Sound.Curve
 /-!
 # Soundness of the checker, part 4b: the curve `X` and the maps `φ₁, φ₂`
 
-Over `𝔽_q`, a point of `X : y² = f(x)` (`f = −C₃`) is affine or at infinity (`XPt`). The Möbius
+Over `𝔽_q`, a point of `X : y² = f(x)` (`f` a sextic) is affine or at infinity (`XPt`). The Möbius
 change of variable `X = (x − x₊)/(x − x₋)`, `Y = y(X − 1)³` sends it to the even model
 `Y² = F(X) = AX⁶ + BX⁴ + CX² + D`, or to the point over `X = ∞` when `x = x₋`
 (`toEv`, `toEv_valid`).
@@ -23,28 +23,41 @@ namespace Fermat433.Sieve
 
 open WeierstrassCurve WeierstrassCurve.Affine Finset
 
-/-- `f(x) = −C₃(x)` over `ZMod q`. -/
-def fZ (q : ℕ) (x : ZMod q) : ZMod q := ∑ k ∈ range 7, (f1.getD k 0 : ZMod q) * x ^ k
+/-- The sextic `f(x) = Σₖ fₖ xᵏ` over `ZMod q`. -/
+def fZ (f : List ℤ) (q : ℕ) (x : ZMod q) : ZMod q := ∑ k ∈ range 7, (f.getD k 0 : ZMod q) * x ^ k
+
+/-- A rational number `num/den` in `ZMod q`. -/
+def ratZ {q : ℕ} (z : ℤ × ℕ) : ZMod q := (z.1 : ZMod q) * (z.2 : ZMod q)⁻¹
 
 /-- A point of `X : y² = f(x)` over `𝔽_q`: affine, or at infinity with `y/x³ → s`. -/
 inductive XPt (q : ℕ)
   | aff (x y : ZMod q)
   | infty (s : ZMod q)
 
-def XPt.Valid {q : ℕ} : XPt q → Prop
-  | .aff x y => y ^ 2 = fZ q x
-  | .infty s => s ^ 2 = (f1.getD 6 0 : ZMod q)
+def XPt.Valid {q : ℕ} (f : List ℤ) : XPt q → Prop
+  | .aff x y => y ^ 2 = fZ f q x
+  | .infty s => s ^ 2 = (f.getD 6 0 : ZMod q)
+
+/-- A generator, a point of `X` with rational coordinates. -/
+def XPt.ofRat {q : ℕ} (p : (ℤ × ℕ) × (ℤ × ℕ)) : XPt q := .aff (ratZ p.1) (ratZ p.2)
 
 /-- A point of the even model, or the point over `X = ∞` (where `x = x₋`), which keeps `y`. -/
 inductive EvPt (q : ℕ)
   | fin (X Y : ZMod q)
   | inf (y : ZMod q)
 
-lemma f_cast {q : ℕ} (hq : 0 < q) (x : ℕ) :
-    (evalPoly (f1.map (ofInt · q)) x q : ZMod q) = fZ q x := by
+lemma f_cast {q : ℕ} (hq : 0 < q) {f : List ℤ} (hf : f.length = 7) (x : ℕ) :
+    (evalPoly (f.map (ofInt · q)) x q : ZMod q) = fZ f q x := by
+  obtain ⟨c0, c1, c2, c3, c4, c5, c6, rfl⟩ := list7 hf
   rw [evalPoly_cast]
-  simp [f1, fZ, evZ, ofInt_cast _ hq, sum_range_succ]
+  simp [fZ, evZ, ofInt_cast _ hq, sum_range_succ]
   ring
+
+lemma ratMod_cast {q : ℕ} [Fact q.Prime] (hq2 : q ≠ 2) (hq64 : q < 2 ^ 64) (z : ℤ × ℕ) :
+    (ratMod z q : ZMod q) = ratZ z := by
+  have h0 : 0 < q := (Fact.out : q.Prime).pos
+  rw [ratMod, ZMod.natCast_mod, Nat.cast_mul, ofInt_cast _ h0, inv_cast hq2 _ hq64,
+    ZMod.natCast_mod, ratZ]
 
 variable (I : Inputs) (q r : ℕ)
 
@@ -62,7 +75,12 @@ def vals : Vals q :=
   ⟨S.xp, S.xm, S.A, S.F.getD 4 0, S.F.getD 2 0, S.D⟩
 
 lemma setting_F : (setting I q r).F =
-    evenModel (evalL I.xp r q) (evalL I.xm r q) q := by simp only [setting]
+    evenModel I.f (evalL I.xp r q) (evalL I.xm r q) q := by simp only [setting]
+lemma setting_f : (setting I q r).f = I.f.map (ofInt · q) := by simp only [setting]
+lemma setting_p1 : (setting I q r).p1 = (ratMod I.p1.1 q, ratMod I.p1.2 q) := by
+  simp only [setting]
+lemma setting_p2 : (setting I q r).p2 = (ratMod I.p2.1 q, ratMod I.p2.2 q) := by
+  simp only [setting]
 lemma setting_xp : (setting I q r).xp = evalL I.xp r q := by simp only [setting]
 lemma setting_xm : (setting I q r).xm = evalL I.xm r q := by simp only [setting]
 lemma setting_A : (setting I q r).A = (setting I q r).F.getD 6 0 := by simp only [setting]
@@ -73,12 +91,13 @@ variable {I q r}
 
 /-- The facts `settingOk` checks. -/
 structure SettingFacts : Prop where
+  flen : I.f.length = 7
   len : (setting I q r).F.length ≤ 7
   c1 : (setting I q r).F.getD 1 0 = 0
   c3 : (setting I q r).F.getD 3 0 = 0
   c5 : (setting I q r).F.getD 5 0 = 0
-  A_eq : (setting I q r).A = evalPoly (f1.map (ofInt · q)) (setting I q r).xm q
-  D_eq : (setting I q r).D = evalPoly (f1.map (ofInt · q)) (setting I q r).xp q
+  A_eq : (setting I q r).A = evalPoly (I.f.map (ofInt · q)) (setting I q r).xm q
+  D_eq : (setting I q r).D = evalPoly (I.f.map (ofInt · q)) (setting I q r).xp q
   xp_lt : (setting I q r).xp < q
   xm_lt : (setting I q r).xm < q
   A_lt : (setting I q r).A < q
@@ -86,12 +105,14 @@ structure SettingFacts : Prop where
   a2_1 : (setting I q r).E1.a2 < q
   a2_2 : (setting I q r).E2.a2 < q
 
-lemma settingFacts_of_ok (h : settingOk (setting I q r) (f1.map (ofInt · q)) = true) :
+lemma settingFacts_of_ok (hf : I.f.length = 7)
+    (h : settingOk (setting I q r) (setting I q r).f = true) :
     SettingFacts (I := I) (q := q) (r := r) := by
+  rw [setting_f] at h
   simp only [settingOk, Bool.and_eq_true, decide_eq_true_eq, beq_iff_eq] at h
   obtain ⟨⟨⟨⟨⟨⟨⟨⟨⟨⟨⟨h1, h2⟩, h3⟩, h4⟩, h5⟩, h6⟩, h7⟩, h8⟩, h9⟩, h10⟩, h11⟩, h12⟩ := h
   simp only [setting_q] at h7 h8 h9 h10 h11 h12
-  exact ⟨h1, h2, h3, h4, h5, h6, h7, h8, h9, h10, h11, h12⟩
+  exact ⟨hf, h1, h2, h3, h4, h5, h6, h7, h8, h9, h10, h11, h12⟩
 
 variable (hS : SettingFacts (I := I) (q := q) (r := r)) (hq : 0 < q)
 include hS
@@ -107,17 +128,17 @@ include hq
 
 /-- `F(X) = Σₖ fₖ (x₋X − x₊)ᵏ (X − 1)⁶⁻ᵏ`. -/
 lemma evZ_F_model (X : ZMod q) : evZ (setting I q r).F X = ∑ k ∈ range 7,
-    (f1.getD k 0 : ZMod q) * ((vals I q r).xm * X - (vals I q r).xp) ^ k * (X - 1) ^ (6 - k) := by
+    (I.f.getD k 0 : ZMod q) * ((vals I q r).xm * X - (vals I q r).xp) ^ k * (X - 1) ^ (6 - k) := by
   have hxp := hS.xp_lt
   rw [setting_xp] at hxp
-  rw [setting_F, evZ_evenModel hq _ _ hxp]
+  rw [setting_F, evZ_evenModel hq hS.flen _ _ hxp]
   simp only [vals, setting_xp, setting_xm]
 
-lemma A_eq_f : (vals I q r).A = fZ q (vals I q r).xm := by
-  simp only [vals]; rw [hS.A_eq, f_cast hq]
+lemma A_eq_f : (vals I q r).A = fZ I.f q (vals I q r).xm := by
+  simp only [vals]; rw [hS.A_eq, f_cast hq hS.flen]
 
-lemma D_eq_f : (vals I q r).D = fZ q (vals I q r).xp := by
-  simp only [vals]; rw [hS.D_eq, f_cast hq]
+lemma D_eq_f : (vals I q r).D = fZ I.f q (vals I q r).xp := by
+  simp only [vals]; rw [hS.D_eq, f_cast hq hS.flen]
 
 omit hS hq in
 /-- The Möbius change of variable to the even model. -/
@@ -133,7 +154,7 @@ def EvPt.Valid (V : Vals q) : EvPt q → Prop
 
 /-- Points of `X` go to points of the even model. -/
 theorem toEv_valid [Fact q.Prime] (P : XPt q)
-    (hP : P.Valid) : (toEv (vals I q r) P).Valid (vals I q r) := by
+    (hP : P.Valid I.f) : (toEv (vals I q r) P).Valid (vals I q r) := by
   cases P with
   | aff x y =>
     simp only [XPt.Valid] at hP
@@ -155,9 +176,8 @@ theorem toEv_valid [Fact q.Prime] (P : XPt q)
     simp only [toEv, EvPt.Valid]
     rw [← evZ_F_even hS, evZ_F_model hS hq, mul_pow, hP]
     simp only [sum_range_succ, sum_range_zero, sub_self, mul_one]
-    simp only [f1]
-    norm_num
-    exact Or.inl (by ring)
+    simp only [zero_add, pow_zero, mul_one, Nat.sub_self]
+    ring
 
 omit hS hq
 

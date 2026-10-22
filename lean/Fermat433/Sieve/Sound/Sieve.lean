@@ -51,8 +51,8 @@ structure PrimeFacts (I : Inputs) (q r : ℕ) : Prop where
 lemma primeFacts_of {q r : ℕ} {R : List Removal} (h : primeOk I ⟨q, r, R⟩ = true) :
     PrimeFacts I q r := by
   simp only [primeOk, Bool.and_eq_true, decide_eq_true_eq] at h
-  obtain ⟨⟨⟨⟨⟨⟨⟨⟨⟨⟨⟨⟨⟨-, -⟩, h16⟩, h32⟩, -⟩, -⟩, -⟩, -⟩, hok⟩, -⟩, hA⟩, -⟩, hd1⟩, hd2⟩ := h
-  exact ⟨h16, h32, settingFacts_of_ok hok, hA, hd1, hd2⟩
+  obtain ⟨⟨⟨⟨⟨⟨⟨⟨⟨⟨⟨⟨⟨⟨hf, -⟩, -⟩, h16⟩, h32⟩, -⟩, -⟩, -⟩, -⟩, hok⟩, -⟩, hA⟩, -⟩, hd1⟩, hd2⟩ := h
+  exact ⟨h16, h32, settingFacts_of_ok hf hok, hA, hd1, hd2⟩
 
 /-- The quotient curves over `ZMod q`. -/
 abbrev W1 (I : Inputs) (q r : ℕ) : Affine (ZMod q) := (setting I q r).E1.W q
@@ -66,11 +66,11 @@ theorem sievePrime_sound {q r : ℕ} [Fact q.Prime] {R : List Removal}
     {alive alive' : List (ℕ × ℕ)} (h : sievePrime I ⟨q, r, R⟩ alive = some alive')
     (a : ℕ × ℕ) (ha : a ∈ alive) (hna : a ∉ alive')
     {G11 G12 : (W1 I q r).Point} {G21 G22 : (W2 I q r).Point}
-    (hG11 : Im1 (I := I) (r := r) (toEv (vals I q r) (.aff 1 1)) G11)
-    (hG12 : Im1 (I := I) (r := r) (toEv (vals I q r) (.aff (-1) 15)) G12)
-    (hG21 : Im2 (I := I) (r := r) (toEv (vals I q r) (.aff 1 1)) G21)
-    (hG22 : Im2 (I := I) (r := r) (toEv (vals I q r) (.aff (-1) 15)) G22)
-    (P : XPt q) (hP : P.Valid) {Q1 : (W1 I q r).Point} {Q2 : (W2 I q r).Point}
+    (hG11 : Im1 (I := I) (r := r) (toEv (vals I q r) (.ofRat I.p1)) G11)
+    (hG12 : Im1 (I := I) (r := r) (toEv (vals I q r) (.ofRat I.p2)) G12)
+    (hG21 : Im2 (I := I) (r := r) (toEv (vals I q r) (.ofRat I.p1)) G21)
+    (hG22 : Im2 (I := I) (r := r) (toEv (vals I q r) (.ofRat I.p2)) G22)
+    (P : XPt q) (hP : P.Valid I.f) {Q1 : (W1 I q r).Point} {Q2 : (W2 I q r).Point}
     (h1 : Im1 (I := I) (r := r) (toEv (vals I q r) P) Q1)
     (h2 : Im2 (I := I) (r := r) (toEv (vals I q r) P) Q2) :
     ¬ ((Nat.card (W1 I q r).Point / 499) • Q1 =
@@ -125,14 +125,17 @@ theorem sievePrime_sound {q r : ℕ} [Fact q.Prime] {R : List Removal}
   simp only [hq', Bool.and_eq_true, decide_eq_true_eq, beq_iff_eq, List.all_eq_true] at hrem
   obtain ⟨⟨⟨⟨ha1, ha2⟩, hlen⟩, hdist⟩, hall⟩ := hrem
   -- the generators and the targets
-  have e1 : (XPt.aff (1 : ZMod q) 1) = XPt.aff ((1 : ℕ) : ZMod q) ((1 : ℕ) : ZMod q) := by
-    rw [Nat.cast_one]
-  have e2 : (XPt.aff (-1 : ZMod q) 15) = XPt.aff ((q - 1 : ℕ) : ZMod q) ((15 : ℕ) : ZMod q) := by
-    rw [Nat.cast_sub h0, ZMod.natCast_self, Nat.cast_one, zero_sub, Nat.cast_ofNat]
+  have e1 : XPt.ofRat (q := q) I.p1 = .aff (S.p1.1 : ZMod q) (S.p1.2 : ZMod q) := by
+    rw [hS, setting_p1, XPt.ofRat, ratMod_cast hq2 hq64, ratMod_cast hq2 hq64]
+  have e2 : XPt.ofRat (q := q) I.p2 = .aff (S.p2.1 : ZMod q) (S.p2.2 : ZMod q) := by
+    rw [hS, setting_p2, XPt.ofRat, ratMod_cast hq2 hq64, ratMod_cast hq2 hq64]
   rw [e1] at hG11 hG21
   rw [e2] at hG12 hG22
-  obtain ⟨r11, r21⟩ := phi_rep hF.facts hq2 hq64 (by omega) (by omega) hG11 hG21
-  obtain ⟨r12, r22⟩ := phi_rep hF.facts hq2 hq64 (by omega) (by omega) hG12 hG22
+  have hlt : ∀ z : ℤ × ℕ, ratMod z q < q := fun z => Nat.mod_lt _ h0
+  have hp1 : S.p1.1 < q ∧ S.p1.2 < q := by rw [hS, setting_p1]; exact ⟨hlt _, hlt _⟩
+  have hp2 : S.p2.1 < q ∧ S.p2.2 < q := by rw [hS, setting_p2]; exact ⟨hlt _, hlt _⟩
+  obtain ⟨r11, r21⟩ := phi_rep hF.facts hq2 hq64 hp1.1 hp1.2 hG11 hG21
+  obtain ⟨r12, r22⟩ := phi_rep hF.facts hq2 hq64 hp2.1 hp2.2 hG12 hG22
   have hT1 : S.E1.Rep q (target S c1 c2 Rm.a).1
       (Rm.a.1 • c1 • G11 + Rm.a.2 • c1 • G12) := by
     simp only [target, imgAt, hq']

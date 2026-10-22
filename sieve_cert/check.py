@@ -9,23 +9,23 @@
 # version.  It is distributed WITHOUT ANY WARRANTY.  See the LICENSE file at
 # the repository root, or <https://www.gnu.org/licenses/>.
 
-"""Independent re-check of the Mordell-Weil sieve (Prop. 6.2) from sieve_cert/inputs.txt.
+"""Independent re-check of the Mordell-Weil sieve (Prop. 6.2) from sieve_cert/inputs_<curve>.txt.
 
-Plain Python, no PARI, no libraries. From the exact inputs (the field L, the fixed points x+, x- of
-the involution, the sieving primes, the candidate vectors a mod 499) it recomputes everything the sieve
+Plain Python, no PARI, no libraries. From the exact inputs (the field L, the sextic f, the generators
+P1, P2, the fixed points x+, x- of the involution, the sieving primes, the candidate vectors a mod 499)
+it recomputes everything the sieve
 uses, by its own route: it reduces modulo the prime of L, builds the bielliptic quotients E1, E2 in the
 non-minimal model of step3_setup.gp (the sieve's verdict does not depend on the model or on the choice
 of generator), counts E_i(F_q) and X(F_q) by brute force, picks its own generator of the 499-part, and
 takes discrete logarithms from a table. A candidate is removed at a prime when the image of its vector
 is not the image of any point of X(F_q).
 
-Usage: python3 sieve_cert/check.py [sieve_cert/inputs.txt]
+Usage: python3 sieve_cert/check.py [sieve_cert/inputs_Bminus.txt ...]   (default: both curves)
 """
 import sys
 from fractions import Fraction
 
 ELL = 499
-F1 = [40, -144, 180, -40, -90, 72, -17]          # -C3(x), low degree first
 
 
 def read_inputs(path):
@@ -36,6 +36,10 @@ def read_inputs(path):
             continue
         if w[0] == "PL":
             data["PL"] = [int(c) for c in w[1:]]
+        elif w[0] == "F":
+            data["F"] = [int(c) for c in w[1:]]
+        elif w[0] == "GEN":
+            data.setdefault("gens", []).append((Fraction(w[1]), Fraction(w[2])))
         elif w[0] in ("XP", "XM"):
             data[w[0]] = [Fraction(c) for c in w[1:]]
         elif w[0] == "PRIME":
@@ -134,6 +138,7 @@ class Curve:
 
 def check_prime(data, q, r, alive):
     assert is_prime(q) and q != ELL, q
+    F1 = data["F"]
     assert peval(data["PL"], r, q) == 0, "r is not a root of PL mod q"
     K = Field(q)
     ev = lambda cs: sum(K.frac(c) * pow(r, k, q) for k, c in enumerate(cs)) % q
@@ -192,7 +197,7 @@ def check_prime(data, q, r, alive):
     def image(pair):
         return (xi(0, pair[0]), xi(1, pair[1]))
 
-    gens = [image(phi(1, 1)), image(phi(q - 1, 15))]
+    gens = [image(phi(K.frac(gx), K.frac(gy))) for gx, gy in data["gens"]]
     allowed, npts = set(), 0
     for x in range(q):
         fx = peval([c % q for c in F1], x, q)
@@ -202,8 +207,9 @@ def check_prime(data, q, r, alive):
         for yy in ({y, (-y) % q}):
             allowed.add(image(phi(x, yy)))
             npts += 1
-    if K.chi(-17) > 0:
-        s = K.sqrt(-17)
+    lead = F1[6] % q                                # points at infinity: y/x^3 -> s, s^2 = f_6
+    if K.chi(lead) > 0:
+        s = K.sqrt(lead)
         for ss in ({s, (-s) % q}):
             allowed.add(image(phi_inf(ss)))
             npts += 1
@@ -221,14 +227,16 @@ def check_prime(data, q, r, alive):
 
 
 def main():
-    data = read_inputs(sys.argv[1] if len(sys.argv) > 1 else "sieve_cert/inputs.txt")
-    alive = data["cands"]
-    print(f"candidates: {len(alive)}")
-    for q, r in data["primes"]:
-        alive = check_prime(data, q, r, alive)
-    print("survivors:")
-    for c in alive:
-        print("  ", c)
+    paths = sys.argv[1:] or ["sieve_cert/inputs_Bminus.txt", "sieve_cert/inputs_Cplus.txt"]
+    for path in paths:
+        data = read_inputs(path)
+        alive = data["cands"]
+        print(f"{path}: candidates: {len(alive)}")
+        for q, r in data["primes"]:
+            alive = check_prime(data, q, r, alive)
+        print("survivors:")
+        for c in alive:
+            print("  ", c)
 
 
 if __name__ == "__main__":

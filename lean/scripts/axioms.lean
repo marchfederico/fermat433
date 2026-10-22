@@ -8,3 +8,5 @@ import Fermat433
 #print axioms Fermat433.Sieve.mem_of_fibre
 #print axioms Fermat433.Sieve.sievePrime_sound
 #print axioms Fermat433.Sieve.sieve_B_minus_sound
+#print axioms Fermat433.Sieve.sieve_C_plus
+#print axioms Fermat433.Sieve.sieve_C_plus_sound
