@@ -309,8 +309,15 @@ from Lemma~\ref{lem:A1} to the six curves, and from their rational points back
 to the solutions, is formalised in Lean~4 with Mathlib (\S\ref{sec:code}). The
 formal theorem is conditional: it takes as hypotheses Lemma~\ref{lem:A1},
 Propositions~\ref{prop:B1} and~\ref{prop:B2}, and
-Corollary~\ref{cor:hardpair}, none of which is formalised. In particular the
-quadratic Chabauty argument, which is the new part, is not.
+Corollary~\ref{cor:hardpair}, none of which is formalised. A second formal
+theorem also checks the Mordell--Weil sieve of Proposition~\ref{prop:sieve}:
+Lean's kernel evaluates a certificate for it, and the certificate checker is
+proved sound. That theorem assumes, in place of Corollary~\ref{cor:hardpair},
+only the inputs of the sieve for each rational point --- that its coefficient
+vector is one of the zeros of Proposition~\ref{prop:zeros}, that its reduction
+satisfies the sieve condition, and that the four vectors which survive belong to
+the known points. The quadratic Chabauty argument
+itself, which is the new part, is not formalised.
 
 \begin{convention}
 Throughout, $\iota$ denotes the hyperelliptic involution $(x,y)\mapsto(x,-y)$;
@@ -978,6 +985,8 @@ likewise on $C^{+}$.
 
 \begin{proof}
 \texttt{step4\_scan.gp}, \texttt{step4\_sieve.gp}; \texttt{logs/step4\_sieve.log}.
+The finite computation is checked again, independently of PARI, in Python and
+in Lean (\S\ref{sec:code}).
 \end{proof}
 
 \subsection{An independent second prime}
@@ -1207,6 +1216,35 @@ the points in \S\ref{sec:conclusion}. The formal proof contains no
 repository's continuous integration rebuilds it and checks this on every
 change.
 
+The directory \texttt{sieve\_cert/} re-checks the Mordell--Weil sieve of
+Proposition~\ref{prop:sieve} without PARI, on both curves and at both primes
+$p=499$ and $p=1459$. From the exact inputs (the field $L$, the sextic, the
+generators, the fixed points $x_{\pm}$ and the zeros' coefficient vectors) an
+independent Python checker reproduces every count of the sieve. A checker
+written in Lean is then evaluated by Lean's kernel on a certificate: for each
+removed zero, the fibre of multiplication by $c_{1}=\#E_{1}(\FF_{q})/p$ over
+its target, together with square roots that locate the points of $X$ above that
+fibre. The resulting theorems use only the axiom \texttt{propext}. A proof in
+Lean that the checker is sound turns them into statements about the curves:
+for each removed zero there is a sieving prime $\qq$ at which no point of
+$X(\FF_{q})$ satisfies the sieve condition, with $E_{1}$, $E_{2}$ and their
+group law taken from Mathlib. The zeros at $p=1459$, which the original run
+did not keep, were regenerated for this purpose; their summary output is
+identical to the recorded one, and they are now kept in
+\texttt{logs/p1459/}.
+
+The sieve at $p=499$ is joined to the main formal theorem in
+\texttt{lean/\allowbreak Fermat433/\allowbreak Assembled.lean}. Its theorem \texttt{fermat433\_\allowbreak qc}
+replaces the hypothesis of Corollary~\ref{cor:hardpair} by three statements
+about each rational point of $B^{-}$ and of $C^{+}$: its coefficient vector
+modulo $499$ is one of the zeros of Proposition~\ref{prop:zeros}; at each
+sieving prime its reduction satisfies the sieve condition; and if the vector is
+one of the four that survive, the point is a known point. The sieve that leads
+from these to $B^{-}(\Q)$ and $C^{+}(\Q)$ is then proved in Lean. These
+hypotheses imply those of the first formal theorem, so they are not weaker; the
+gain is that what is assumed is now the input to the sieve rather than its
+outcome.
+
 \begin{table}[ht]
 \caption{Where each statement is established.}\label{tab:scripts}
 \footnotesize
@@ -1223,6 +1261,9 @@ Lemma~\ref{lem:A3} &
   \texttt{etale.py}, \texttt{twistset.py} & --- \\
 Lemmas~\ref{lem:A2}--\ref{lem:A3} and \S\ref{sec:conclusion}, formally &
   \texttt{lean/Fermat433/} & --- \\
+Prop.~\ref{prop:sieve}, independently and formally &
+  \texttt{sieve\_cert/}, \texttt{lean/Fermat433/\allowbreak Sieve/} &
+  \texttt{logs/p1459/\allowbreak */step3\_\allowbreak candidates.gp} \\
 Prop.~\ref{prop:B1} &
   \texttt{sel2/certify.gp}, \texttt{sel2/fakeselmerset.gp} &
   \texttt{logs/sel2/certify.log} \\
