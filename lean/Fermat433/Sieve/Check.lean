@@ -126,33 +126,31 @@ inductive Pt
   | pt (x y : Nat)
   deriving DecidableEq
 
+/-- The curve `y² = x³ + a₂x² + a₄x + a₆`; the modulus `q` is passed to each operation. -/
 structure Curve where
-  q : Nat
   a2 : Nat
   a4 : Nat
   a6 : Nat
 
 namespace Curve
 
-def rhs (E : Curve) (x : Nat) : Nat := (x * x % E.q * x + E.a2 * x % E.q * x + E.a4 * x + E.a6) % E.q
+def rhs (E : Curve) (q x : Nat) : Nat := (x * x % q * x + E.a2 * x % q * x + E.a4 * x + E.a6) % q
 
-def onCurve (E : Curve) : Pt → Bool
+def onCurve (E : Curve) (q : Nat) : Pt → Bool
   | .inf => true
-  | .pt x y => y * y % E.q == E.rhs x
+  | .pt x y => y * y % q == E.rhs q x
 
 /-- The discriminant of the cubic, up to a unit: `−4a₂³a₆ + a₂²a₄² + 18a₂a₄a₆ − 4a₄³ − 27a₆²`. -/
-def disc (E : Curve) : Nat :=
-  let q := E.q
+def disc (E : Curve) (q : Nat) : Nat :=
   let (a, b, c) := (E.a2, E.a4, E.a6)
   let pos := (a * a % q * b % q * b + 18 * a % q * b % q * c) % q
   let neg := (4 * a % q * a % q * a % q * c + 4 * b % q * b % q * b + 27 * c % q * c) % q
   sub pos neg q
 
-def add (E : Curve) : Pt → Pt → Pt
+def add (E : Curve) (q : Nat) : Pt → Pt → Pt
   | .inf, Q => Q
   | P, .inf => P
   | .pt x1 y1, .pt x2 y2 =>
-    let q := E.q
     if x1 = x2 ∧ (y1 + y2) % q = 0 then .inf else
       let lam :=
         if x1 = x2 then (3 * x1 % q * x1 + 2 * E.a2 % q * x1 + E.a4) % q * inv (2 * y1 % q) q % q
@@ -160,19 +158,19 @@ def add (E : Curve) : Pt → Pt → Pt
       let x3 := (lam * lam % q + 3 * q - E.a2 - x1 - x2) % q
       .pt x3 (sub (lam * sub x1 x3 q % q) y1 q)
 
-def mulAux (E : Curve) : Nat → Nat → Pt → Pt → Pt
+def mulAux (E : Curve) (q : Nat) : Nat → Nat → Pt → Pt → Pt
   | 0, _, _, R => R
   | fuel + 1, n, P, R =>
     if n = 0 then R else
-      mulAux E fuel (n / 2) (E.add P P) (if n % 2 = 1 then E.add R P else R)
+      mulAux E q fuel (n / 2) (E.add q P P) (if n % 2 = 1 then E.add q R P else R)
 
-def mul (E : Curve) (n : Nat) (P : Pt) : Pt := E.mulAux 64 n P .inf
+def mul (E : Curve) (q n : Nat) (P : Pt) : Pt := E.mulAux q 64 n P .inf
 
 /-- `#E(𝔽_q) = q + 1 + Σₓ (rhs(x) / q)`. -/
-def order (E : Curve) : Int :=
-  (List.range E.q).foldl (fun acc x =>
-    let e := euler (E.rhs x) E.q
-    if e = 1 then acc + 1 else if e = 0 then acc else acc - 1) ((E.q : Int) + 1)
+def order (E : Curve) (q : Nat) : Int :=
+  (List.range q).foldl (fun acc x =>
+    let e := euler (E.rhs q x) q
+    if e = 1 then acc + 1 else if e = 0 then acc else acc - 1) ((q : Int) + 1)
 
 end Curve
 
@@ -191,12 +189,19 @@ structure PrimeCert where
 
 /-! ### One prime -/
 
+/-- `F(X) = (X − 1)⁶ f((x₋X − x₊)/(X − 1)) = Σₖ fₖ (x₋X − x₊)ᵏ (X − 1)⁶⁻ᵏ`, lowest degree first. -/
+def evenModel (xp xm q : Nat) : List Nat :=
+  (f1.zipIdx).foldl (fun acc (c, k) =>
+    padd acc (pmul (pscale (ofInt c q) (ppow [(q - xp) % q, xm] k q) q)
+      (ppow [q - 1, 1] (6 - k) q) q) q) []
+
 /-- The setting at `𝔮`: `x±`, the even sextic `A X⁶ + B X⁴ + C X² + D`, and the two quotients
 `E₁ : y² = x³ + Bx² + ACx + A²D`, `E₂ : y² = x³ + Cx² + BDx + AD²`, as in `step3_setup.gp`. -/
 structure Setting where
   q : Nat
   xp : Nat
   xm : Nat
+  F : List Nat
   A : Nat
   D : Nat
   E1 : Curve
@@ -205,23 +210,19 @@ structure Setting where
 def setting (I : Inputs) (q r : Nat) : Setting :=
   let xp := evalL I.xp r q
   let xm := evalL I.xm r q
-  let F := (f1.zipIdx).foldl (fun acc (c, k) =>
-    padd acc (pmul (pscale (ofInt c q) (ppow [(q - xp) % q, xm] k q) q)
-      (ppow [q - 1, 1] (6 - k) q) q) q) []
+  let F := evenModel xp xm q
   let co := fun i => F.getD i 0
   let (A, B, C, D) := (co 6, co 4, co 2, co 0)
-  { q, xp, xm, A, D,
-    E1 := ⟨q, B, A * C % q, A * A % q * D % q⟩,
-    E2 := ⟨q, C, B * D % q, A * D % q * D % q⟩ }
+  { q, xp, xm, F, A, D,
+    E1 := ⟨B, A * C % q, A * A % q * D % q⟩,
+    E2 := ⟨C, B * D % q, A * D % q * D % q⟩ }
 
-/-- `F` is even: its odd coefficients vanish. -/
-def evenOk (I : Inputs) (q r : Nat) : Bool :=
-  let xp := evalL I.xp r q
-  let xm := evalL I.xm r q
-  let F := (f1.zipIdx).foldl (fun acc (c, k) =>
-    padd acc (pmul (pscale (ofInt c q) (ppow [(q - xp) % q, xm] k q) q)
-      (ppow [q - 1, 1] (6 - k) q) q) q) []
-  F.getD 1 0 == 0 && F.getD 3 0 == 0 && F.getD 5 0 == 0
+/-- Structural facts about the setting that the soundness proof uses: `F` is an even sextic,
+`A = f(x₋)`, `D = f(x₊)`, and every value is reduced modulo `q`. -/
+def settingOk (S : Setting) (f : List Nat) : Bool :=
+  S.F.length ≤ 7 && S.F.getD 1 0 == 0 && S.F.getD 3 0 == 0 && S.F.getD 5 0 == 0 &&
+    S.A == evalPoly f S.xm S.q && S.D == evalPoly f S.xp S.q &&
+    S.xp < S.q && S.xm < S.q && S.A < S.q && S.D < S.q && S.E1.a2 < S.q && S.E2.a2 < S.q
 
 /-- `(φ₁, φ₂)` of an affine point of `X`. -/
 def phi (S : Setting) (x y : Nat) : Pt × Pt :=
@@ -239,7 +240,7 @@ witness `w`. Over `Q = (u, v)` the points of `X` are `(X, Y) = (±√(u/A), v/A)
 over `Q = O` they are the points with `x = x₋`, where `φ₂ = (0, D·y)`. -/
 def fibreOk (S : Setting) (f : List Nat) (c2 : Nat) (T2 : Pt) (Q : Pt) (w : Nat) : Bool :=
   let q := S.q
-  let hit : Pt → Bool := fun P => S.E2.mul c2 P == T2
+  let hit : Pt → Bool := fun P => S.E2.mul q c2 P == T2
   match Q with
   | .inf =>
     let fx := evalPoly f S.xm q
@@ -254,41 +255,66 @@ def fibreOk (S : Setting) (f : List Nat) (c2 : Nat) (T2 : Pt) (Q : Pt) (w : Nat)
     if w = q then euler s q == q - 1
     else w * w % q == s && !hit (img w) && !hit (img ((q - w) % q))
 
+/-- A checker point with coordinates reduced modulo `q`. -/
+def Pt.reduced (q : Nat) : Pt → Bool
+  | .inf => true
+  | .pt x y => x < q && y < q
+
 /-- The points of a list are pairwise distinct. -/
 def distinct : List Pt → Bool
   | [] => true
   | P :: Ps => !Ps.contains P && distinct Ps
 
+/-- The checker's form of `f`. -/
+def fq (q : Nat) : List Nat := f1.map (ofInt · q)
+
+/-- The checks at a prime that do not depend on the candidates: `𝔮 = (q, t − r)` is a prime of `L`
+of degree one, `X`, `E₁`, `E₂` have good reduction there, and the setting is well formed. -/
+def primeOk (I : Inputs) (C : PrimeCert) : Bool :=
+  let q := C.q
+  let S := setting I q C.r
+  isPrime q && q ≠ ell && 15 < q && q < 2 ^ 32 &&
+    evalPoly (I.pl.map (ofInt · q)) C.r q = 0 && denomsOk I.xp q && denomsOk I.xm q &&
+    squarefree (fq q) q && settingOk S (fq q) &&
+    S.xp ≠ S.xm && S.A ≠ 0 && S.D ≠ 0 && S.E1.disc q ≠ 0 && S.E2.disc q ≠ 0
+
+/-- The 499-parts are cyclic of order 499, and the cofactors are small. -/
+def ordersOk (q : Nat) (N1 N2 : Int) : Bool :=
+  N1 % 499 = 0 && N1 % (499 * 499) ≠ 0 && N2 % 499 = 0 && N2 % (499 * 499) ≠ 0 &&
+    (N1 / 499).toNat < q && (N2 / 499).toNat < q
+
+/-- The images `cᵢ·φᵢ(P)` of a point of `X`, and the target of a candidate. -/
+def imgAt (S : Setting) (c1 c2 : Nat) (P : Pt × Pt) : Pt × Pt :=
+  (S.E1.mul S.q c1 P.1, S.E2.mul S.q c2 P.2)
+
+def target (S : Setting) (c1 c2 : Nat) (a : Nat × Nat) : Pt × Pt :=
+  let q := S.q
+  let G1 := imgAt S c1 c2 (phi S 1 1)
+  let G2 := imgAt S c1 c2 (phi S (q - 1) 15)
+  (S.E1.add q (S.E1.mul q a.1 G1.1) (S.E1.mul q a.2 G2.1),
+    S.E2.add q (S.E2.mul q a.1 G1.2) (S.E2.mul q a.2 G2.2))
+
+/-- The removal witness `R` is valid: its fibre is `c₁` distinct reduced points `Q` of `E₁` with
+`c₁·Q = T₁`, and no point of `X` over any of them reaches `T₂`. -/
+def removedBy (S : Setting) (c1 c2 : Nat) (R : Removal) : Bool :=
+  let q := S.q
+  let T := target S c1 c2 R.a
+  R.a.1 < 499 && R.a.2 < 499 && R.fibre.length == c1 && distinct (R.fibre.map Prod.fst) &&
+    R.fibre.all fun (Q, w) => Q.reduced q && w ≤ q && S.E1.onCurve q Q &&
+      S.E1.mul q c1 Q == T.1 && fibreOk S (fq q) c2 T.2 Q w
+
 /-- Sieve the candidates still alive at one prime; `none` if any check fails. -/
 def sievePrime (I : Inputs) (C : PrimeCert) (alive : List (Nat × Nat)) :
-    Option (List (Nat × Nat)) := do
-  let q := C.q
-  let f := f1.map (ofInt · q)
-  -- the prime 𝔮 = (q, t − r) of L, and good reduction of X, E₁, E₂ there
-  unless isPrime q && q ≠ ell && 3 < q do none
-  unless evalPoly (I.pl.map (ofInt · q)) C.r q = 0 do none
-  unless denomsOk I.xp q && denomsOk I.xm q do none
-  unless squarefree f q do none
-  unless evenOk I q C.r do none
-  let S := setting I q C.r
-  unless S.xp ≠ S.xm && S.A ≠ 0 && S.D ≠ 0 && S.E1.disc ≠ 0 && S.E2.disc ≠ 0 do none
-  -- the 499-parts are cyclic of order 499
-  let N1 := S.E1.order
-  let N2 := S.E2.order
-  unless N1 % 499 = 0 && N1 % (499 * 499) ≠ 0 && N2 % 499 = 0 && N2 % (499 * 499) ≠ 0 do none
-  let c1 := (N1 / 499).toNat
-  let c2 := (N2 / 499).toNat
-  -- the generator images; P₂ = (−1, 15)
-  let img : Pt × Pt → Pt × Pt := fun (P1, P2) => (S.E1.mul c1 P1, S.E2.mul c2 P2)
-  let G1 := img (phi S 1 1)
-  let G2 := img (phi S (q - 1) 15)
-  let target : Nat × Nat → Pt × Pt := fun (a1, a2) =>
-    (S.E1.add (S.E1.mul a1 G1.1) (S.E1.mul a2 G2.1), S.E2.add (S.E2.mul a1 G1.2) (S.E2.mul a2 G2.2))
-  let removed : Removal → Bool := fun R =>
-    let T := target R.a
-    R.fibre.length == c1 && distinct (R.fibre.map Prod.fst) &&
-      R.fibre.all fun (Q, w) => S.E1.onCurve Q && S.E1.mul c1 Q == T.1 && fibreOk S f c2 T.2 Q w
-  some (alive.filter fun a => !(C.removals.any fun R => R.a == a && removed R))
+    Option (List (Nat × Nat)) :=
+  if primeOk I C then
+    let S := setting I C.q C.r
+    let N1 := S.E1.order C.q
+    let N2 := S.E2.order C.q
+    if ordersOk C.q N1 N2 then
+      some (alive.filter fun a => !(C.removals.any fun R =>
+        R.a == a && removedBy S (N1 / 499).toNat (N2 / 499).toNat R))
+    else none
+  else none
 
 /-- Run the sieve over all primes in order. -/
 def run (I : Inputs) (certs : List PrimeCert) : Option (List (Nat × Nat)) :=

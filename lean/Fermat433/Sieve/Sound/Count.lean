@@ -67,20 +67,20 @@ lemma euler_eq_char (hq2 : q ≠ 2) (hq64 : q < 2 ^ 64) (a : ℕ) :
 
 namespace Curve
 
-variable (E : Curve)
+variable (E : Curve) (q : ℕ)
 
-lemma rhs_cast (x : ℕ) : (E.rhs x : ZMod E.q) =
-    (x : ZMod E.q) ^ 3 + E.a2 * (x : ZMod E.q) ^ 2 + E.a4 * x + E.a6 := by
+lemma rhs_cast (x : ℕ) : (E.rhs q x : ZMod q) =
+    (x : ZMod q) ^ 3 + E.a2 * (x : ZMod q) ^ 2 + E.a4 * x + E.a6 := by
   simp only [rhs, ZMod.natCast_mod, Nat.cast_add, Nat.cast_mul]; ring
 
-lemma order_eq_sum [Fact E.q.Prime] (hq2 : E.q ≠ 2) (hq64 : E.q < 2 ^ 64) :
-    E.order = E.q + 1 + ∑ x : ZMod E.q,
-      (quadraticChar (ZMod E.q) (x ^ 3 + E.a2 * x ^ 2 + E.a4 * x + E.a6) : ℤ) := by
-  have : NeZero E.q := ⟨(Fact.out : E.q.Prime).ne_zero⟩
-  have hfun : (fun acc x => let e := euler (E.rhs x) E.q
+lemma order_eq_sum [Fact q.Prime] (hq2 : q ≠ 2) (hq64 : q < 2 ^ 64) :
+    E.order q = q + 1 + ∑ x : ZMod q,
+      (quadraticChar (ZMod q) (x ^ 3 + E.a2 * x ^ 2 + E.a4 * x + E.a6) : ℤ) := by
+  have : NeZero q := ⟨(Fact.out : q.Prime).ne_zero⟩
+  have hfun : (fun acc x => let e := euler (E.rhs q x) q
       if e = 1 then acc + 1 else if e = 0 then acc else acc - 1) =
-      fun (acc : ℤ) (x : ℕ) => acc + (if euler (E.rhs x) E.q = 1 then 1
-        else if euler (E.rhs x) E.q = 0 then 0 else -1 : ℤ) := by
+      fun (acc : ℤ) (x : ℕ) => acc + (if euler (E.rhs q x) q = 1 then 1
+        else if euler (E.rhs q x) q = 0 then 0 else -1 : ℤ) := by
     funext acc x; simp only; split_ifs <;> ring
   rw [order, hfun, foldl_add_eq, list_sum_range, ← sum_range_zmod]
   congr 1
@@ -88,24 +88,25 @@ lemma order_eq_sum [Fact E.q.Prime] (hq2 : E.q ≠ 2) (hq64 : E.q < 2 ^ 64) :
   rw [euler_eq_char hq2 hq64, rhs_cast]
 
 /-- Points are the point at infinity or a nonsingular affine pair (`WithZero` is `Option`). -/
-def pointEquivOption : E.W.Point ≃ Option {xy : ZMod E.q × ZMod E.q // E.W.Nonsingular xy.1 xy.2} :=
-  E.W.nonsingularPointEquiv
+def pointEquivOption :
+    (E.W q).Point ≃ Option {xy : ZMod q × ZMod q // (E.W q).Nonsingular xy.1 xy.2} :=
+  (E.W q).nonsingularPointEquiv
 
-instance [Fact E.q.Prime] : Finite E.W.Point :=
-  have : NeZero E.q := ⟨(Fact.out : E.q.Prime).ne_zero⟩
-  Finite.of_equiv _ E.pointEquivOption.symm
+instance [Fact q.Prime] : Finite (E.W q).Point :=
+  have : NeZero q := ⟨(Fact.out : q.Prime).ne_zero⟩
+  Finite.of_equiv _ (E.pointEquivOption q).symm
 
 /-- `Curve.order` is the number of points. -/
-theorem card_eq_order [Fact E.q.Prime] (hq2 : E.q ≠ 2) (hq64 : E.q < 2 ^ 64) (hΔ : E.W.Δ ≠ 0) :
-    (Nat.card E.W.Point : ℤ) = E.order := by
-  have : NeZero E.q := ⟨(Fact.out : E.q.Prime).ne_zero⟩
+theorem card_eq_order [Fact q.Prime] (hq2 : q ≠ 2) (hq64 : q < 2 ^ 64) (hΔ : (E.W q).Δ ≠ 0) :
+    (Nat.card (E.W q).Point : ℤ) = E.order q := by
+  have : NeZero q := ⟨(Fact.out : q.Prime).ne_zero⟩
   classical
-  have hchar : ringChar (ZMod E.q) ≠ 2 := by rw [ZMod.ringChar_zmod_n]; exact hq2
-  set g : ZMod E.q → ZMod E.q := fun x => x ^ 3 + E.a2 * x ^ 2 + E.a4 * x + E.a6 with hg
+  have hchar : ringChar (ZMod q) ≠ 2 := by rw [ZMod.ringChar_zmod_n]; exact hq2
+  set g : ZMod q → ZMod q := fun x => x ^ 3 + E.a2 * x ^ 2 + E.a4 * x + E.a6 with hg
   -- points = affine solutions of y² = g(x), plus infinity
-  have hpts : Nat.card E.W.Point =
-      (univ.filter fun xy : ZMod E.q × ZMod E.q => xy.2 ^ 2 = g xy.1).card + 1 := by
-    rw [Nat.card_congr E.pointEquivOption, Nat.card_eq_fintype_card, Fintype.card_option,
+  have hpts : Nat.card (E.W q).Point =
+      (univ.filter fun xy : ZMod q × ZMod q => xy.2 ^ 2 = g xy.1).card + 1 := by
+    rw [Nat.card_congr (E.pointEquivOption q), Nat.card_eq_fintype_card, Fintype.card_option,
       Fintype.card_subtype]
     congr 2
     ext xy
@@ -113,14 +114,14 @@ theorem card_eq_order [Fact E.q.Prime] (hq2 : E.q ≠ 2) (hq64 : E.q < 2 ^ 64) (
     rw [← equation_iff_nonsingular_of_Δ_ne_zero hΔ, equation_iff]
     simp [W]
   -- split by `x`, and count square roots
-  have hsplit : ((univ.filter fun xy : ZMod E.q × ZMod E.q => xy.2 ^ 2 = g xy.1).card : ℤ) =
-      ∑ x : ZMod E.q, ((quadraticChar (ZMod E.q) (g x) : ℤ) + 1) := by
+  have hsplit : ((univ.filter fun xy : ZMod q × ZMod q => xy.2 ^ 2 = g xy.1).card : ℤ) =
+      ∑ x : ZMod q, ((quadraticChar (ZMod q) (g x) : ℤ) + 1) := by
     rw [card_filter, Fintype.sum_prod_type]
     push_cast
     refine sum_congr rfl fun x _ => ?_
     rw [← quadraticChar_card_sqrts hchar (g x), Set.toFinset_ofPred, card_filter]
     push_cast; rfl
-  rw [hpts, Nat.cast_add, hsplit, order_eq_sum E hq2 hq64, sum_add_distrib]
+  rw [hpts, Nat.cast_add, hsplit, order_eq_sum E q hq2 hq64, sum_add_distrib]
   simp [ZMod.card, hg]
   ring
 

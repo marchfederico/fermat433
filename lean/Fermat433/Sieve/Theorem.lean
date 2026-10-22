@@ -40,6 +40,11 @@ private def kept := some [(1, 0), (498, 0), (77, 227), (0, 1), (0, 498)]
 #guard run inputs (spoil fun l => l.take 1 |>.map (fun (Q, w) => (Q, (w + 1) % 12973)) |>.append (l.drop 1)) == kept
 -- a fibre point not on the curve
 #guard run inputs (spoil fun l => (l.take 1 |>.map fun (_, w) => (Pt.pt 1 1, w)) ++ l.drop 1) == kept
+-- a fibre point repeated in unreduced form `(x + q, y)`
+#guard run inputs (spoil fun l => match l with
+  | (Pt.pt x y, w) :: rest => (Pt.pt x y, w) :: (rest.take (rest.length - 1)) ++
+      [(Pt.pt (x + 12973) y, w)]
+  | l => l) == kept
 -- a wrong prime of L
 #guard run inputs [cert997, { cert12973 with r := 776 }] == none
 

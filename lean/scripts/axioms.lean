@@ -6,3 +6,5 @@ import Fermat433
 #print axioms Fermat433.Sieve.Curve.mul_rep
 #print axioms Fermat433.Sieve.Curve.card_eq_order
 #print axioms Fermat433.Sieve.mem_of_fibre
+#print axioms Fermat433.Sieve.sievePrime_sound
+#print axioms Fermat433.Sieve.sieve_B_minus_sound

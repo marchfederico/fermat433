@@ -47,13 +47,17 @@ solutions:
 
 ## The sieve certificate
 
-`Fermat433/Sieve/` checks the finite arithmetic of the Mordell–Weil sieve for B⁻ (Proposition 6.2 of
-the paper), independently of PARI. The theorem `Fermat433.Sieve.sieve_B_minus` is proved by
-evaluating a checker in Lean's kernel (`decide +kernel`, about 35 seconds, axioms: `propext` only).
-It confirms that the primes above 997 and 12973 remove all 524 quadratic Chabauty candidates except
-the four known points. It is separate from `fermat433`, and is not yet connected to it: the
-checker's soundness (that it computes the group law on the elliptic curves correctly) is not
-proved. See `../sieve_cert/README.md`.
+`Fermat433/Sieve/` checks the Mordell–Weil sieve for B⁻ (Proposition 6.2 of the paper) without
+PARI, in two steps:
+
+- `Fermat433.Sieve.sieve_B_minus`: the checker, evaluated in Lean's kernel (`decide +kernel`, about
+  35 seconds, axioms: `propext` only), returns exactly the four known points.
+- `Fermat433.Sieve.sieve_B_minus_sound` (in `Sieve/Sound/`): the checker is sound, so every other
+  candidate is ruled out at q = 997 or 12973 by a statement about Mathlib elliptic curves over
+  `ZMod q`.
+
+It is not connected to `fermat433`: the candidate list and the sieve condition itself
+(Propositions 6.1–6.2) remain outside Lean. See `../sieve_cert/README.md`.
 
 ## Building
 

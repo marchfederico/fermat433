@@ -82,22 +82,40 @@ condition were all recomputed without PARI.
 - the C⁺ half and the p = 1459 rerun, which have the same structure and are a straightforward
   extension.
 
-**What the Lean theorem means, and what remains.** `sieve_B_minus` says that this program, run on
-these inputs, returns the four survivors. That the program computes what its comments say is not
-yet proved. That proof would show that `run` returning `some` implies the statement about the
-elliptic curves over 𝔽_q, using Mathlib's Weierstrass curves. It needs, for example, that the
-addition formulas give the group law, and that the fibres of multiplication by c₁ have c₁ points.
-That soundness proof is what turns the checker into a proof. It is in progress, in
-`lean/Fermat433/Sieve/Sound/`, in four layers:
+**The soundness proof.** `sieve_B_minus` says that a program returns the four survivors.
+`sieve_B_minus_sound` (in `lean/Fermat433/Sieve/Sound/Main.lean`) turns that into mathematics.
+For each of the 520 removed candidates a = (a₁, a₂), there is a prime q ∈ {997, 12973} at which
+no point P of X(𝔽_q) satisfies both
+
+  c₁·φ₁(P) = a₁·c₁·φ₁(P₁) + a₂·c₁·φ₁(P₂) on E₁  and  c₂·φ₂(P) = a₁·c₂·φ₂(P₁) + a₂·c₂·φ₂(P₂) on E₂,
+
+where P₁ = (1, 1), P₂ = (−1, 15) and cᵢ = #Eᵢ(𝔽_q)/499. The curves Eᵢ, their points and group law
+are Mathlib's (`WeierstrassCurve.Affine.Point` over `ZMod q`). The maps φᵢ are given by their
+formulas: the change of variable X = (x − x₊)/(x − x₋), Y = y(X − 1)³ to the even model, then
+(AX², AY) and (D/X², DY/X³). X(𝔽_q) includes the points at infinity and the special points
+x = x±. The theorem depends only on Lean's three standard axioms.
+
+The proof is in four layers in `lean/Fermat433/Sieve/Sound/`:
 
 | layer | statement | status |
 |---|---|---|
 | 1. arithmetic (`Arith.lean`) | `powMod`, `inv`, `sub`, `ofInt` compute exponentiation, inverses, subtraction and casts in `ZMod q`; `euler` returning `q − 1` means "not a square" | proved |
-| 2. group law (`Curve.lean`) | `Curve.add` and `Curve.mul` are Mathlib's addition and `n • ·` on `WeierstrassCurve.Affine.Point`; points passing `onCurve` are points; `disc ≠ 0` gives `Δ ≠ 0` | proved |
-| 3. counting (`Count.lean`, `Fibre.lean`) | `Curve.order` is the number of points of the Mathlib curve (`card_eq_order`); in a group of order `499c` with `499 ∤ c`, `c` distinct points of a fibre of `c • ·` are the whole fibre (`mem_of_fibre`) | proved |
-| 4. the sieve | `run inputs certs = some L` implies: for each removed candidate, no point of `X(𝔽_q)` maps to its target, stated with Mathlib points | to do |
+| 2. group law (`Curve.lean`) | `Curve.add` and `Curve.mul` are Mathlib's addition and `n • ·`; points passing `onCurve` are points; `disc ≠ 0` gives `Δ ≠ 0` | proved |
+| 3. counting (`Count.lean`, `Fibre.lean`) | `Curve.order` is the number of points (`card_eq_order`); in a group of order `499c` with `499 ∤ c`, `c` distinct points of a fibre of `c • ·` are the whole fibre (`mem_of_fibre`) | proved |
+| 4. the sieve (`Poly.lean`, `Geometry.lean`, `Bridge.lean`, `Sieve.lean`, `Main.lean`) | the list polynomials compute `F`; points of `X` land on the even model and on `E₁`, `E₂`; the checker's `phi` and fibre test are correct; `sievePrime` returning `some` implies the statement above | proved |
 
-Layers 1–3 use only Lean's standard axioms and are built by CI.
+Writing layer 4 exposed one real gap in the checker, now closed. Fibre points were not required to
+be reduced mod q, so a certificate could have listed (x, y) and (x + q, y) as two "distinct" points.
+The checker now rejects this, and `Theorem.lean` tests that it does. A few other facts the proof
+needs (F has at most seven coefficients, A = f(x₋), D = f(x₊), values reduced mod q, q > 15) are
+also checked at run time rather than derived.
+
+**What is still not proved in Lean:**
+- that the 524 candidate vectors are the zeros of the quadratic Chabauty function (§6,
+  Proposition 6.1);
+- that the sieve condition above is the right one, i.e. that a rational point's coefficient vector
+  must satisfy it (Proposition 6.2): this links φᵢ over 𝔽_q to the maps over L and to J(ℚ);
+- the C⁺ half and the p = 1459 rerun, which have the same structure.
 
 ## Reproducing
 
