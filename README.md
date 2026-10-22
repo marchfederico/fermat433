@@ -17,7 +17,7 @@ an expert should check first.
 
 ## The paper
 
-`paper/fermat433.tex` is the proof written up as a 15-page article (amsart), with the built PDF tracked beside it at
+`paper/fermat433.tex` is the proof written up as a 16-page article (amsart), with the built PDF tracked beside it at
 `paper/fermat433.pdf` so it can be read without a TeX installation. It covers the same ground as PROOF.md in the
 form a referee would expect: the theorem, the rank-2-equals-genus obstruction and the idea in §1; the four parts of
 the proof in §§2–8; and in §9 a table mapping every proposition to the script and log that establish it. The

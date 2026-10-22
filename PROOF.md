@@ -366,6 +366,11 @@ heights over Q in the parallel session's qc_sigma.py). The p-adic computations c
 tracking; the only truncation is the series tail on each residue disk, controlled by the observed linear growth of
 coefficient valuations and confirmed at higher precision.
 
+**Formal check.** The step from Lemma A.1 to the six curves (the parts of A.2 and A.3 that are used) and the step
+from their rational points back to the solutions are formalized in Lean 4 / Mathlib in `lean/`. The formal theorem
+takes Lemma A.1, Propositions B.1 and B.2 and the rational points of B⁻ and C⁺ as hypotheses; none of those is
+formalized. See lean/README.md.
+
 ## References
 
 - J. S. Balakrishnan, N. Dogra, *Quadratic Chabauty and rational points II: Generalised height functions on Selmer

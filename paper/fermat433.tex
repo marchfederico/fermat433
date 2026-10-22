@@ -78,7 +78,7 @@
 
 \author{Marcello Federico}
 \email{marcellof@gmail.com}
-\date{September 2026}
+\date{October 2026}
 
 \subjclass[2020]{Primary 11D41; Secondary 11G30, 11G50, 11Y50, 14G05, 14H45}
 \keywords{Generalised Fermat equation, quadratic Chabauty, bielliptic genus two
@@ -279,6 +279,14 @@ everything asserted here, which is what the name on the title page means.
 Claude is not an author and could not be one: it can neither stand behind the
 result nor answer for it if the result is wrong.
 
+The author is aware that many mathematicians are uneasy about work produced
+with AI systems, and regards that unease as reasonable: such systems can
+produce confident arguments that are wrong, and checking them costs the time of
+people who did not ask to spend it. The author came to this problem in order to
+learn the mathematics around it, and used Claude as a tool for doing so. That
+does not make the result more likely to be right, and no one is asked to take
+it on trust.
+
 The reader should treat the mathematics accordingly --- that is,
 critically, and with the scripts and logs in hand. Everything needed to do so is
 public (\S\ref{sec:code}): every proposition names the script and the log that
@@ -295,6 +303,14 @@ precise relationship between the identity proved there and
 \cite[Thm.~1.5]{BBBM}, has not been examined by anyone else. The questions the
 author would most like an expert to consider are collected in
 \texttt{REFEREE\_NOTES.md} in the repository.
+
+One part of the argument has been checked by machine. The elementary passage
+from Lemma~\ref{lem:A1} to the six curves, and from their rational points back
+to the solutions, is formalised in Lean~4 with Mathlib (\S\ref{sec:code}). The
+formal theorem is conditional: it takes as hypotheses Lemma~\ref{lem:A1},
+Propositions~\ref{prop:B1} and~\ref{prop:B2}, and
+Corollary~\ref{cor:hardpair}, none of which is formalised. In particular the
+quadratic Chabauty argument, which is the new part, is not.
 
 \begin{convention}
 Throughout, $\iota$ denotes the hyperelliptic involution $(x,y)\mapsto(x,-y)$;
@@ -1176,6 +1192,21 @@ chunks, about $10$ minutes at $p=499$ and about $40$ minutes at $p=1459$) and
 the $2$-adic point searches of \texttt{sel2/pipeline.gp}, up to about $1.5$
 hours per curve.
 
+The directory \texttt{lean/} contains a Lean~4 / Mathlib formalisation of the
+reduction. Its main theorem states that, given Lemma~\ref{lem:A1} and the
+$x$-coordinates of the affine rational points of the six curves
+\eqref{eq:Apm}, \eqref{eq:BCpm} as determined in
+Propositions~\ref{prop:B1}, \ref{prop:B2} and Corollary~\ref{cor:hardpair}, the
+primitive solutions of \eqref{eq:main} are exactly those of
+Theorem~\ref{thm:main}. These inputs appear as explicit hypotheses of the
+theorem, not as axioms. What Lean proves is the content of
+Lemmas~\ref{lem:A2} and~\ref{lem:A3} that the proof uses --- that $a$ is odd,
+that $k=2,3$ cannot occur, and the twist set --- together with the transport of
+the points in \S\ref{sec:conclusion}. The formal proof contains no
+\texttt{sorry} and depends only on Lean's three standard axioms; the
+repository's continuous integration rebuilds it and checks this on every
+change.
+
 \begin{table}[ht]
 \caption{Where each statement is established.}\label{tab:scripts}
 \footnotesize
@@ -1190,6 +1221,8 @@ Lemmas~\ref{lem:A1}--\ref{lem:A2} &
   \texttt{descent\_explore.py}, \texttt{diagonal.py} & --- \\
 Lemma~\ref{lem:A3} &
   \texttt{etale.py}, \texttt{twistset.py} & --- \\
+Lemmas~\ref{lem:A2}--\ref{lem:A3} and \S\ref{sec:conclusion}, formally &
+  \texttt{lean/Fermat433/} & --- \\
 Prop.~\ref{prop:B1} &
   \texttt{sel2/certify.gp}, \texttt{sel2/fakeselmerset.gp} &
   \texttt{logs/sel2/certify.log} \\
